@@ -275,6 +275,55 @@ def summarize(records: list[dict], patterns: list[tuple[str, re.Pattern[str]]]) 
     }
 
 
+def barred_list_baseline(records: list[dict], patterns: list[tuple[str, re.Pattern[str]]]) -> dict:
+    """Word search that looks only at the cannot-join section.
+
+    A hit is a trial whose exclusion section contains any of the phrases.
+    Scored against the section shortcut, precision is 1 by construction:
+    the shortcut and the search use the same heading split. The useful
+    numbers are how many whole-text hits this drops, and how many barred-list
+    hits also mention the phrase on the required list.
+    """
+    buckets = Counter(classify(record["eligibility_criteria"], patterns) for record in records)
+    anywhere_hits = buckets["inclusion_only"] + buckets["exclusion_only"] + buckets["both"]
+    barred_hits = buckets["exclusion_only"] + buckets["both"]
+    return {
+        "whole_text_hits": anywhere_hits,
+        "required_list_only": buckets["inclusion_only"],
+        "barred_list_only": buckets["exclusion_only"],
+        "both_lists": buckets["both"],
+        "phrase_present_but_no_heading": buckets["unsplit"],
+        "barred_list_search_hits": barred_hits,
+        "whole_text_hits_dropped": buckets["inclusion_only"],
+        "barred_list_hits_also_on_required_list": buckets["both"],
+    }
+
+
+HISTORY_PATTERNS = [item for item in IMMUNO_PATTERNS if item[0] not in {"PD-1", "PD-L1"}]
+MARKER_PATTERNS = [item for item in IMMUNO_PATTERNS if item[0] in {"PD-1", "PD-L1"}]
+
+
+def marker_versus_history(records: list[dict]) -> dict:
+    """PD-1 and PD-L1 often name a lab result, not a prior drug.
+
+    Counts how many whole-text hits match only those two phrases.
+    """
+    only_marker = 0
+    history_word = 0
+    for record in records:
+        text = record["eligibility_criteria"]
+        has_history = any(pattern.search(text) for _, pattern in HISTORY_PATTERNS)
+        has_marker = any(pattern.search(text) for _, pattern in MARKER_PATTERNS)
+        if has_history:
+            history_word += 1
+        elif has_marker:
+            only_marker += 1
+    return {
+        "hits_with_a_history_word": history_word,
+        "hits_with_only_pd1_or_pdl1": only_marker,
+    }
+
+
 def header_stats(records: list[dict]) -> dict:
     modes = Counter(split_sections(record["eligibility_criteria"])["mode"] for record in records)
     reversed_headers = sum(
@@ -316,6 +365,9 @@ def main() -> None:
         "brain_phrase_docs": phrase_counts(records, BRAIN_PATTERNS),
         "immuno_seven_terms": summarize(records, IMMUNO_PATTERNS),
         "brain_any_listed_phrase": summarize(records, BRAIN_PATTERNS),
+        "immuno_barred_list_baseline": barred_list_baseline(records, IMMUNO_PATTERNS),
+        "brain_barred_list_baseline": barred_list_baseline(records, BRAIN_PATTERNS),
+        "immuno_marker_versus_history": marker_versus_history(records),
     }
     REPORT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps(report, indent=2, ensure_ascii=False))
