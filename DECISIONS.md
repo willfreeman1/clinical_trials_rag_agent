@@ -182,3 +182,24 @@ Step 5 labelling the genetic-marker trait and finding it throws out far more tha
 would push the six-trait projection toward or past 70% and make the cheap step clearly worth
 building. That is the single most informative thing left to measure, and it argues for
 prioritising the marker trait over the three plain yes-or-no ones.
+
+---
+
+## 2026-09-29 — Environment: Python 3.11 venv, not Anaconda 3.9
+
+**Decision: create `.venv` on the Python 3.11.9 already on PATH, and do not install into
+Anaconda base.**
+
+The plan checked this machine on 2026-09-29 and found Anaconda 3.9.12 as the base interpreter.
+That is still there, but it is not what `python` resolves to: PATH python is 3.11.9, and 3.13.x
+is also installed. Several libraries Step 7 needs have dropped 3.9. Putting the spike on 3.11
+now avoids rebuilding the environment later, and 3.11 is new enough for current
+`transformers` / `torch` wheels without being 3.13, whose wheels are still patchy.
+
+Pinned in `requirements.txt`: `numpy==2.1.3` only, until Step 7. Verified inside the venv:
+Python 3.11.9, numpy 2.1.3.
+
+### What would reverse this
+
+Step 7's chosen starting model or trainer refusing to install on 3.11. Then recreate the venv
+on whichever version actually works, and log it.

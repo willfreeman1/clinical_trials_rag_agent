@@ -165,3 +165,103 @@ two-trait overlap so the size of that effect is known rather than assumed.
   errors. Step 9 addresses that as far as it can be.
 - The invented patients are balanced by design rather than realistic in their mix, so no average
   across patients is an estimate of what a real clinic would see.
+
+---
+
+## Spike 2, Step 3 — can two wordings of the same trait be linked?
+
+**Committed 2026-09-29, before any matching run.** Set from the plan's guessed
+gates. Will may override; an override gets a `DECISIONS.md` entry.
+
+### What is being measured
+
+The cheap step has to recognise that a patient's wording and a trial's wording
+name the same trait, without treating two different traits as the same. The
+second error is the one that can throw out a joinable trial. The first error
+only makes the shortlist bigger.
+
+Three methods, compared on the same pairs:
+
+1. **Embeddings** — `text-embedding-3-small`, the model already used in Step 1,
+   cosine similarity, match at or above the operating threshold.
+2. **MeSH** — the National Library of Medicine's medical subject headings,
+   freely downloadable, with the synonym list and the hierarchy that should
+   connect a specific drug to its class. UMLS is preferred in the plan but
+   needs a licence; if MeSH cannot be installed in half a day, this arm is
+   recorded as failed and embeddings run alone.
+3. **Combined** — MeSH first; embeddings only when MeSH cannot resolve at
+   least one of the two phrases. A MeSH "no" is a no, not a fallback.
+
+### Gold pairs
+
+The pairs are in `scripts/step3_gold.json`, committed with this document. They
+were written before any matching scores existed.
+
+**Same-trait pairs** come from two places that do not depend on embeddings:
+
+- The wording-trap table already written at the end of `data/fake_patients.md`,
+  plus a few extra surface forms of those same traps (a drug name vs the class
+  the table says it should recover).
+- English-only variants anyone can check by reading: an abbreviation and its
+  expansion, a plural and a singular, a phrase and the same phrase with a
+  filler word (`written informed consent` / `informed consent`).
+
+They do **not** come from Step 1's embedding clusters. Scoring embeddings
+against those clusters would make method 1 look perfect by construction.
+
+**Different-trait pairs** are the dangerous ones, not a random sample of
+unrelated phrases (random unrelated phrases are easy and would flatter every
+method):
+
+- Near-string confusions: `brain metastases` / `bone metastases` (the merge
+  Step 1 already documented as a mistake), `hepatitis b` / `hepatitis c`,
+  `pleural effusion` / `pericardial effusion`, `nsclc` / `small cell lung cancer`.
+- Crossed traps: a wording that should recover trait A, paired with trait B
+  (`pembrolizumab` / `platinum-based chemotherapy`, `carbo/pemetrexed` /
+  `prior immunotherapy`).
+- Same-category but different fact: `EGFR mutation` / `ALK fusion`,
+  `pregnancy` / `pregnancy test`.
+
+A small **related-unclear** list is scored and reported but is **not** read
+against the gate — pairs a reader could honestly argue either way
+(`measurable disease` / `measurable lesion`). Putting them in the gate would
+let a wording dispute look like a method failure.
+
+### Operating threshold for embeddings
+
+Match if cosine ≥ **0.85**. That is the merge threshold Step 1 already used, so
+this step tests the setting the project has actually been relying on, not a
+new one chosen to look better. The same pairs are also scored at 0.75, 0.80,
+0.90 and 0.95 and reported as a curve; those points are not the gate.
+
+### Thresholds — guessed, as the plan labelled them
+
+Read from the hand-specified gold in `scripts/step3_gold.json`.
+
+| Result on the best of the three methods | Decision |
+|---|---|
+| Wrongly linking different-trait pairs **> 5%** | Matching is the weak point. Stop building the rest of the cheap step until this is fixed. |
+| Correctly linking same-trait pairs **< 85%** | The cheap step will miss rules. That makes the shortlist bigger, not wrong. Note it and continue. |
+| Wrong-link ≤ 5% and correct-link ≥ 85% | Matching is good enough to build on. |
+
+The gate is read from the **best** method, because the cheap step will use one
+method, not an average of three.
+
+### Also reported, with no threshold attached
+
+- The wording groups Step 1's cosine-0.85 merge actually produced, written to
+  `data/step3_wording_groups.json` this time (they were never saved before).
+- Whether that merge still joins `bone metastases` to `brain metastases`.
+- How many gold phrases MeSH cannot resolve at all.
+- Tokens and dollars for the embedding calls this step makes.
+
+### Known limits, recorded before results exist
+
+- The same-trait set is small and tilted toward the traps in the invented
+  patients, which is the matching problem the cheap step actually faces, not a
+  sample of all 5,578 concept strings.
+- MeSH 2025 ASCII is used if it downloads; 2026 ASCII was discontinued. A
+  one-year lag in a synonym list is a limitation, not a reason to skip the arm.
+- No UMLS licence is on this machine. If the hierarchy in MeSH is too coarse
+  to connect a drug to its class, that is a finding about MeSH, not about
+  "a medical dictionary" in the abstract.
