@@ -385,6 +385,65 @@ second run of the same 20.
 
 ---
 
+## 2026-09-29 — Spike 2 Step 4 revised once: marker kind is fixed, 4 of 20 fail
+
+**Decision: continue.** Will counted P02, P03, and P10 — three of twenty, over
+the threshold of two. The prompt was revised once, as the plan permits
+(committed in `0031555` before this run). Re-read of all 20: **4 of 20** fail.
+The post-revision gate is more than 4 → stop. 4 is not more than 4.
+
+Cost **$0.17** (16,859 in, 8,632 out).
+
+### What the revision changed
+
+Two instruction fixes, nothing else:
+
+1. One-of-many fields use fixed names: `tumour genetic marker`, `disease stage`,
+   `histology`, `sex`. The specific value goes in the value slot.
+2. The tumour genetic marker is always `one_of_many`, never `yes_no`. "No
+   marker found" is the value `none`. One worked example of each.
+
+### Against the four counted mistakes, by reading
+
+The load-bearing fail from the review is gone. P03 is now
+`tumour genetic marker / one_of_many / none`. P10 is now
+`tumour genetic marker / one_of_many / ALK fusion`. Every patient who stated a
+marker, or stated that none was found, used that shape.
+
+| Patient | Call | Why |
+|---|---|---|
+| P02 | **miss** | Still no disease-stage row. "Metastatic adenocarcinoma" is in the description. |
+| P09 | **direction in name** | Extra row `untreated brain lesion`. |
+| P10 | **direction in name** | Extra row `brain metastases treated`. Marker kind is now correct. |
+| P18 | **direction in name** | Extra row `brain metastases untreated`. |
+| The other 16 | pass | Fixed names used; marker kind correct; no invented traits; numbers stayed numbers. |
+
+The three extra-row fails are the treated/untreated detail the threshold
+document said was optional to record. Recording it is fine; putting
+"untreated" in the *name* is not.
+
+Negative traps still hold (P07, P11, P13, P17, P19, P20). Drug-to-class still
+holds. P12 now lifts rheumatoid arthritis to `autoimmune condition`.
+
+### Disclosed, not counted
+
+Five patients stated an age in shorthand (`67F`, `53M`, …) and omitted an age
+row (P01, P02, P03, P07, P12). Pass 1 did not count those as fails, and age is
+a number trait stage 2 ignores. If they are counted, the set goes over 4 and
+the plan says stop. Left uncounted, and said here so that call can be reversed
+without re-running.
+
+The script's 16 "fails" are mostly that alias bug (`age` matching the letters
+inside `disease stage`) plus extras that are in the description (steroids,
+frailty, ART). Reading is the count.
+
+### What would reverse this
+
+Counting the age omissions, or counting any further shape problem on a
+re-read, so the set is more than 4 of 20. Then the plan says stop.
+
+---
+
 ## 2026-09-29 — Spike 2 Step 5a: the marker trait is the strong filter, and it justifies continuing
 
 **Decision: the cheap step is still worth building. Do not label the other

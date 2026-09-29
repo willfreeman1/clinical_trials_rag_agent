@@ -398,3 +398,84 @@ exit in the plan.
   gene tokens (EGFR, ALK, KRAS, ROS1, BRAF, MET, RET, NTRK, HER2), because a
   perfect filter would know `EGFR L858R` satisfies a required list that says
   `EGFR mutation`. That rule is written down here before the labels exist.
+
+---
+
+## Spike 2, Step 3b — matching once both sides are in general terms
+
+**Committed 2026-09-29, before any normalisation or matching run.** Suggested
+by Will; argued below where this document disagrees.
+
+### Why this is a new measurement
+
+Step 3 tested raw hard cases (drug name to family) and found the pairs that
+should match score 0.34–0.63 while brain/bone scores 0.86. No cutoff works.
+But the take-apart step already does that translation, once per patient. The
+untested question is whether matching works once *both* sides are written in
+general terms.
+
+### What is being measured
+
+1. The big model turns each non-empty answer-key quote for the three labelled
+   facts (immunotherapy, brain, marker) into a short general-term subject:
+   no direction, no number, class over specific drug. It is not told which
+   fact the quote came from, and it is not given the patient field names, so
+   it cannot just copy a closed list.
+2. The patient side is the revised Step 4 output.
+3. Three matching arms, scored on the same pairs:
+   - **Word overlap** — after lowercase, split on non-letters, drop
+     `{the,a,an,of,to,for,on,in,and,or,with,by,from,into,as,at,is,are}`, keep
+     tokens of length ≥ 4 or in `{cns,alk,hiv,met,ret,egfr,kras,ros1,braf,her2,pd1,pdl1}`.
+     Match if the intersection is non-empty.
+   - **Embeddings** — `text-embedding-3-small`, match at cosine ≥ **0.80**.
+     Sweep 0.70, 0.75, 0.80, 0.85, 0.90 is reported; 0.80 is the gate. 0.85
+     was Step 3's un-normalised operating point and sat above cerebral/brain
+     (0.80) and below bone/brain (0.86). Once both sides are general, 0.80 is
+     the lowest cutoff that still has a chance to catch a near-paraphrase;
+     bone/brain risk is left to the wrongly-picked-up number.
+   - **Combined** — either arm matches.
+
+A patient query is the trait **name**, and for `one_of_many` also the
+**value**. A trial is retrieved for that query if any of its normalised
+subjects (from any of the three facts) matches any of those strings. Ground
+truth is free: a trial has a rule about a fact iff its answer-key verdict is
+anything other than `not_mentioned` (for markers: either list non-empty).
+
+- **Recall** — of trials that have a rule about this fact, what share is
+  retrieved.
+- **Wrongly-picked-up rate** — of trials that have no rule about this fact,
+  what share is retrieved anyway.
+
+The headline is not recall × ceiling. That is an approximation. The headline
+is the **matching-gated ceiling**: re-run the Step 2 oracle, but a trial is
+thrown out only if the oracle would throw it out *and* matching retrieved it
+for that trait. Report that next to the 39.9% perfect-oracle ceiling. The
+difference is the real state of the project.
+
+The gated number uses **combined** at the committed 0.80. It is a ceiling
+under this matcher, not a prediction of end-to-end accuracy. Reading
+everything is still Step 8.
+
+### Thresholds
+
+| Result on combined, at 0.80, mean across the three facts | Decision |
+|---|---|
+| Recall **below 60%** | Matching loses most of the ceiling. The approach needs rethinking. |
+| Recall **60–85%** | Workable. Quote the matching-gated ceiling, not the perfect-oracle ceiling. |
+| Recall **above 85%** | Matching is not the bottleneck. |
+| Wrongly-picked-up **above 20%** | Too noisy. The judging step gets swamped and the brain/bone risk is live. |
+
+Per-fact numbers are also reported. The gate is read from the mean, because
+the cheap step has to work on every fact, and from the matching-gated union
+as the headline.
+
+### Known limits, recorded before results exist
+
+- Only three facts are labelled, so only three can be matched. Step 5b adds
+  three more and this measurement is re-run.
+- Quote-check failures (stitched quotes) still go into normalisation; a bad
+  quote can produce a bad subject.
+- Trials with no quote on any of the three facts can never be retrieved, so
+  they pull the wrongly-picked-up rate down. That is the operational number
+  (those trials are silent in the index), and it is said here rather than
+  hidden.
