@@ -94,3 +94,91 @@ Step 1b finding that real patient descriptions draw almost entirely from the top
 concepts. That would mean columns can supply every filter a question needs, the tail
 measured here never gets exercised, and the extraction reading of spike 1 is right after
 all for the filtering stage even though it is wrong for the corpus as a whole.
+
+---
+
+## 2026-09-29 — Spike 2 Step 2: the ceiling clears the floor but misses the target
+
+**Decision: continue, and the ceiling is the headline of the write-up, not the model.**
+
+### What was run
+
+`scripts/step2_ceiling.py` — arithmetic over `data/answer_key.jsonl` and
+`data/fake_patients_draw.json`. No API calls, no cost. Assumes a flawless filter and builds
+nothing: for each of the 20 invented patients and each of the two labelled traits, it uses the
+answer key as a perfect oracle and counts how many of the 1,308 trials could be thrown out, then
+takes the union across traits.
+
+Thresholds were committed in `68559b7`, before this ran.
+
+### The numbers
+
+| | Result |
+|---|---|
+| Mean per-trait share thrown out | **11.4%** (range 3.6% to 19.8%) |
+| Two traits combined, mean | **22.0%** (range 16.4% to 27.1%) |
+| Same, if conditional refusals could be resolved | **37.7%** |
+| Projection to six traits, if independent | **51.7%** |
+| Trials stating the brain rule conditionally | **417 of 1,308 — 31.9%** |
+| Trials stating the immunotherapy rule conditionally | 87 of 1,308 — 6.7% |
+
+Per-trait detail: a patient who has had immunotherapy trips 19.8% of trials; one who has not
+trips 12.8%. A patient whose cancer has spread to the brain trips 9.5%; one whose has not trips
+3.6%.
+
+### Against the committed threshold
+
+The threshold was: below 8.2% per trait → stop; 8.2% to 18.2% → continue but the ceiling is the
+story; above 18.2% → the target is reachable.
+
+**Measured 11.4%, which lands in the middle band.** Six traits project to 51.7% — comfortably
+above the 40% floor, well short of the 70% target that would make the full cancer registry
+cheap. At 50% elimination, cost per patient at cancer scope falls from about $10 to about $5.
+Real, but not transformative.
+
+### One disclosure: my pre-registered reasoning was wrong in a way that favours the project
+
+The committed threshold document argued that because restrictive trials tend to be restrictive on
+several counts at once, the same trial would be thrown out by more than one trait, so the
+independent projection would be an **upper** bound and the real six-trait figure lower.
+
+Measured, the opposite is true. Observed overlap was **230 trial-slots against 279 predicted by
+independence — a ratio of 0.82.** The two traits co-occur *less* than chance, so the 51.7%
+projection is if anything slightly conservative. Recording this rather than editing the
+threshold. It does not change the decision, but it does mean the argument I used to justify the
+threshold was not sound, and the write-up should not repeat it.
+
+### The measurement's own limits
+
+- **Only four distinct outcomes exist.** Both traits are yes-or-no and the answer key is fixed, so
+  there are exactly 2 × 2 = 4 possible results and the 20 patients produced only four distinct
+  union values (16.4%, 21.4%, 23.1%, 27.1%). For *this* measurement, 20 patients carried no more
+  information than 4 would. The apparent per-patient spread is the balanced design showing
+  through, not a finding. More patients will matter for later steps; they did not matter here.
+- **The strongest trait is not in this measurement.** The two labelled traits are mid-strength.
+  Step 1 found that one particular genetic-marker requirement is mentioned by roughly a third of
+  trials, so for a patient lacking that marker it could throw out on its own more than twice what
+  either measured trait does. Until Step 5 labels it, 11.4% is a floor on the mean, not an
+  estimate.
+- Inherits any errors in the answer key, which no human has checked beyond four corrections.
+
+### The most useful finding, which was not the headline number
+
+**Nearly a third of all trials — 417 of 1,308 — state their brain-metastases rule conditionally**,
+and those cannot be thrown out from a patient description no matter how good any model is. That
+is the ceiling made concrete, and it is a property of how the rules are written rather than of any
+model.
+
+But the same fact is a product idea. Resolving conditional refusals lifts two-trait elimination
+from 22.0% to **37.7%** — nearly double. Those conditions are mostly about whether the brain
+lesions were treated and have been stable, which is one or two follow-up questions to the
+coordinator. **So "ask two clarifying questions" is worth roughly as much as adding several more
+traits.** That belongs in the design, and it is the kind of finding worth reporting whatever
+happens to the rest of the project.
+
+### What would reverse this
+
+Step 5 labelling the genetic-marker trait and finding it throws out far more than 11.4%, which
+would push the six-trait projection toward or past 70% and make the cheap step clearly worth
+building. That is the single most informative thing left to measure, and it argues for
+prioritising the marker trait over the three plain yes-or-no ones.
