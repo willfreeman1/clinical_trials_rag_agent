@@ -374,3 +374,81 @@ get one revision. Left as 2 of 20 pending that call.
 Will reading the check sheet and counting more than 2 of 20. Then one prompt
 revision, focused on forcing one_of_many for histology and markers, and a
 second run of the same 20.
+
+---
+
+## 2026-09-29 — Spike 2 Step 5a: the marker trait is the strong filter, and it justifies continuing
+
+**Decision: the cheap step is still worth building. Do not label the other
+three traits until Will approves the ~$10.** The marker trait alone throws out
+**23.9%** of trials on average — above the 18.2% per-trait figure that would
+make six traits reach 70% if they were all this strong. Combined with the two
+already-labelled traits, a perfect filter throws out **39.9%** of the corpus
+(the 40% floor, with three traits not six). The six-trait projection moves
+from 51.7% to **63.8%**, which is toward 70% and is the plan's test for
+whether the remaining labelling is justified.
+
+Thresholds for this decision were already in the Step 2 section, plus the
+Step 5a section committed in `af4c473` before labelling. Cost **$6.36**
+(1,662,093 in, 146,776 out). Estimate was ~$4.
+
+### What was run
+
+`scripts/step5_label_markers.py` on all 1,308 trials, then
+`scripts/step2_ceiling.py` re-run with three traits. New labels:
+`data/answer_key_markers.jsonl`. Existing two-trait key not touched.
+
+| | |
+|---|---|
+| Labelled | 1,308 / 1,308, none failed |
+| Quote-check flagged | 151 (11.5%; the two-trait key was 353 / 27%) |
+| Trials that require some marker | **442 (33.8%)** — matches Step 1's "roughly a third" |
+| Trials that refuse some marker | 382 |
+| No marker rule (silence, a pass) | 610 |
+| Rule is conditional | 206 (15.7%) |
+
+### Ceiling with three traits
+
+| | Two-trait partial | Three-trait re-run |
+|---|---:|---:|
+| Mean per-trait throw-out | 11.4% | **15.6%** |
+| Marker trait alone | — | **23.9%** (16.7%–29.4%) |
+| Union across measured traits | 22.0% | **39.9%** (34.5%–44.4%) |
+| Same, if conditionals resolved | 37.7% | 57.0% |
+| Projection to six independent traits | 51.7% | **63.8%** |
+
+Against the committed band: 15.6% is still between 8.2% and 18.2%, so the
+ceiling remains the headline, not the model. The marker did the job this step
+existed for: it is more than twice either of the first two traits, and it
+nearly doubles the union.
+
+By patient marker, pessimistic throw-out on that trait alone:
+
+| Patient marker | Share thrown out |
+|---|---:|
+| ALK fusion (P10) | 29.4% |
+| no driver (13 patients) | 24.6% |
+| EGFR L858R / exon 19 deletion | 22.2% |
+| KRAS G12C (P19) | 16.7% |
+
+A patient with no identified driver is refused by every trial that demands one,
+which is the commonest reason this trait eliminates anything. A KRAS G12C
+patient loses fewer trials because more of the marker-specific studies are
+KRAS studies.
+
+### Two caveats
+
+1. **151 quotes failed the substring check**, mostly two passages stitched
+   together. The lists may still be right. Same class of flag as the original
+   key, at a lower rate. Not guessed into different lists.
+2. **Marker matching for the ceiling uses gene-token overlap**, as written in
+   THRESHOLDS.md before the labels existed (`EGFR L858R` satisfies a required
+   list containing `EGFR mutation`). A tighter exact-string match would throw
+   out fewer trials and would understate a perfect filter.
+
+### What would reverse this
+
+The other three traits being labelled and the six-trait union not moving
+materially past 40%, which would mean the marker was the whole story and
+further labelling was wasted. That is why they wait on approval rather than
+running tonight.
