@@ -136,6 +136,25 @@ different wordings for one genetic marker, four for one infection, and one commo
 abbreviation appearing zero times. And 13,033 pairs of (trait name, the exact sentence it came
 from).
 
+### What Step 2 of this spike found
+
+Ran 2026-09-29, free, as a two-trait partial. Assuming a **flawless** cheap step and building
+nothing, it used the answer key as a perfect oracle to count how many trials could possibly be
+thrown out.
+
+- **11.4% per trait on average** (range 3.6% to 19.8%), **22.0%** with both traits together,
+  projecting to about **51.7%** for six traits.
+- **417 of 1,308 trials — nearly a third — state their brain rule conditionally** and therefore
+  cannot be thrown out by anything, ever.
+- Resolving those conditions would lift two-trait throwing-out from 22.0% to **37.7%** — so
+  **asking the coordinator one or two follow-up questions is worth about as much as adding several
+  more traits.** That is a design finding worth reporting whatever happens to the rest.
+- **The strongest trait was not in the measurement**, so 11.4% is a floor on the mean rather than
+  an estimate. This is why Step 5 does the genetic-marker trait first and re-measures before
+  spending anything else.
+
+Full numbers in `data/step2_ceiling.json`; reasoning and three caveats in `DECISIONS.md`.
+
 ### What it costs to read everything
 
 From the first spike's own word counts: 1,735,341 in and 194,803 out across 1,308 trials is
@@ -495,9 +514,23 @@ covering 24% of rules, not one of 300 trials fully covered. Full numbers in Part
 and two disclosures in `DECISIONS.md`. Cost $6.72. Files: `scripts/step1_concepts.py`,
 `scripts/step1_analyze.py`, `data/step1_*`.
 
-### Step 2 — What is the best the cheap step could possibly do? (half a day, free)
+### Step 2 — What is the best the cheap step could possibly do? — RUN 2026-09-29, PARTIAL
 
-**The cheapest thing that could kill the whole idea, so it runs first.**
+**Ran as a two-trait partial. Do not re-run as it stands — re-run it after Step 5 with six
+traits.** Script: `scripts/step2_ceiling.py`. Result: `data/step2_ceiling.json`. Reasoning and
+disclosures: `DECISIONS.md`. Cost nothing.
+
+**Result: a flawless filter throws out 11.4% per trait on average, 22.0% with both traits
+combined, projecting to 51.7% for six.** The committed threshold was 8.2% per trait to clear the
+floor and 18.2% to reach the target, so this clears the floor and misses the target — continue,
+with the ceiling as the write-up's headline rather than the model. Three caveats are in
+`DECISIONS.md`, and the important one is that **the strongest trait was not in this measurement**,
+so 11.4% is a floor on the mean rather than an estimate. See Step 5.
+
+The rest of this section is kept because it explains what the measurement is and why, and because
+it has to be re-run with six traits.
+
+**The cheapest thing that could kill the whole idea, so it ran first.**
 
 Many rules are conditional — *"cannot join if the cancer has spread to the brain, unless it was
 treated and has been stable for four weeks."* The cheap step is only allowed to throw a trial
@@ -624,26 +657,48 @@ instructions once, measure once more, and say in the write-up that it was revise
 The answer key covers two traits. Two cannot show whether throwing-out multiplies across
 traits, which is the mechanism Part 2's arithmetic depends on.
 
-Extend the existing instructions to four more traits and run the existing script over all 1,308
-trials. Apply the same quote check as before and report how many rows it flags. Then **re-run
-Step 2** with six traits instead of two.
+Extend the existing instructions and run the existing script over all 1,308 trials. Apply the
+same quote check as before and report how many rows it flags.
 
-**Four traits, two of each kind.**
+## Do the genetic-marker trait first, on its own, and re-measure before doing the rest
 
-*Plain yes-or-no, which the existing eight verdicts already handle unchanged:*
+**This ordering is the most important instruction in the step, and it comes out of Step 2's
+result.** Step 2 measured a flawless filter throwing out only 11.4% per trait, projecting to
+about 50% for six traits — enough to clear the floor, not enough to reach the target. But both
+traits it measured are mid-strength, and the strongest one was not in it.
 
-- previous platinum chemotherapy
-- autoimmune disease
+Step 1 found that one particular genetic-marker requirement is mentioned by roughly a third of
+all trials. For a patient who does not carry that marker, that single trait could throw out more
+than twice what either already-measured trait does. **So it alone could decide whether the cheap
+step is worth building at all.**
 
-*One-of-many, which need a slightly different answer recorded:*
+Therefore:
 
-- **which genetic marker the trial asks for.** Record, per trial, the list of markers it
-  requires and the list it refuses. Then the check is whether the patient's marker is in the
-  required list. **This is the highest-value trait in the whole spike** — most trials in this
-  disease are built around one particular marker, so a trial asking for a marker the patient
-  doesn't carry is the commonest reason a patient is ineligible.
-- **which disease stages the trial accepts.** Same shape: a list of stages allowed, checked
-  against the patient's stage.
+1. **Label the genetic-marker trait first**, across all 1,308 trials. Roughly $4 of the step's
+   budget.
+2. **Re-run Step 2 immediately**, with three traits instead of two.
+3. **Then decide whether to label the other three.** If the marker trait throws out enough to
+   push the projection toward 70%, the cheap step is clearly worth building and the rest of the
+   labelling is justified. If it does not, that is the signal that the honest answer is a
+   tidy-field filter plus reading everything — and you will have learned it for about $4 instead
+   of $14.
+
+**The four traits, in the order to do them.**
+
+*First, and on its own:*
+
+- **which genetic marker the trial asks for** *(one-of-many)*. Record, per trial, the list of
+  markers it requires and the list it refuses. The check is whether the patient's marker is in
+  the required list. Most trials in this disease are built around one particular marker, so a
+  trial asking for a marker the patient doesn't carry is the commonest reason a patient is
+  ineligible.
+
+*Then, only if the re-measurement justifies continuing:*
+
+- **which disease stages the trial accepts** *(one-of-many)*. Same shape: a list of stages
+  allowed, checked against the patient's stage.
+- **previous platinum chemotherapy** *(plain yes-or-no)*.
+- **autoimmune disease** *(plain yes-or-no)*.
 
 All four appear in Step 1's list of the 40 commonest traits and in the invented patients. Exact
 definitions and the record shapes are in Part 11.
@@ -796,7 +851,8 @@ write-up.
 | 2 — best-possible ceiling | $0 |
 | 3 — matching different wordings | ~$1 |
 | 4 — taking patient descriptions apart | ~$1 |
-| 5 — labelling four more traits | ~$14, needs approval |
+| 5a — labelling the genetic-marker trait only | ~$4 |
+| 5b — labelling the other three, only if 5a justifies it | ~$10, needs approval |
 | 6 — training material | ~$12, needs approval |
 | 7 — training and testing the small model | ~$3 |
 | 8 — whole pipeline plus the read-everything baseline | ~$19, needs approval |
@@ -808,8 +864,12 @@ those before spending anything else.
 
 # Part 10 — What would make Will stop
 
-- **Step 2:** too many rules are written conditionally, so even a flawless cheap step cannot
-  throw out enough. Nothing can fix this, because it is a property of the text.
+- **Step 2, already run as a partial:** 11.4% per trait cleared the floor, so this did not stop
+  the project — but it did not clear the target either, and the re-run after the marker trait is
+  labelled is the real test.
+- **Step 5a, the cheapest remaining exit:** the genetic-marker trait, labelled on its own for
+  about $4, fails to lift the projection meaningfully. That is the signal to stop before spending
+  the other $10 on labelling or anything at all on training.
 - **Step 3:** different wordings of the same trait cannot be matched reliably, or worse, different
   traits get matched to each other.
 - **Step 4:** patient descriptions cannot be turned into clean trait lists.
