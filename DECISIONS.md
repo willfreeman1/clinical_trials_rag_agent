@@ -224,18 +224,24 @@ embeddings. The wording groups Step 1 never saved are now in `data/step3_wording
 
 ### The numbers, at the committed operating point (cosine 0.85)
 
-| Method | Same-trait pairs linked (of 29) | Different-trait pairs linked (of 25) |
-|---|---:|---:|
-| Embeddings | **6.9%** (2) | **4.0%** (1) |
-| MeSH | 3.5% (1) | 0% (0) |
-| Combined | **10.3%** (3) | **4.0%** (1) |
+Wilson 95% intervals. The plan requires a range on any sample under about 200.
+At n=29 / n=25 almost nothing is distinguishable: 3 of 29 and 0 of 25 overlap.
 
-Against the gate: wrong-link ≤ 5% **cleared**; correct-link ≥ 85% **not cleared**, by a
-wide margin.
+| Method | Same-trait (of 29) | 95% CI | Different-trait (of 25) | 95% CI |
+|---|---:|---|---:|---|
+| Embeddings | 6.9% (2) | 1.9–22.0% | 4.0% (1) | 0.7–19.5% |
+| MeSH | 3.5% (1) | 0.6–17.2% | 0% (0) | 0–13.3% |
+| Combined | **10.3% (3)** | **3.6–26.4%** | **4.0% (1)** | **0.7–19.5%** |
 
-The script nominated MeSH as "best" because it sorts by lowest wrong-link first. That is
-misleading: MeSH almost never links anything. The method the design actually specified is
-**combined**, and that is the row to quote.
+Against the gate: wrong-link ≤ 5% **cleared on the point estimate**; the interval
+runs to 20%, so that clearance is not established. Correct-link ≥ 85% **not
+cleared**, even at the top of the interval.
+
+**Retracted: "best method = MeSH."** MeSH linked 1 of 29 correctly and 0 of 25
+wrongly. It wins a wrong-link ranking by barely matching anything. A method that
+never matches never makes a mistake. Never select on the error gate alone;
+require a minimum recall first. Combined is the method the design specified, and
+it is the row to quote. No method here cleared a usable recall.
 
 ### What actually linked, and what did not
 
@@ -288,9 +294,11 @@ things that are not.
    immunotherapy, and `carbo` in `carbo/pemetrexed` did not look up so the slash-split
    only found pemetrexed. A looser lookup (token-subset of headings) was not run after
    seeing this; it would be a different method.
-2. **UMLS was not tried.** The plan allowed half a day and then embeddings only. MeSH
-   downloaded and parsed in minutes, so the dictionary arm was tested. What failed is
-   the connection from drug to class, not the install.
+2. **MeSH is the easier substitute, not "a medical dictionary."** It returned
+   `unknown` on 21 of 29 same-trait pairs. Drug-to-family hierarchies are what UMLS
+   has and MeSH largely lacks. The record is: the freely downloadable substitute was
+   tested and failed. It is not: a medical dictionary does not help. UMLS needs a
+   licence this machine does not have; that remains an open option, not a result.
 
 ### What this means for the cheap step
 
@@ -383,10 +391,14 @@ second run of the same 20.
 three traits until Will approves the ~$10.** The marker trait alone throws out
 **23.9%** of trials on average — above the 18.2% per-trait figure that would
 make six traits reach 70% if they were all this strong. Combined with the two
-already-labelled traits, a perfect filter throws out **39.9%** of the corpus
-(the 40% floor, with three traits not six). The six-trait projection moves
-from 51.7% to **63.8%**, which is toward 70% and is the plan's test for
-whether the remaining labelling is justified.
+already-labelled traits, a *perfect* filter — one that finds every rule —
+throws out **39.9%** of the corpus (the 40% floor, with three traits not six).
+The six-trait projection moves from 51.7% to **63.8%**, which is toward 70%
+and is the plan's test for whether the remaining labelling is justified.
+
+**These are best-case ceilings, not predictions.** They assume every rule is
+found. How good simply reading everything is has not been measured; that is
+Step 8. Do not quote 39.9% or 63.8% as what the system would do.
 
 Thresholds for this decision were already in the Step 2 section, plus the
 Step 5a section committed in `af4c473` before labelling. Cost **$6.36**

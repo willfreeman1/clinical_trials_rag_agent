@@ -36,36 +36,65 @@ OUT_PATH = ROOT / "data" / "step4_parse.json"
 CHECK_PATH = ROOT / "data" / "step4_check.md"
 WORKERS = 4
 
+# Revised once after review, 2026-09-29. First prompt is in git history
+# (4597f41). Two fixes: fixed names for one_of_many fields, and tumour
+# genetic marker is always one_of_many with value "none" when none found.
 SYSTEM = """You read a description of a (fictional) patient and turn it into a clean list of traits. Do not decide whether the patient qualifies for any trial. Do not invent facts that the description does not state.
 
 Each trait has three things, kept separate on purpose:
 
-1. name — a short noun phrase for the subject, with no direction and no number in it. "previous platinum chemotherapy", not "must have had chemotherapy", not "three prior lines". "cancer spread to the brain", not "untreated brain metastases". Searching later looks only at this name, so a direction word or a number in it breaks the search.
+1. name — a short noun phrase for the subject, with no direction and no number in it. Searching later looks only at this name, so a direction word or a number in it breaks the search.
 2. kind — exactly one of: yes_no, one_of_many, number.
 3. situation — has, does_not_have, or value. Use has / does_not_have for yes_no traits. Use value for one_of_many and number traits, and put the value in the value field. For yes_no traits set value to null.
 
 Kinds:
 - yes_no: the patient either has it or does not. Previous chemotherapy. An autoimmune condition. Cancer spread to the brain.
-- one_of_many: the patient has exactly one item from a set of alternatives, which means they do not have the others. Which genetic marker the tumour carries. Which stage the disease is at. Record the value they have, and nothing about the values they lack. These fields are exclusive: a patient recorded as carrying one marker is understood not to carry a different one.
+- one_of_many: the patient has exactly one item from a set of alternatives, which means they do not have the others. Record the value they have, and nothing about the values they lack. These fields are exclusive.
 - number: a measured quantity. Age, performance status score, creatinine clearance, number of previous treatment courses. Keep these as number even if a later step will ignore them.
 
-Do not list the alternatives a one_of_many patient lacks. Do not turn a drug name into a yes_no named after that drug if the fact is membership of a class — "carbo/pemetrexed" is previous platinum chemotherapy, "pembrolizumab" is previous immunotherapy.
+These one_of_many traits must use these exact names. Put the specific value in the value slot, never in the name:
+
+- tumour genetic marker — e.g. EGFR L858R, ALK fusion, none
+- disease stage — e.g. IV, IIIB
+- histology — e.g. adenocarcinoma
+- sex — e.g. female
+
+The tumour genetic marker is always one_of_many, never yes_no. Do not name the trait after one marker ("ALK rearrangement", "EGFR mutation", "targetable alteration on NGS"). A yes_no named after one marker cannot throw out a trial that demands a different marker, because that trial finds no matching trait and silence keeps it. If the description says no marker was found, wild type, no driver, or no targetable alteration, the value is none — not does_not_have on some other trait name.
+
+Worked examples:
+
+- "ALK-rearranged adenocarcinoma" → {"name": "tumour genetic marker", "kind": "one_of_many", "situation": "value", "value": "ALK fusion"}
+- "no targetable alteration on NGS" / "wild type" / "no driver" → {"name": "tumour genetic marker", "kind": "one_of_many", "situation": "value", "value": "none"}
+- "stage IV lung adeno" → {"name": "disease stage", "kind": "one_of_many", "situation": "value", "value": "IV"} and {"name": "histology", "kind": "one_of_many", "situation": "value", "value": "adenocarcinoma"}
+- "67F" → {"name": "sex", "kind": "one_of_many", "situation": "value", "value": "female"}
+
+Other traits keep a stable name with no direction and no number: "previous platinum chemotherapy", "previous immunotherapy", "cancer spread to the brain". Do not turn a drug name into a yes_no named after that drug if the fact is membership of a class — "carbo/pemetrexed" is previous platinum chemotherapy, "pembrolizumab" is previous immunotherapy.
+
+Do not list the alternatives a one_of_many patient lacks.
 
 Return JSON with keys patient_id and traits. traits is a list of objects with keys name, kind, situation, value.
 """
 
-# Aliases used only to flag, not to judge. Will settles close names by reading.
+# After the revision, these four names must be exact. Others still flag by alias.
+FIXED_ONE_OF_MANY = {
+    "tumour genetic marker": "one_of_many",
+    "disease stage": "one_of_many",
+    "histology": "one_of_many",
+    "sex": "one_of_many",
+}
+
 ALWAYS = [
     ("age", "number", ("age",)),
-    ("disease stage", "one_of_many", ("stage",)),
-    ("histology", "one_of_many", ("histolog", "adenocarcinoma", "squamous", "nsclc")),
-    ("genetic marker", "one_of_many", ("genetic marker", "driver", "mutation", "alteration", "wild type", "egfr", "alk", "kras", "ros1", "ngs")),
+    ("disease stage", "one_of_many", ("disease stage",)),
+    ("histology", "one_of_many", ("histology",)),
+    ("tumour genetic marker", "one_of_many", ("tumour genetic marker", "tumor genetic marker")),
     ("performance status", "number", ("performance", "ecog")),
     ("creatinine clearance", "number", ("creatinine", "crcl", "renal")),
-    ("prior lines of therapy", "number", ("line of therapy", "lines of therapy", "prior line", "prior regimen", "treatment line")),
-    ("previous platinum chemotherapy", "yes_no", ("platinum", "cisplatin", "carboplatin", "carbo")),
-    ("previous immunotherapy", "yes_no", ("immunotherapy", "checkpoint", "pd-1", "pd-l1", "pembrolizumab", "nivolumab", "atezolizumab", "durvalumab")),
+    ("prior lines of therapy", "number", ("line of therapy", "lines of therapy", "prior line", "prior regimen", "treatment line", "treatment courses")),
+    ("previous platinum chemotherapy", "yes_no", ("platinum", "cisplatin", "carboplatin")),
+    ("previous immunotherapy", "yes_no", ("immunotherapy", "checkpoint", "pd-1", "pd-l1")),
     ("cancer spread to the brain", "yes_no", ("brain", "cerebral", "cns", "central nervous")),
+    ("sex", "one_of_many", ("sex",)),
 ]
 
 OPTIONAL_IF_TRUE = [
@@ -176,11 +205,19 @@ def flag_patient(pid: str, gold: dict, traits: list[dict]) -> dict:
             return
         matched_idx.add(hit_i)
         kind = hit.get("kind")
+        name = (hit.get("name") or "").strip()
+        if label in FIXED_ONE_OF_MANY and name != label:
+            flags["wrong_kind"].append(
+                f"{label}: name must be exactly '{label}', got '{name}'"
+            )
         if kind != expected_kind:
             flags["wrong_kind"].append(
-                f"{label}: expected {expected_kind}, got {kind} ({hit.get('name')})"
+                f"{label}: expected {expected_kind}, got {kind} ({name})"
             )
-        name = hit.get("name") or ""
+        if label == "tumour genetic marker" and kind == "yes_no":
+            flags["wrong_kind"].append(
+                f"tumour genetic marker recorded as yes_no ({name})"
+            )
         if DIRECTION_IN_NAME.search(name):
             flags["direction_or_number_in_name"].append(name)
 
@@ -241,8 +278,8 @@ def write_check(rows: list[dict], gold_by_id: dict, n_fail: int, cost: float) ->
         "in fake_patients.md, the model's trait list, and script flags. The flags",
         "are hints. A close name that the script missed is yours to accept.",
         "",
-        f"Script-flagged fails: **{n_fail} of 20**. Gate: more than 2 → revise the",
-        "instructions once; more than 4 after that → stop.",
+        f"Script-flagged fails: **{n_fail} of 20**. This is the one permitted",
+        "revision. Gate: more than 4 of 20 after revision → stop.",
         "",
         f"Estimated cost: ${cost:.4f}",
         "",
@@ -340,6 +377,7 @@ def main() -> None:
         "input_tokens": input_tokens,
         "output_tokens": output_tokens,
         "estimated_usd": round(cost, 4),
+        "revision": 1,
         "gates": {"revise_if_more_than": 2, "stop_after_revision_if_more_than": 4},
         "patients": rows,
     }
