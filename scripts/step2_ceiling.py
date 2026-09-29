@@ -21,6 +21,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ANSWER_KEY = ROOT / "data" / "answer_key.jsonl"
 MARKERS = ROOT / "data" / "answer_key_markers.jsonl"
+STEP5B = ROOT / "data" / "answer_key_step5b.jsonl"
 PATIENTS = ROOT / "data" / "fake_patients_draw.json"
 OUT = ROOT / "data" / "step2_ceiling.json"
 
@@ -53,11 +54,11 @@ def load_yes_no() -> dict[str, dict]:
     return key
 
 
-def load_markers() -> dict[str, dict]:
+def _load_answer_file(path: Path) -> dict[str, dict]:
     key: dict[str, dict] = {}
-    if not MARKERS.exists():
+    if not path.exists():
         return key
-    with MARKERS.open(encoding="utf-8") as handle:
+    with path.open(encoding="utf-8") as handle:
         for line in handle:
             if not line.strip():
                 continue
@@ -65,6 +66,14 @@ def load_markers() -> dict[str, dict]:
             if row.get("answer"):
                 key[row["nct_id"]] = row["answer"]
     return key
+
+
+def load_markers() -> dict[str, dict]:
+    return _load_answer_file(MARKERS)
+
+
+def load_step5b() -> dict[str, dict]:
+    return _load_answer_file(STEP5B)
 
 
 def genes(text: str) -> set[str]:
@@ -133,6 +142,35 @@ def marker_out(patient_value: str, answer: dict, optimistic: bool) -> bool:
     return False
 
 
+def stage_in_list(patient_stage: str, items: list[str]) -> bool:
+    """Committed in THRESHOLDS.md before Step 5b ran."""
+    p = (patient_stage or "").lower().strip()
+    if not p or not items:
+        return False
+    compact = re.sub(r"[\s\-]", "", p)
+    for item in items:
+        n = item.lower()
+        nc = re.sub(r"[\s\-]", "", n)
+        if p in n or n in p or compact in nc or nc in compact:
+            return True
+        if p in {"iv", "4"} and ("metastatic" in n or "stage 4" in n or "stage iv" in n):
+            return True
+    return False
+
+
+def stage_out(patient_stage: str, answer: dict, optimistic: bool) -> bool:
+    allowed = as_list(answer.get("allowed_stages"))
+    refused = as_list(answer.get("refused_stages"))
+    condition = (answer.get("stage_condition") or "").strip()
+    if condition and not optimistic:
+        return False
+    if allowed and not stage_in_list(patient_stage, allowed):
+        return True
+    if refused and stage_in_list(patient_stage, refused):
+        return True
+    return False
+
+
 def project(x: float, n: int = 6) -> float:
     return 1 - (1 - x) ** n
 
@@ -140,8 +178,14 @@ def project(x: float, n: int = 6) -> float:
 def main() -> None:
     yes_no = load_yes_no()
     markers = load_markers()
+    extra = load_step5b()
     patients = json.loads(PATIENTS.read_text(encoding="utf-8"))["patients"]
-    trial_ids = sorted(set(yes_no) & set(markers) if markers else set(yes_no))
+    ids = set(yes_no)
+    if markers:
+        ids &= set(markers)
+    if extra:
+        ids &= set(extra)
+    trial_ids = sorted(ids)
     n_trials = len(trial_ids)
 
     unreachable = {
@@ -155,6 +199,16 @@ def main() -> None:
             1 for t in trial_ids if (markers.get(t, {}).get("genetic_marker_condition") or "").strip()
         ),
     }
+    if extra:
+        unreachable["prior_platinum_chemo_classification"] = sum(
+            1 for t in trial_ids if extra[t].get("prior_platinum_chemo_classification") == CONDITIONAL_BAR
+        )
+        unreachable["autoimmune_disease_classification"] = sum(
+            1 for t in trial_ids if extra[t].get("autoimmune_disease_classification") == CONDITIONAL_BAR
+        )
+        unreachable["stage_condition"] = sum(
+            1 for t in trial_ids if (extra[t].get("stage_condition") or "").strip()
+        )
 
     rows = []
     for p in patients:
@@ -186,6 +240,36 @@ def main() -> None:
                 "share": round(len(out) / n_trials, 4),
             }
             row["per_trait_optimistic"]["driver_mutation"] = {
+                "thrown_out": len(out_opt),
+                "share": round(len(out_opt) / n_trials, 4),
+            }
+            union |= out
+            union_opt |= out_opt
+
+        if extra:
+            for pfield, kfield in (
+                ("prior_platinum_chemo", "prior_platinum_chemo_classification"),
+                ("autoimmune_disease", "autoimmune_disease_classification"),
+            ):
+                has = bool(p[pfield])
+                out = {t for t in trial_ids if yes_no_out(extra[t].get(kfield, ""), has, False)}
+                out_opt = {t for t in trial_ids if yes_no_out(extra[t].get(kfield, ""), has, True)}
+                row["per_trait"][pfield] = {
+                    "patient_has": has, "thrown_out": len(out), "share": round(len(out) / n_trials, 4)
+                }
+                row["per_trait_optimistic"][pfield] = {
+                    "thrown_out": len(out_opt), "share": round(len(out_opt) / n_trials, 4)
+                }
+                union |= out
+                union_opt |= out_opt
+            out = {t for t in trial_ids if stage_out(p["disease_stage"], extra[t], False)}
+            out_opt = {t for t in trial_ids if stage_out(p["disease_stage"], extra[t], True)}
+            row["per_trait"]["disease_stage"] = {
+                "patient_value": p["disease_stage"],
+                "thrown_out": len(out),
+                "share": round(len(out) / n_trials, 4),
+            }
+            row["per_trait_optimistic"]["disease_stage"] = {
                 "thrown_out": len(out_opt),
                 "share": round(len(out_opt) / n_trials, 4),
             }

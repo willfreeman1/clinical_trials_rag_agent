@@ -479,3 +479,46 @@ as the headline.
   they pull the wrongly-picked-up rate down. That is the operational number
   (those trials are silent in the index), and it is said here rather than
   hidden.
+
+---
+
+## Spike 2, Step 5b — label stage, platinum, and autoimmune
+
+**Committed 2026-09-29, before the labelling run.** Approved after the marker
+trait moved the six-trait projection from 51.7% to 63.8%. Run after Step 3b
+because matching on general terms may change what three more facts are worth.
+
+### What is being labelled
+
+One request per trial, three traits, new file
+`data/answer_key_step5b.jsonl`. Same model, `gpt-5.4`. Same quote-check idea.
+
+- **previous platinum chemotherapy** — the eight-way classification and a
+  quote, same shape as the immunotherapy trait.
+- **autoimmune disease** — the same eight-way shape.
+- **disease stages** — list-shaped, like markers: `allowed_stages`,
+  `refused_stages`, `stage_condition`, `stage_quote`. Record the trial's own
+  labels, including descriptive ones (`locally advanced`, `metastatic`). Do
+  not translate a description into a numbered stage.
+
+Definitions are those in the plan. A platinum drug the trial itself would
+give is not prior platinum. A family history is not an autoimmune disease.
+
+### Stage matching for the six-trait ceiling, written before labels exist
+
+Patient `disease_stage` is thrown out when, and only when:
+
+- `stage_condition` is empty (else keep), and
+- `allowed_stages` is non-empty and the patient's stage is not in that list,
+  or `refused_stages` is non-empty and the patient's stage is in that list.
+
+"In the list" means substring match after lowercase, plus: patient `IV`
+matches a list item containing `metastatic` or `stage 4` / `stage iv`;
+patient `IIIB` matches `iiib`, `iii-b`, or `iii b`. No other translations.
+
+### After the run
+
+Re-run the perfect-oracle ceiling with six traits, and the matching-gated
+ceiling with whatever Step 3b subjects exist plus newly normalised quotes
+for these three facts. The 8.2% / 18.2% per-trait gates still decide. The
+Step 3b recall gates still decide for matching.

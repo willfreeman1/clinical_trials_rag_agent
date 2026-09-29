@@ -523,3 +523,82 @@ The other three traits being labelled and the six-trait union not moving
 materially past 40%, which would mean the marker was the whole story and
 further labelling was wasted. That is why they wait on approval rather than
 running tonight.
+
+---
+
+## 2026-09-29 — Step 3b: matching on general terms does not recover the ceiling
+
+**Decision: matching loses most of the ceiling. The approach needs rethinking.**
+Combined recall is **32.2%** (below the 60% gate). Wrongly-picked-up is
+**0.9%** (well under 20%). The matching-gated union is **10.2%**, against a
+perfect-oracle ceiling of **39.9%**. Those are ceilings under this matcher,
+not predictions of end-to-end accuracy.
+
+Thresholds were committed in `73e9cc6`, before normalisation. Cost about
+**$1.10** to turn 2,167 quotes into subjects (750 immuno, 719 brain, 698
+marker), plus a few cents to embed 764 terms.
+
+### What was run
+
+`scripts/step3b_normalise.py` then `scripts/step3b_match.py`. The model was
+not told which fact a quote belonged to, and was not given the patient field
+names. Patient queries came from the revised Step 4 output.
+
+| Arm (at cosine 0.80) | Mean recall | Wrongly picked up |
+|---|---:|---:|
+| Word overlap | **32.2%** | 0.9% |
+| Embeddings | 1.2% | 0.0% |
+| Combined | **32.2%** | 0.9% |
+
+By fact, combined (= word, because embeddings added nothing):
+
+| Fact | Recall | Wrongly picked up |
+|---|---:|---:|
+| Immunotherapy | 32.5% | 0.0% |
+| Brain metastases | 48.4% | 2.7% |
+| Tumour genetic marker | 15.8% | 0.0% |
+
+Embeddings at every sweep point (0.70–0.90) stay below 7% mean recall.
+`previous immunotherapy` vs `immunotherapy` is cosine **0.73**. `cancer
+spread to the brain` vs `brain metastases` is **0.53**. `tumour genetic
+marker` vs `EGFR mutation` is **0.52**. The one pair that clears 0.80 is a
+specific value against its gene: `EGFR L858R` vs `EGFR mutation` (0.83).
+Normalising both sides to "general terms" did not move them into the same
+neighbourhood. Word overlap is the whole combined arm.
+
+### Why marker recall is 16%
+
+A patient with value `none` queries `tumour genetic marker` and `none`.
+Neither shares a token with `EGFR mutation` or `ALK fusion`. Those patients
+are exactly the ones the perfect oracle throws out the most (24.6%), and
+matching finds none of those rules. Patients who carry a named marker match
+some same-gene trials and still miss the rest.
+
+### The matching-gated ceiling
+
+| | Perfect oracle | After matching |
+|---|---:|---:|
+| Union mean | 39.9% | **10.2%** (2.3–16.8%) |
+| Mean per-trait | 15.6% | 4.7% |
+| Six-trait projection | 63.8% | 25.1% |
+
+Matching finds about a quarter of the rules the oracle uses. The cheap step,
+as currently matched, cannot throw out most of what a perfect filter could.
+
+### What this suggests, which is not a result
+
+The take-apart step already uses *fixed* names (`tumour genetic marker`,
+`cancer spread to the brain`). This measurement asked the trial side for any
+ordinary general term, on purpose, so it could not just copy those names.
+The miss is that those two vocabularies are not the same. Forcing the
+trial-side subject onto the same closed names would make matching a string
+equals and is a different method — not run here, not scored.
+
+UMLS is still untested. Steps 6 and 7 stay on hold: a trained small model
+does not fix a matching hole that sits *before* the judge.
+
+### What would reverse this
+
+A matcher that puts both sides on the same closed names, or a dictionary
+that links `tumour genetic marker` to `EGFR mutation` without linking brain
+to bone, measured on this same quote set.
