@@ -203,3 +203,108 @@ Python 3.11.9, numpy 2.1.3.
 
 Step 7's chosen starting model or trainer refusing to install on 3.11. Then recreate the venv
 on whichever version actually works, and log it.
+
+---
+
+## 2026-09-29 — Spike 2 Step 3: matching misses the traps; it does not mix up different traits
+
+**Decision: continue.** The cheap step will miss differently-worded rules, which makes the
+shortlist bigger rather than wrong. Matching is not good enough to be a load-bearing filter
+on its own. That is what the committed gate said to do with a correct-link rate under 85%.
+
+Thresholds were committed in `6c1cf87`, before this ran. Cost: one embedding batch of 17
+short phrases, about **$0.000001**. MeSH 2025 ASCII downloaded free (2026 ASCII was
+discontinued). UMLS was not used; it needs a licence this machine does not have.
+
+### What was run
+
+`scripts/step3_dump_clusters.py` then `scripts/step3_match.py`, against the gold pairs in
+`scripts/step3_gold.json`. Three methods: embeddings at cosine 0.85, MeSH, and MeSH-then-
+embeddings. The wording groups Step 1 never saved are now in `data/step3_wording_groups.json`.
+
+### The numbers, at the committed operating point (cosine 0.85)
+
+| Method | Same-trait pairs linked (of 29) | Different-trait pairs linked (of 25) |
+|---|---:|---:|
+| Embeddings | **6.9%** (2) | **4.0%** (1) |
+| MeSH | 3.5% (1) | 0% (0) |
+| Combined | **10.3%** (3) | **4.0%** (1) |
+
+Against the gate: wrong-link ≤ 5% **cleared**; correct-link ≥ 85% **not cleared**, by a
+wide margin.
+
+The script nominated MeSH as "best" because it sorts by lowest wrong-link first. That is
+misleading: MeSH almost never links anything. The method the design actually specified is
+**combined**, and that is the row to quote.
+
+### What actually linked, and what did not
+
+The two embedding hits at 0.85 were English inflection and abbreviation: `brain metastasis` /
+`brain metastases` (cosine 0.95) and `cns metastases` / `central nervous system metastases`
+(0.85). The one MeSH hit was `rheumatoid arthritis` / `autoimmune disease`, which is the
+hierarchy doing the one job we wanted it for.
+
+Everything the invented patients were built to test **missed**:
+
+| Pair | Cosine | MeSH |
+|---|---:|---|
+| carbo/pemetrexed ↔ platinum-based chemotherapy | 0.53 | unknown |
+| carboplatin ↔ platinum-based chemotherapy | 0.63 | unknown |
+| pembrolizumab ↔ immunotherapy | 0.47 | no (both terms found, not connected) |
+| pembrolizumab ↔ checkpoint inhibitor | 0.34 | unknown (`checkpoint inhibitor` is not a heading; `immune checkpoint inhibitors` is) |
+| PD-1 agent ↔ prior immunotherapy | 0.38 | unknown |
+| cerebral metastases ↔ brain metastases | 0.80 | unknown |
+| CNS metastases ↔ brain metastases | 0.76 | unknown |
+| ILD ↔ interstitial lung disease | 0.40 | unknown |
+| nsclc ↔ non-small cell lung cancer | 0.64 | unknown (abbreviation not in MeSH as `nsclc`) |
+
+The one wrong link at 0.85 is the trap Step 1 already documented: **`brain metastases` /
+`bone metastases` at cosine 0.8608.** Combined inherits it, because MeSH could not resolve
+`bone metastases` and so fell through to embeddings. Step 1's cosine-0.85 merge still joins
+those two; that is now written down in the wording-groups file rather than being an anecdote.
+
+### The curve, so this is not an artefact of 0.85
+
+No point on the curve reaches 85% correct-link. Loosening embeddings *does* pick up a few
+near-paraphrases (`cerebral` / `brain` mets at 0.80), and it blows the wrong-link gate on
+the way:
+
+| Cosine | Embeddings correct | Embeddings wrong |
+|---:|---:|---:|
+| 0.75 | 24% | **16%** |
+| 0.80 | 14% | **12%** |
+| 0.85 | 7% | 4% |
+| 0.90 | 3% | 0% |
+
+Drug-to-class never appears on this curve. Those pairs sit at 0.34–0.63. There is no
+threshold that catches `pembrolizumab` as immunotherapy without first catching a pile of
+things that are not.
+
+### Two disclosures about the dictionary arm
+
+1. **Exact lookup, not a failure to download.** MeSH loaded 947,905 terms including
+   supplementary drug names. `pembrolizumab`, `carboplatin`, `immunotherapy`, `brain
+   metastases` all resolved. The hierarchy still did not treat pembrolizumab as
+   immunotherapy, and `carbo` in `carbo/pemetrexed` did not look up so the slash-split
+   only found pemetrexed. A looser lookup (token-subset of headings) was not run after
+   seeing this; it would be a different method.
+2. **UMLS was not tried.** The plan allowed half a day and then embeddings only. MeSH
+   downloaded and parsed in minutes, so the dictionary arm was tested. What failed is
+   the connection from drug to class, not the install.
+
+### What this means for the cheap step
+
+A binary "are these two phrases the same trait" matcher cannot be how candidate lines are
+found. Word-index overlap will still catch a trial that uses the same words the patient
+used. It will not catch a trial that says `platinum-based chemotherapy` when the patient
+said `carbo/pemetrexed`. That is a recall hole, and the committed reading of that hole is:
+the shortlist gets bigger, later stages spend more, the system does not throw out a
+joinable trial *by this mechanism*. The bone/brain mix-up *is* that mechanism, and at 0.85
+it is sitting just over the line.
+
+### What would reverse this
+
+A matcher that links drug-to-class without linking brain-to-bone — for example UMLS with
+the actual hierarchy, or a short curated synonym list checked against sampled hits, not
+invented from memory. Either would have to be measured on this same gold file, which stays
+frozen.
