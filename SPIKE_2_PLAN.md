@@ -265,7 +265,29 @@ traits. Each trait gets three things:
 |---|---|---|
 | A name, with no direction and no number in it | `previous platinum chemotherapy` | The name is what gets searched for, and searching only ever looks for a subject |
 | The patient's situation | has it / doesn't have it / a value | Direction is not a search term |
-| Whether it is a category or a number | category | Number traits are dropped here — see Part 4 |
+| Which of three kinds it is | plain yes-or-no / one-of-many / number | Each kind gets compared differently. Number traits are dropped here — see Part 4 |
+
+**The three kinds, because they are compared differently.**
+
+- **Plain yes-or-no** — the patient either has it or doesn't, and nothing else is implied.
+  Previous chemotherapy. An autoimmune condition. Cancer spread to the brain.
+- **One-of-many** — the patient has exactly one item from a set of alternatives, which means
+  they don't have any of the others. Which genetic marker their tumour carries. Which stage the
+  disease is at. **These are recorded as a field with a value** — `genetic marker = C`,
+  `stage = 4` — not as a long list of things the patient doesn't have. The comparison does the
+  work: a trial requiring marker A fails this patient because C is not A.
+- **Number** — dropped at this stage, see Part 4.
+
+The one-of-many kind matters more than it sounds, because **a trial requiring one particular
+genetic marker is probably the single most trial-eliminating rule in this whole set** — most
+trials in this disease are built around one marker. Missing that kind would mean missing the
+strongest filter available.
+
+The only thing the system has to be told is that these alternatives exclude each other. It is
+obvious to a person reading "the patient's tumour carries marker C" that they therefore don't
+carry marker A, and invisible to the system unless the instructions say so. **The trial side
+needs nothing extra** — recording which marker a trial asks for is the whole content of that
+rule anyway.
 
 One request per patient. A couple of cents. This is not a per-trial cost.
 
@@ -357,10 +379,11 @@ leave a test that is easier than reality, which is the dangerous direction.
 
 | Trait | In or out | Why |
 |---|---|---|
-| previous platinum chemotherapy | **in** | a category |
-| cancer spread to the brain | **in** | a category, even when the text says "stable for four weeks" |
-| disease stage | **in** | a short fixed list of labels; it is "is it one of these", not "is it above this number" |
-| autoimmune disease | **in** | a category |
+| previous platinum chemotherapy | **in** | plain yes-or-no |
+| cancer spread to the brain | **in** | plain yes-or-no, even when the text says "stable for four weeks" |
+| autoimmune disease | **in** | plain yes-or-no |
+| which genetic marker the tumour carries | **in** | one-of-many. Compared by "is the patient's value the one this trial asks for", not by size |
+| disease stage | **in** | one-of-many. A short fixed list of labels |
 | performance-status score | **out** | a number. The cheapest one to reconsider later if the cheap step isn't throwing out enough |
 | number of previous treatment courses | **out** | a number |
 | every blood and organ test | **out** | numbers, in inconsistent units, often relative to a laboratory's own range |
@@ -498,10 +521,19 @@ from that trait, about 9%.
 **Method.** Assume a *perfect* cheap step and build nothing. For each invented patient and each
 trait, walk the answer key and mark every trial:
 
+For a plain yes-or-no trait:
+
 - `barred` and the patient has it → **throw out**
 - `required` and the patient does not have it → **throw out**
 - `barred_with_exception` → **can't tell, keep**
 - everything else → **keep**
+
+For a one-of-many trait, where the trial's answer is a list of values:
+
+- the trial names a required list, and the patient's value is **not** in it → **throw out**
+- the trial names a refused list, and the patient's value **is** in it → **throw out**
+- the trial names no list for that trait → **keep**
+- the list carries a condition attached to it → **can't tell, keep**
 
 Then take the **union** across the patient's traits — the union, not the sum, because the same
 trial often gets thrown out by more than one trait and double-counting would inflate the
@@ -596,27 +628,36 @@ Extend the existing instructions to four more traits and run the existing script
 trials. Apply the same quote check as before and report how many rows it flags. Then **re-run
 Step 2** with six traits instead of two.
 
-**The four traits: previous platinum chemotherapy, autoimmune disease, interstitial lung
-disease, and hepatitis B infection.** All four are *does the patient have this or not* questions,
-which is the only shape the truth table in Step 2 handles, and all four appear both in Step 1's
-list of the 40 commonest traits and in the invented patients. Exact definitions are in Part 11.
+**Four traits, two of each kind.**
 
-**A limitation to record now, because it caps what this spike can show.** Two trait types that
-would eliminate far more trials do *not* fit this shape and are therefore left out:
+*Plain yes-or-no, which the existing eight verdicts already handle unchanged:*
 
-- **Disease stage.** A patient *is* one stage. A trial requires or excludes a *set* of stages.
-  Deciding it is "is the patient's stage in the trial's allowed set", which needs the label to
-  record which stages, not a direction.
-- **A required genetic marker.** Same problem, and worse: a trial requiring one marker
-  automatically excludes patients carrying a different one. This is very likely the **most
-  eliminative rule type in the whole corpus**, since most trials in this disease target one
-  specific marker.
+- previous platinum chemotherapy
+- autoimmune disease
 
-Handling set-membership traits needs a second labelling shape and a second truth table. That is
-real work and it is deliberately out of scope here. **So every "share thrown out" figure this
-spike produces is a floor, not an estimate** — a finished system that also handled stage and
-genetic markers would throw out considerably more. Say that plainly in the write-up rather than
-letting a reader assume the measured figure is the best achievable.
+*One-of-many, which need a slightly different answer recorded:*
+
+- **which genetic marker the trial asks for.** Record, per trial, the list of markers it
+  requires and the list it refuses. Then the check is whether the patient's marker is in the
+  required list. **This is the highest-value trait in the whole spike** — most trials in this
+  disease are built around one particular marker, so a trial asking for a marker the patient
+  doesn't carry is the commonest reason a patient is ineligible.
+- **which disease stages the trial accepts.** Same shape: a list of stages allowed, checked
+  against the patient's stage.
+
+All four appear in Step 1's list of the 40 commonest traits and in the invented patients. Exact
+definitions and the record shapes are in Part 11.
+
+**Why a list rather than one verdict, and the cheaper choice.** There are two ways to handle a
+one-of-many trait. You could treat every individual marker as its own yes-or-no trait — "has
+marker A", "has marker B" — which needs no new machinery at all, but if the text mentions thirty
+markers that is thirty separate labelling runs and thirty times the cost. Or you record one
+answer per trial holding the list of markers it asks for, which is a single run. **Use the
+list.** It is one labelling pass instead of thirty, and the comparison is just "is the patient's
+value in this list".
+
+**Then re-run Step 2** with six traits instead of two, since the ceiling measurement only becomes
+meaningful once the strongest filter is included.
 
 ### Step 6 — Build the training material (1 day, ~$12, needs approval)
 
@@ -833,8 +874,8 @@ So the pattern for a new trait is `<trait_key>_classification` and `<trait_key>_
 | `brain_metastases` | `brain_metastases_classification` |
 | `prior_platinum_chemo` | `prior_platinum_chemo_classification` *(after Step 5)* |
 | `autoimmune_disease` | `autoimmune_disease_classification` *(after Step 5)* |
-| `interstitial_lung_disease` | `interstitial_lung_disease_classification` *(after Step 5)* |
-| `hepatitis_b` | `hepatitis_b_classification` *(after Step 5)* |
+| `driver_mutation` | `required_markers` and `refused_markers` *(after Step 5, list-shaped)* |
+| `disease_stage` | `allowed_stages` and `refused_stages` *(after Step 5, list-shaped)* |
 
 **`data/step1_concentration.json`** — `decision_cut`, `embed_model`, `n_trials`, `variants`
 (keyed `exact_merge`, `cosine_0.9`, `cosine_0.85`, `cosine_0.8`, `cosine_0.75`), and
@@ -886,15 +927,25 @@ Ask for exactly this, and enforce it:
 
     {"patient_id": "P01",
      "traits": [
-       {"name": "previous platinum chemotherapy", "kind": "category",
+       {"name": "previous platinum chemotherapy", "kind": "yes_no",
         "situation": "has", "value": null},
-       {"name": "cancer spread to the brain", "kind": "category",
+       {"name": "cancer spread to the brain", "kind": "yes_no",
         "situation": "has", "value": null},
+       {"name": "genetic marker the tumour carries", "kind": "one_of_many",
+        "situation": "value", "value": "EGFR L858R"},
+       {"name": "disease stage", "kind": "one_of_many",
+        "situation": "value", "value": "IV"},
        {"name": "performance status score", "kind": "number",
         "situation": "value", "value": "1"}]}
 
-`kind` is `category` or `number`. `situation` is `has`, `does_not_have`, or `value`. `name`
-carries no direction word and no number — that is what Step 4 counts as a failure.
+`kind` is `yes_no`, `one_of_many`, or `number`. `situation` is `has`, `does_not_have`, or
+`value`. `name` carries no direction word and no number — that is what Step 4 counts as a
+failure.
+
+**On the one-of-many entries:** the model records the value the patient has, and nothing about
+the values they don't. Do **not** ask it to list the alternatives the patient lacks — there may
+be dozens, and the comparison handles it. The instructions do have to say that these fields are
+exclusive, so that a patient recorded as carrying one marker is understood not to carry another.
 
 ## Step 5 — definitions for the four new traits
 
@@ -905,20 +956,35 @@ had before. Keep both of those principles. If a definition turns out to be wrong
 once labelling starts, that corrupts every downstream number, so **flag disagreement rather than
 guessing** and log the resolution.
 
-- **previous platinum chemotherapy** — chemotherapy containing a platinum drug (cisplatin,
-  carboplatin, oxaliplatin, nedaplatin, lobaplatin) that the person received, or was receiving,
-  before joining. Chemotherapy without a platinum drug does not count. A platinum drug the trial
-  itself would administer does not count.
-- **autoimmune disease** — a condition in which the immune system attacks the body's own tissue,
-  whether active now or in the past. Includes named examples the text gives. A family history
-  alone does not count. Being on a drug that suppresses the immune system is not by itself an
-  autoimmune disease, though the text often mentions both together.
-- **interstitial lung disease** — scarring or inflammation of lung tissue, however the text names
-  it, including radiation-caused and drug-caused inflammation of the lungs. Ordinary chronic
-  obstructive lung disease or asthma does not count.
-- **hepatitis B infection** — current or past infection with the hepatitis B virus, including
-  when the text describes it only by a blood test result for that virus. Hepatitis C is a
-  different trait and does not count. Vaccination against hepatitis B is not infection.
+- **previous platinum chemotherapy** *(plain yes-or-no)* — chemotherapy containing a platinum
+  drug (cisplatin, carboplatin, oxaliplatin, nedaplatin, lobaplatin) that the person received, or
+  was receiving, before joining. Chemotherapy without a platinum drug does not count. A platinum
+  drug the trial itself would administer does not count.
+- **autoimmune disease** *(plain yes-or-no)* — a condition in which the immune system attacks the
+  body's own tissue, whether active now or in the past. Includes named examples the text gives. A
+  family history alone does not count. Being on a drug that suppresses the immune system is not by
+  itself an autoimmune disease, though the text often mentions both together.
+- **genetic marker the trial asks for** *(one-of-many, list-shaped)* — record two lists per trial.
+  `required_markers` holds every specific tumour genetic change the trial demands; leave it empty
+  if the trial demands none. `refused_markers` holds every one it excludes. Use the exact names the
+  trial uses, plus the general phrase if it gives one — a trial saying "any sensitising alteration
+  in the EGFR gene" gets that general phrase rather than a guessed list of specific ones. If the
+  trial requires simply "some actionable alteration" without naming which, record the literal
+  phrase; matching will have to handle it and that is worth measuring. Attach a `condition` field
+  when the requirement is qualified.
+- **disease stages the trial accepts** *(one-of-many, list-shaped)* — record `allowed_stages` and
+  `refused_stages`, using whatever labels the trial uses, including descriptive ones like "locally
+  advanced", "metastatic", "unresectable", "early". Do not translate a description into a
+  numbered stage; record what it says. Attach a `condition` field when qualified.
+
+**Both list-shaped traits need a `condition` field** for the same reason plain traits need the
+`_with_exception` verdicts: a qualified requirement cannot be settled from the patient
+description alone, so it routes to "can't tell" and keeps the trial.
+
+**Why lists rather than one verdict per marker:** the text mentions many different markers. One
+yes-or-no trait per marker would need one labelling run per marker over all 1,308 trials. One
+list-shaped answer covers them all in a single run, and the comparison is just checking whether
+the patient's value appears in the list.
 
 ## Step 7 — the model to start from
 
