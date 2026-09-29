@@ -265,3 +265,85 @@ method, not an average of three.
 - No UMLS licence is on this machine. If the hierarchy in MeSH is too coarse
   to connect a drug to its class, that is a finding about MeSH, not about
   "a medical dictionary" in the abstract.
+
+---
+
+## Spike 2, Step 4 — can the big model take a patient description apart?
+
+**Committed 2026-09-29, before any parse run.** Set from the plan's guessed
+gates. Will may override; an override gets a `DECISIONS.md` entry.
+
+### What is being measured
+
+Everything downstream assumes a patient description can be turned into a clean
+list of traits: a name with no direction and no number in it, a situation, and
+one of three kinds (`yes_no`, `one_of_many`, `number`). Nothing has tested
+that. Step 1 pulled traits out of trials, which is the opposite direction.
+
+Each of the 20 invented descriptions in `data/fake_patients.md` is sent to
+`gpt-5.4` with the output shape in the plan. Will then checks all 20 against
+the structured answers already written under each description, counting four
+kinds of mistake separately. That check is careful reading of English against
+a list. It needs no medical knowledge.
+
+### Expected traits, fixed before the run
+
+Every description states these, so a missing one is a miss:
+
+- age — `number`
+- disease stage — `one_of_many`
+- histology — `one_of_many`
+- genetic marker the tumour carries (including "none" / wild type) — `one_of_many`
+- performance status score — `number`
+- creatinine clearance — `number`
+- prior lines of therapy — `number`
+- previous platinum chemotherapy — `yes_no`
+- previous immunotherapy — `yes_no`
+- cancer spread to the brain — `yes_no`
+
+And, only when the description actually states them: autoimmune disease, interstitial
+lung disease, hepatitis B, hepatitis C, HIV, major surgery, pleural effusion.
+A comorbidity the description does not mention is not a miss if omitted, and is
+an invention if added.
+
+Treated-versus-untreated brain metastases is extra detail on that trait, not a
+separate required row. Recording it is fine; dropping it is not one of the four
+counted mistakes.
+
+`one_of_many` records the value the patient has, not the values they lack.
+Number traits stay `number` even though the cheap step will later ignore them.
+
+### The four mistakes, counted per patient
+
+- **Missed** a trait the description states (from the list above).
+- **Invented** a trait the description does not state.
+- **Put a direction or a number into the name** — "must have had chemotherapy"
+  rather than "previous chemotherapy"; a digit or a comparison in the name.
+- **Wrong kind** — a number trait labelled `yes_no` or `one_of_many`, or the
+  reverse.
+
+A patient is a **fail** if they have a miss or an invention. Direction-in-name
+and wrong-kind are counted separately and also make that patient a fail, because
+both break the search step.
+
+### Thresholds — guessed, as the plan labelled them
+
+| Result | Decision |
+|---|---|
+| Miss or invent (or either of the other two mistakes) in **more than 2 of 20** patients | Fix the instructions once, measure once more, and say in the write-up that they were revised. |
+| Still more than **4 of 20** after that one revision | Stop. |
+
+### Also reported, with no threshold attached
+
+- Tokens and dollars.
+- Whether drug names were recovered as the class (`carbo/pemetrexed` → previous
+  platinum chemotherapy). That is the wording problem Step 3 just measured; it
+  is not a fourth gate here, but a miss of platinum on P01 is still a miss.
+- Names that are close but not identical to the list above, which Will settles
+  by reading. The script flags, it does not judge.
+
+### Known limits, recorded before results exist
+
+- 20 invented descriptions, written with traps on purpose, so this is harder
+  than a templated note and easier than a real chart.
+- One model, one prompt. No second-model agreement.
