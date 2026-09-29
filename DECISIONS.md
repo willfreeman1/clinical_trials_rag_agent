@@ -667,3 +667,91 @@ A trained small model (Steps 6–7) does not sit in front of that hole.
 
 Closed-name normalisation on the trial side, measured on these same quotes,
 lifting matching-gated union toward the 54% oracle without a 45% brain FPR.
+
+---
+
+## 2026-09-29 — Step 3c: closed names recover most of the ceiling
+
+**Decision: matching is workable once both sides use the same fixed names.**
+Mean recall is **84.2%** (the 60–85% band). Wrongly-picked-up is **0.03%**.
+The matching-gated union is **40.6%**, against a 54.2% perfect-oracle
+ceiling and a 23.2% figure under unconstrained general terms. Quote 40.6%,
+not 54.2%. These are still ceilings under this matcher, not predictions.
+Reading everything is still Step 8.
+
+Thresholds were committed in `c1b190d`, before assignment. Cost **$2.36**
+(426,135 in, 86,365 out) to name 4,383 quotes.
+
+### What was run
+
+`scripts/step3c_closed_names.py` then `scripts/step3c_match.py`. The model
+was not told which fact a quote belonged to. Patient queries came from the
+revised Step 4 output, name only — never the value. Matching is exact
+equality of names. No word index, no embeddings.
+
+| Fact | Recall | Wrongly picked up |
+|---|---:|---:|
+| Tumour genetic marker | 99.9% | 0.2% |
+| Autoimmune disease | 99.4% | 0.0% |
+| Brain metastases | 93.9% | 0.0% |
+| Disease stage | 93.3% | 0.0% |
+| Immunotherapy | 81.4% | 0.0% |
+| Platinum chemotherapy | **37.2%** | 0.0% |
+| **Mean** | **84.2%** | **0.03%** |
+
+Assignment agreed with the source field on 86.1% of quotes (3,773 of
+4,383). 419 came back `other`.
+
+### The two bugs are closed
+
+- **No-marker.** Marker recall is 99.9%. Every none-marker patient who
+  actually listed the trait retrieves the same 321 trials the oracle
+  throws out. Querying the name `tumour genetic marker`, not the value
+  `none`, is the whole fix.
+- **Word-flooding.** Brain wrongly-picked-up is 0.0%, down from 45.5%.
+  There is no shared token bag, so `cancer` in the patient name cannot
+  hit a stage quote.
+
+### Why the mean is 84% and not 99%
+
+Platinum. 284 of 545 platinum quotes were assigned `other`. They are
+generic prior-therapy sentences — "no prior systemic treatment", "any
+prior chemotherapy" — that never say platinum. The answer key treats
+those as platinum rules because chemotherapy includes platinum. The
+assigner, not told the question is about platinum, refuses to invent
+that implication. Five of six facts clear 81%. Platinum is 37% and
+pulls the mean into the workable band rather than past 85%.
+
+The other drag on the *gated* number is take-apart, not matching. Six
+of twenty parses omitted `tumour genetic marker` (P01, P06, P08, P11,
+P14, P20). Those patients cannot throw out on the strongest trait.
+If every patient queried every always-on fact, the gated union would
+be **48.6%**. The official number uses the Step 4 output, as committed,
+and is 40.6%.
+
+| | Perfect oracle | General terms (3b) | Closed names (3c) |
+|---|---:|---:|---:|
+| Six-trait union | 54.2% | 23.2% | **40.6%** |
+| Same, if take-apart listed every fact | 54.2% | — | 48.6% |
+
+### What this does to the architecture
+
+Write-once-and-look-up is now the design to prefer. Matching by exact
+name works. The leftover holes are (1) take-apart missing a listed
+trait, and (2) a quote that names a broader class than the fact. A
+trained small model (Steps 6–7) does not sit in front of either hole,
+and still stays on hold.
+
+A write-once pass that assigns the closed name *while labelling* would
+not have the platinum miss: the labeler already decided those sentences
+are platinum rules. That is a different measurement — how accurate the
+label is — not a matching measurement.
+
+### What would reverse this
+
+Re-running with names assigned at labelling time and finding the gated
+union still far below 54%, which would mean implication and take-apart
+are the real ceiling and closed-name matching was not the missing piece.
+Or counting the 84.2% mean as a fail because it is just under 85% —
+the committed band calls that workable, and says to quote the gated
+number.
