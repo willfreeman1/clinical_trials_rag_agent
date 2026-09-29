@@ -522,3 +522,98 @@ Re-run the perfect-oracle ceiling with six traits, and the matching-gated
 ceiling with whatever Step 3b subjects exist plus newly normalised quotes
 for these three facts. The 8.2% / 18.2% per-trait gates still decide. The
 Step 3b recall gates still decide for matching.
+
+---
+
+## Spike 2, Step 3c — matching by exact equality on a closed name list
+
+**Committed 2026-09-29, before any closed-name assignment or matching run.**
+This is the rethink named after Step 3b: put both sides on the same fixed
+names, then match by string equality. The two known matching bugs are
+closed in the same method, not by a new matcher.
+
+### Why this is a new measurement
+
+Step 3b asked the trial side for any ordinary general term and found that
+those terms do not sit in the same neighbourhood as the patient-side names.
+Marker recall was 16–23% because a patient with value `none` queries
+`tumour genetic marker` and `none`, which share no token with `EGFR
+mutation`. Brain wrongly-picked-up hit 45.5% because a shared word index
+let `cancer` in `cancer spread to the brain` hit nearly every stage quote.
+
+Neither hole needs embeddings, a dictionary, or a trained model:
+
+- **No-marker.** Retrieval asks "does this trial have a rule about this
+  fact?", not "does the patient's value appear in the subject." The value
+  is for the later throw-out, not for matching. A patient whose marker is
+  `none` still queries the name `tumour genetic marker`.
+- **Word-flooding.** There is no shared token bag. A trial is retrieved
+  for a fact only when its assigned name equals that fact's name.
+
+### What is being measured
+
+1. The big model reads each non-empty answer-key quote for the six labelled
+   facts (~4,383 sentences) and assigns it to exactly one name from this
+   closed list, or `other`:
+
+   - `previous immunotherapy`
+   - `cancer spread to the brain`
+   - `tumour genetic marker`
+   - `previous platinum chemotherapy`
+   - `autoimmune disease`
+   - `disease stage`
+   - `other`
+
+   It is not told which fact the quote was labelled as. Direction and
+   value are not re-extracted. Batch ~20 quotes per request.
+
+2. The patient side is the revised Step 4 output, mapped onto the same
+   six names (`autoimmune condition` → `autoimmune disease`;
+   `tumor genetic marker` → `tumour genetic marker`). The query is the
+   name only. The value is never a query string.
+
+3. **One matching arm: exact equality of names.** A trial is retrieved
+   for a patient fact if any of its assigned names equals that fact's
+   name. `other` retrieves nothing.
+
+Ground truth is unchanged: a trial has a rule about a fact iff its
+answer-key verdict is anything other than `not_mentioned` (for markers
+and stage: either list non-empty).
+
+- **Recall** — of trials that have a rule about this fact, what share is
+  retrieved.
+- **Wrongly-picked-up rate** — of trials that have no rule about it, what
+  share is retrieved anyway.
+
+The headline is the **matching-gated ceiling** under this matcher, next
+to the 54.2% six-trait perfect-oracle ceiling. A trial is thrown out only
+if the oracle would throw it out *and* exact-name matching retrieved it
+for that trait. That is a ceiling under this matcher, not a prediction
+of end-to-end accuracy. Reading everything is still Step 8.
+
+### Thresholds
+
+Same bands as Step 3b, because the decision question is the same.
+
+| Result, mean across the six facts | Decision |
+|---|---|
+| Recall **below 60%** | Matching still loses most of the ceiling. Closed names did not fix it. |
+| Recall **60–85%** | Workable. Quote the matching-gated ceiling, not the perfect-oracle ceiling. |
+| Recall **above 85%** | Matching is not the bottleneck. |
+| Wrongly-picked-up **above 20%** | Too noisy. Assignment is putting quotes on the wrong name. |
+
+Per-fact numbers are also reported. Also reported, no gate: the share of
+quotes whose assigned name matches the source fact (assignment accuracy),
+and the share of rule-trials that have no quote at all (a ceiling on
+recall that no matcher can beat).
+
+### Known limits, recorded before results exist
+
+- The model sees the quote, not the source field, so assignment error is
+  a real miss. Using the source field as the name would make recall
+  perfect by construction and would not measure matching.
+- Stitched quotes (one sentence covering two facts) get one name. That
+  can miss the second fact.
+- Trials with a rule but an empty quote cannot be retrieved.
+- Only the six labelled facts are on the list. A quote about something
+  else should come back `other`.
