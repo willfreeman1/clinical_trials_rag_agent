@@ -101,3 +101,67 @@ answers a per-trial question while the decision is per-question.
   biases toward the extraction conclusion — the conservative direction for this
   project, which is the right way round.
 - Lung cancer only. Concentration in another disease area is unmeasured.
+
+---
+
+## Spike 2, Step 2 — the best a perfect cheap step could do
+
+**Committed 2026-09-29, before the run.** Set by Claude with the arithmetic shown. Will may
+override; an override gets a `DECISIONS.md` entry.
+
+### What is being measured
+
+Assume a flawless cheap step and build nothing. For each invented patient and each labelled
+trait, use the answer key as a perfect oracle and count how many of the 1,308 trials could be
+thrown out. Take the union across the patient's traits, not the sum, so trials thrown out by more
+than one trait are not double-counted.
+
+A trial can only be thrown out when a rule settles the matter definitely. Rules written
+conditionally — "cannot join unless it was treated and has been stable" — cannot be settled from
+a patient description, so they keep the trial no matter how good any model is. That is what puts
+a ceiling on the whole idea, and the ceiling is a property of how the rules are written rather
+than of any model.
+
+### The partial-run problem
+
+Only two traits are labelled today: previous immunotherapy and cancer spread to the brain. The
+plan's threshold is written for six traits. So this run measures **per-trait elimination** and a
+**two-trait union**, and the six-trait threshold is evaluated later, after Step 5.
+
+### Thresholds — reasoned, not guessed
+
+If six traits were independent, the share of trials thrown out would be 1 − (1 − x)⁶ where x is
+the mean per-trait share. Solving that for the two targets in the plan:
+
+- to reach the **40% floor**: (1 − x)⁶ = 0.60, so x = **8.2%**
+- to reach the **70% target**: (1 − x)⁶ = 0.30, so x = **18.2%**
+
+| Mean per-trait elimination across the two labelled traits | Reading |
+|---|---|
+| **below 8.2%** | Six independent traits could not reach even the 40% floor. Strong signal to stop before spending anything on labelling. |
+| **8.2% to 18.2%** | Six traits land between the floor and the target. Continue, but the ceiling is the headline of the write-up, not the model. |
+| **above 18.2%** | Six traits could clear the target. Continue. |
+
+**Independence is almost certainly false and the error runs one way.** Restrictive trials tend to
+be restrictive on several counts at once, so the same trial gets thrown out by more than one
+trait and the union is smaller than the independent projection. So the projection above is an
+**upper bound**, and the real six-trait figure will be lower. This run measures the actual
+two-trait overlap so the size of that effect is known rather than assumed.
+
+### Also reported, with no threshold attached
+
+- **Per-patient spread**, not just an average. A patient whose cancer has spread to the brain
+  faces a very different ceiling from one whose has not.
+- **An optimistic ceiling** alongside the pessimistic one, treating conditional refusals as
+  though the extra detail were available. The gap between the two answers a design question: if
+  the system asked the coordinator two follow-up questions, how much more could it throw out?
+- **How much of the corpus is unreachable**, meaning trials that have a rule about a trait but
+  state it conditionally.
+
+### Known limits, recorded before results exist
+
+- Two traits of six, so the headline six-trait number cannot be produced yet.
+- The answer key has not been human-checked beyond four corrections, so these figures inherit its
+  errors. Step 9 addresses that as far as it can be.
+- The invented patients are balanced by design rather than realistic in their mix, so no average
+  across patients is an estimate of what a real clinic would see.
