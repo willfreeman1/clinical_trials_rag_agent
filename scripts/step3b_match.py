@@ -20,9 +20,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from step1_analyze import EMBED_MODEL, load_key  # noqa: E402
 from step2_ceiling import (  # noqa: E402
     load_markers,
+    load_step5b,
     load_yes_no,
     marker_out,
     project,
+    stage_out,
     yes_no_out,
 )
 from step3_match import cosine, embed_new  # noqa: E402
@@ -47,6 +49,10 @@ NAME_TO_FACT = {
     "cancer spread to the brain": "brain_metastases",
     "tumour genetic marker": "driver_mutation",
     "tumor genetic marker": "driver_mutation",
+    "previous platinum chemotherapy": "prior_platinum_chemo",
+    "autoimmune disease": "autoimmune_disease",
+    "autoimmune condition": "autoimmune_disease",
+    "disease stage": "disease_stage",
 }
 
 
@@ -132,13 +138,20 @@ def embed_terms(terms: list[str]) -> dict[str, np.ndarray]:
     return by_term
 
 
-def has_rule(nct: str, fact: str, yes_no: dict, markers: dict) -> bool:
+def has_rule(nct: str, fact: str, yes_no: dict, markers: dict, extra: dict) -> bool:
     if fact == "prior_immunotherapy":
         return (yes_no.get(nct) or {}).get("prior_immunotherapy_classification", "not_mentioned") != "not_mentioned"
     if fact == "brain_metastases":
         return (yes_no.get(nct) or {}).get("brain_metastases_classification", "not_mentioned") != "not_mentioned"
-    answer = markers.get(nct) or {}
-    return bool(answer.get("required_markers") or answer.get("refused_markers"))
+    if fact == "driver_mutation":
+        answer = markers.get(nct) or {}
+        return bool(answer.get("required_markers") or answer.get("refused_markers"))
+    if fact == "prior_platinum_chemo":
+        return (extra.get(nct) or {}).get("prior_platinum_chemo_classification", "not_mentioned") != "not_mentioned"
+    if fact == "autoimmune_disease":
+        return (extra.get(nct) or {}).get("autoimmune_disease_classification", "not_mentioned") != "not_mentioned"
+    answer = extra.get(nct) or {}
+    return bool(answer.get("allowed_stages") or answer.get("refused_stages"))
 
 
 def retrieved(queries: list[str], trial_subjects: list[str], vecs: dict, method: str, threshold: float) -> bool:
@@ -184,8 +197,11 @@ def rates(found: dict[str, set[str]], truth: dict[str, set[str]], universe: list
     return out
 
 
-def gated_ceiling(patients: list[dict], yes_no: dict, markers: dict, found_by_patient: dict) -> dict:
-    trial_ids = sorted(set(yes_no) & set(markers))
+def gated_ceiling(patients: list[dict], yes_no: dict, markers: dict, extra: dict, found_by_patient: dict, facts: list[str]) -> dict:
+    ids = set(yes_no) & set(markers)
+    if extra:
+        ids &= set(extra)
+    trial_ids = sorted(ids)
     n = len(trial_ids)
     rows = []
     for p in patients:
@@ -193,18 +209,28 @@ def gated_ceiling(patients: list[dict], yes_no: dict, markers: dict, found_by_pa
         found = found_by_patient[pid]
         union: set[str] = set()
         per = {}
-        for pfield, kfield, fact in (
-            ("prior_immunotherapy", "prior_immunotherapy_classification", "prior_immunotherapy"),
-            ("brain_metastases", "brain_metastases_classification", "brain_metastases"),
+        for pfield, kfield, fact, source in (
+            ("prior_immunotherapy", "prior_immunotherapy_classification", "prior_immunotherapy", yes_no),
+            ("brain_metastases", "brain_metastases_classification", "brain_metastases", yes_no),
+            ("prior_platinum_chemo", "prior_platinum_chemo_classification", "prior_platinum_chemo", extra),
+            ("autoimmune_disease", "autoimmune_disease_classification", "autoimmune_disease", extra),
         ):
-            oracle = {t for t in trial_ids if yes_no_out(yes_no[t].get(kfield, ""), bool(p[pfield]), False)}
+            if fact not in facts or not source:
+                continue
+            oracle = {t for t in trial_ids if yes_no_out(source[t].get(kfield, ""), bool(p[pfield]), False)}
             kept = oracle & found[fact]
             per[pfield] = {"oracle": len(oracle), "matched": len(kept), "share": round(len(kept) / n, 4)}
             union |= kept
-        oracle_m = {t for t in trial_ids if marker_out(p["driver_mutation"], markers[t], False)}
-        kept_m = oracle_m & found["driver_mutation"]
-        per["driver_mutation"] = {"oracle": len(oracle_m), "matched": len(kept_m), "share": round(len(kept_m) / n, 4)}
-        union |= kept_m
+        if "driver_mutation" in facts:
+            oracle_m = {t for t in trial_ids if marker_out(p["driver_mutation"], markers[t], False)}
+            kept_m = oracle_m & found["driver_mutation"]
+            per["driver_mutation"] = {"oracle": len(oracle_m), "matched": len(kept_m), "share": round(len(kept_m) / n, 4)}
+            union |= kept_m
+        if extra and "disease_stage" in facts:
+            oracle_s = {t for t in trial_ids if stage_out(p["disease_stage"], extra[t], False)}
+            kept_s = oracle_s & found["disease_stage"]
+            per["disease_stage"] = {"oracle": len(oracle_s), "matched": len(kept_s), "share": round(len(kept_s) / n, 4)}
+            union |= kept_s
         rows.append({"id": pid, "per_trait": per, "union": len(union), "union_share": round(len(union) / n, 4)})
     unions = [r["union_share"] for r in rows]
     shares = [v["share"] for r in rows for v in r["per_trait"].values()]
@@ -222,10 +248,16 @@ def main() -> None:
     subjects = load_subjects()
     yes_no = load_yes_no()
     markers = load_markers()
+    extra = load_step5b()
     patients = json.loads(PATIENTS.read_text(encoding="utf-8"))["patients"]
     queries = load_patient_queries()
-    universe = sorted(set(yes_no) & set(markers))
+    ids = set(yes_no) & set(markers)
+    if extra:
+        ids &= set(extra)
+    universe = sorted(ids)
     facts = ["prior_immunotherapy", "brain_metastases", "driver_mutation"]
+    if extra:
+        facts += ["prior_platinum_chemo", "autoimmune_disease", "disease_stage"]
 
     # trial -> all subjects (any fact)
     trial_subjects: dict[str, list[str]] = defaultdict(list)
@@ -235,7 +267,7 @@ def main() -> None:
     truth: dict[str, set[str]] = {f: set() for f in facts}
     for nct in universe:
         for fact in facts:
-            if has_rule(nct, fact, yes_no, markers):
+            if has_rule(nct, fact, yes_no, markers, extra):
                 truth[fact].add(nct)
 
     all_terms = [row["subject"] for row in subjects]
@@ -274,8 +306,12 @@ def main() -> None:
         summary = {"by_fact": {}, "mean_recall": None, "mean_wrongly_picked_up": None}
         recs, fprs = [], []
         for fact in facts:
-            fact_recs = [r[fact]["recall"] for r in per_patient if r[fact]["recall"] is not None]
-            fact_fprs = [r[fact]["wrongly_picked_up"] for r in per_patient if r[fact]["wrongly_picked_up"] is not None]
+            usable = [
+                r for p, r in zip(patients, per_patient)
+                if fact in queries.get(p["id"], {})
+            ]
+            fact_recs = [r[fact]["recall"] for r in usable if r[fact]["recall"] is not None]
+            fact_fprs = [r[fact]["wrongly_picked_up"] for r in usable if r[fact]["wrongly_picked_up"] is not None]
             summary["by_fact"][fact] = {
                 "recall": round(sum(fact_recs) / len(fact_recs), 4) if fact_recs else None,
                 "wrongly_picked_up": round(sum(fact_fprs) / len(fact_fprs), 4) if fact_fprs else None,
@@ -298,7 +334,7 @@ def main() -> None:
         sweep.append({"threshold": t, "embed": mean_rates(found), "combined": mean_rates(find_all("combined", t))})
 
     print("gated ceiling...", flush=True)
-    gated = gated_ceiling(patients, yes_no, markers, found_comb)
+    gated = gated_ceiling(patients, yes_no, markers, extra, found_comb, facts)
 
     report = {
         "embed_model": EMBED_MODEL,
@@ -322,7 +358,9 @@ def main() -> None:
             "wrongly_picked_up_cleared": (comb_rates["mean_wrongly_picked_up"] or 1) <= 0.20,
         },
         "matching_gated_ceiling": gated,
-        "perfect_oracle_union_mean": 0.399,
+        "perfect_oracle_union_mean": json.loads(
+            (ROOT / "data" / "step2_ceiling.json").read_text(encoding="utf-8")
+        ).get("union_mean") if (ROOT / "data" / "step2_ceiling.json").exists() else None,
     }
     OUT.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
 
@@ -335,7 +373,7 @@ def main() -> None:
     print()
     print(f"matching-gated union mean : {gated['union_mean']:.1%}  "
           f"(range {gated['union_range'][0]:.1%} to {gated['union_range'][1]:.1%})")
-    print(f"perfect-oracle union mean : 39.9%")
+    print(f"perfect-oracle union mean : {report['perfect_oracle_union_mean']}")
     print(f"Wrote {OUT}")
 
 

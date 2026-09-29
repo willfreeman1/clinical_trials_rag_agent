@@ -27,6 +27,7 @@ from mini_pilot import (  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 ANSWER_KEY = ROOT / "data" / "answer_key.jsonl"
 MARKERS = ROOT / "data" / "answer_key_markers.jsonl"
+STEP5B = ROOT / "data" / "answer_key_step5b.jsonl"
 OUT = ROOT / "data" / "step3b_quote_subjects.jsonl"
 SUMMARY = ROOT / "data" / "step3b_normalise_summary.json"
 BATCH = 20
@@ -81,6 +82,34 @@ def collect_quotes() -> list[dict]:
                     "quote": quote,
                     "verdict": "has_rule",
                 })
+    if STEP5B.exists():
+        with STEP5B.open(encoding="utf-8") as handle:
+            for line in handle:
+                if not line.strip():
+                    continue
+                row = json.loads(line)
+                answer = row.get("answer") or {}
+                nct = row["nct_id"]
+                for fact, class_key, quote_key in (
+                    ("prior_platinum_chemo", "prior_platinum_chemo_classification", "prior_platinum_chemo_quote"),
+                    ("autoimmune_disease", "autoimmune_disease_classification", "autoimmune_disease_quote"),
+                ):
+                    verdict = answer.get(class_key) or "not_mentioned"
+                    quote = (answer.get(quote_key) or "").strip()
+                    if verdict == "not_mentioned" or not quote:
+                        continue
+                    rows.append({"id": f"{nct}::{fact}", "nct_id": nct, "fact": fact, "quote": quote, "verdict": verdict})
+                allowed = answer.get("allowed_stages") or []
+                refused = answer.get("refused_stages") or []
+                quote = (answer.get("stage_quote") or "").strip()
+                if (allowed or refused) and quote:
+                    rows.append({
+                        "id": f"{nct}::disease_stage",
+                        "nct_id": nct,
+                        "fact": "disease_stage",
+                        "quote": quote,
+                        "verdict": "has_rule",
+                    })
     return rows
 
 

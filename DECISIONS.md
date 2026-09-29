@@ -602,3 +602,68 @@ does not fix a matching hole that sits *before* the judge.
 A matcher that puts both sides on the same closed names, or a dictionary
 that links `tumour genetic marker` to `EGFR mutation` without linking brain
 to bone, measured on this same quote set.
+
+---
+
+## 2026-09-29 — Step 5b: six-trait ceiling is 54.2%; matching still loses most of it
+
+**Decision: the perfect-oracle ceiling with six traits is 54.2% — above the
+40% floor, short of 70%.** Matching-gated, it is **23.2%**. The cheap step
+as currently matched still cannot deliver the ceiling. Steps 6 and 7 stay on
+hold.
+
+Thresholds were committed in `6c9da99` before labelling. Cost **$9.26** to
+label (1,852,214 in, 308,955 out) plus **$1.19** to normalise 2,216 new
+quotes. One trial failed (NCT07560111, HTTP 520). Quote-check flagged 683
+of 1,307 (52%), mostly stitched stage quotes. 1,196 trials have an allowed
+stage list; 744 of those lists are conditional, so stage is often unreachable
+from a plain description.
+
+### Perfect-oracle ceiling, six traits
+
+| Trait | Mean throw-out | Notes |
+|---|---:|---|
+| Tumour genetic marker | 23.8% | Still the strongest |
+| Disease stage | 17.3% | 57% of trials state the rule conditionally |
+| Immunotherapy | 16.3% | |
+| Platinum chemotherapy | 12.6% | |
+| Brain metastases | 6.5% | 32% conditional |
+| Autoimmune disease | **0.6%** | 316 of 1,307 are barred-with-exception |
+| **Union** | **54.2%** (46–64%) | |
+| Optimistic union | 79.0% | |
+| Independent six-trait projection from the new mean (12.9%) | 56.2% | Close to the measured union |
+
+These are best-case ceilings assuming every rule is found. They are not what
+the system would do. Reading everything is still unmeasured (Step 8).
+
+Autoimmune adds almost nothing to a timid filter: the common rule is
+conditional. Stage looks useful until more than half the rules carry a
+condition. The marker is still doing the heavy work; the other five together
+lift the union from 39.9% to 54.2%.
+
+### Matching-gated, six facts
+
+Combined recall **58.1%**, wrongly-picked-up **10.1%**. Recall is just under
+the 60% rethink gate. Mean FPR clears 20%, but brain FPR is **45.5%** —
+because the patient name `cancer spread to the brain` shares the token
+`cancer` with nearly every newly indexed stage quote. Adding facts to a
+shared word-overlap index made a name that was safe on three facts unsafe on
+six. Marker recall is still 23%. Autoimmune recall is 92% on the one patient
+who has the trait listed (P12); that is n=1.
+
+| | Perfect oracle | After matching |
+|---|---:|---:|
+| Three-trait union | 39.9% | 10.2% |
+| Six-trait union | 54.2% | **23.2%** (12–32%) |
+
+### What this does to the architecture question
+
+The write-once-and-look-up design Will prefers still needs both sides on the
+same closed names. Unconstrained general terms do not match, and a shared
+word index over mixed facts is one generic token away from swamping a fact.
+A trained small model (Steps 6–7) does not sit in front of that hole.
+
+### What would reverse this
+
+Closed-name normalisation on the trial side, measured on these same quotes,
+lifting matching-gated union toward the 54% oracle without a 45% brain FPR.
