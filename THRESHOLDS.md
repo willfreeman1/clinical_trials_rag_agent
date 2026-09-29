@@ -347,3 +347,54 @@ both break the search step.
 - 20 invented descriptions, written with traps on purpose, so this is harder
   than a templated note and easier than a real chart.
 - One model, one prompt. No second-model agreement.
+
+---
+
+## Spike 2, Step 5a — label the genetic-marker trait only
+
+**Committed 2026-09-29, before the labelling run.** The gate this run is
+read against is already in the Step 2 section above (8.2% per trait to clear
+the floor, 18.2% to reach the target). This section only records what is
+being labelled and that the other three traits wait on the re-measurement.
+
+### What is being labelled
+
+One list-shaped trait across all 1,308 trials, in a new file
+`data/answer_key_markers.jsonl`, so the existing two-trait key is not
+touched.
+
+Per trial: `required_markers` (list), `refused_markers` (list),
+`genetic_marker_condition` (string or empty), `genetic_marker_quote`, `note`.
+Empty lists and an empty quote mean the trial states no marker rule.
+
+Instructions extend the existing labelling prompt's rules (a lab result is
+not a treatment history; a drug the trial itself gives is not something the
+patient had before) and add the marker definition from the plan. Same model,
+`gpt-5.4`. Same quote check, adapted: a non-empty list needs a quote that
+appears in the trial text and mentions a marker; empty lists need an empty
+quote.
+
+### What happens after the run, before any more labelling
+
+Re-run Step 2 with three traits (immunotherapy, brain, markers). The
+committed Step 2 table still decides:
+
+| Mean per-trait elimination | Reading |
+|---|---|
+| below 8.2% | Stop. |
+| 8.2% to 18.2% | Continue, ceiling is the headline. Whether the other three traits get labelled depends on whether the marker moved the six-trait projection toward 70%. |
+| above 18.2% | Continue, including the other three traits. |
+
+If the marker trait does not lift the projection enough to change that
+picture, the other three traits are **not** labelled. That is the cheap
+exit in the plan.
+
+### Known limits, recorded before results exist
+
+- Claude wrote the marker definition; Will cannot check it medically. If a
+  labelled row is internally inconsistent (quote does not mention a marker
+  that appears in a list), it is flagged, not guessed into a different list.
+- Marker matching for the Step 2 re-run will be string overlap plus shared
+  gene tokens (EGFR, ALK, KRAS, ROS1, BRAF, MET, RET, NTRK, HER2), because a
+  perfect filter would know `EGFR L858R` satisfies a required list that says
+  `EGFR mutation`. That rule is written down here before the labels exist.

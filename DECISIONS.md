@@ -308,3 +308,69 @@ A matcher that links drug-to-class without linking brain-to-bone — for example
 the actual hierarchy, or a short curated synonym list checked against sampled hits, not
 invented from memory. Either would have to be measured on this same gold file, which stays
 frozen.
+
+---
+
+## 2026-09-29 — Spike 2 Step 4: the big model can take the descriptions apart
+
+**Decision: continue.** Script-flagged fails were 18 of 20; that is the alias
+matcher, not the model. Reading the English against the list already written
+under each patient, **2 of 20** fail the four counted mistakes. The gate is
+more than 2 → revise once. 2 is not more than 2, so the instructions stay as
+they were. Will should still skim `data/step4_check.md` — the plan assigned
+him that reading, and a different call on the two borderline patients would
+flip the gate.
+
+Thresholds were committed in `4597f41`, before this ran. Cost **$0.13**
+(9,859 in, 7,082 out).
+
+### What was run
+
+`scripts/step4_parse.py` — `gpt-5.4`, the 20 descriptions from
+`data/fake_patients.md`, output shape as in the plan. Check sheet:
+`data/step4_check.md`.
+
+### Against the four counted mistakes
+
+Counted by reading, not by the script. The script required exact name aliases
+and treated "cancer type = adenocarcinoma" as a missed histology; it is not.
+
+| Patient | Call | Why |
+|---|---|---|
+| P02 | **miss** | Description says metastatic adenocarcinoma. No disease-stage row; metastatic was folded into a yes_no named "metastatic adenocarcinoma". |
+| P03 | **miss** | Description says "excellent performance status". No performance-status row at all. |
+| The other 18 | pass | Every inventory trait the description actually states is present, with the right kind for numbers vs categories. |
+
+Direction or a number in the name: **none**. Number labelled as a category or
+the reverse: **none**. True inventions (a trait the description does not
+state): **none**. Extra rows that *are* in the description — steroids, SRS,
+methotrexate, frailty, ART — were flagged by the script as inventions and are
+not.
+
+Negative traps held: P07 "never had immunotherapy — declined it" and P11
+"neither platinum nor a checkpoint agent" both came back `does_not_have`, not
+`has`.
+
+Drug-to-class, which Step 3 could not do: `carbo/pemetrexed` → previous
+platinum chemotherapy (P01), `pembrolizumab` / `a PD-1 agent` / `durvalumab` /
+`nivolumab` / `atezolizumab` → previous immunotherapy, `CNS metastases` and
+`cerebral metastases` → cancer spread to the brain. The big model does this
+when it sees the whole sentence. Embeddings and MeSH, looking at the two
+phrases alone, do not.
+
+### One shape issue that is not a counted fail, and should be said
+
+On several patients a one_of_many trait came back as yes_no: "adenocarcinoma
+/ has" instead of "histology / value / adenocarcinoma" (P04, P06, P16), and
+"ALK rearrangement / has" instead of "genetic marker / value / ALK fusion"
+(P10). That is not "a number labelled as a category", so it does not trip the
+committed fourth mistake. It *does* lose the exclusivity the cheap step needs
+for markers. If Will counts it as a fail, P10 (and maybe P03's "targetable
+alteration / does_not_have") push the set over 2 of 20 and the instructions
+get one revision. Left as 2 of 20 pending that call.
+
+### What would reverse this
+
+Will reading the check sheet and counting more than 2 of 20. Then one prompt
+revision, focused on forcing one_of_many for histology and markers, and a
+second run of the same 20.
