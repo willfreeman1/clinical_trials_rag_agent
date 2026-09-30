@@ -841,3 +841,43 @@ accuracy figure.
 - Conditional key exclusions (`barred_with_exception`, marker/stage
   conditions) are not in the verifiable-exclusion set.
 
+---
+
+## Spike 2, Step 9 — check the answer key as far as reading can
+
+**Committed 2026-09-30, before the 40-row sheet was written.** Free. No
+API. Will checks English, not medicine.
+
+### Sample
+
+40 rows, seed **20260930**, from `data/answer_key.jsonl` only (the two
+traits the original key was built on). Least-sure labels first:
+
+| Bucket | How many |
+|---|---:|
+| Immunotherapy `unclear` | all 12 |
+| Brain `unclear` | all 7 |
+| Brain `both_classifications` | all 7 |
+| Immunotherapy `both_classifications` | 8 of 22 |
+| Immunotherapy `barred_with_exception` | 3 of 87 |
+| Brain `barred_with_exception` | 3 of 417 |
+
+This is not a random sample of the key. It is biased toward the labels
+the model itself was least sure about, which is the point.
+
+### What Will marks
+
+agree / disagree / needs medical knowledge. The last is unresolvable in
+this project. Report all three. The gate uses only the checkable ones
+(agree + disagree).
+
+### Threshold
+
+| Measure | Gate |
+|---|---|
+| Disagree / (agree + disagree) | above **25%** → rework the labelling instructions and redo the key before quoting anything that depends on it |
+
+The share marked needs-medical-knowledge is reported, not gated. That is
+the part of the key nobody here can verify.
+
+
