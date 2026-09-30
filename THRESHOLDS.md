@@ -1381,6 +1381,126 @@ estimate is agreed.
 - Start TREC-scale concept assignment before Task A, Task D, and
   the cost agreement.
 
+---
+
+## Spike 2 — UMLS corrections (2026-09-30, before the lung API run)
+
+**Committed before any UMLS REST call and before any Metathesaurus
+download.** The brief is not a wholesale swap of the six-name matcher.
+
+### Do not download the full Metathesaurus unless smaller options fail
+
+Order: (1) scispaCy bundled subset — only if it has concept is-a;
+(2) UMLS REST API for the lung-slice gate; (3) standalone RxNorm +
+MeSH if the API test passes and we need a local index; (4) SNOMED CT
+only if those two are insufficient; (5) full Metathesaurus +
+MetamorphoSys last. External disk is fine for raw files. Query a
+small SQLite index on the internal drive, not the external disk.
+
+### scispaCy check (do this first)
+
+If the bundled KB has no concept-to-concept is-a, it cannot do
+containment and is unused. The Semantic Network type tree is not a
+substitute. Do not install it as a hierarchy.
+
+### Gene symbols stay as they are
+
+Do **not** put `driver_mutation` through UMLS. It is 99.9% recall on
+plain gene-symbol / closed-name matching and is the strongest filter.
+UMLS coverage of specific variants (EGFR L858R, ALK fusion, KRAS G12C)
+is thin. Trading the best component for the weakest is forbidden.
+UMLS is for diseases, comorbidities, drugs and drug classes, and lab
+tests — the parts a hand-written list cannot enumerate.
+
+### Lung-slice gate still holds, via the API
+
+Same 20 patients, 1,307 trials, same answer key. Mean recall ≥84%
+(within 10 points of 93.9%). False pickup ≤5%. Report per fact.
+Markers reported from the existing matcher, not from UMLS.
+
+A few thousand lookups. No bulk download. Lookup miss → keep the
+literal phrase and match on the string (degrade to current behaviour;
+do not drop the rule). Report the miss rate.
+
+### TREC assignment is not a frontier-model bill
+
+Do not spend ~$5,100 (judged pool) or ~$40,000 (snapshot) on gpt-5.4.
+Cheap hosted (~$1,500) is still too much. Shrinking to 30 of 125
+topics harms the scoreboard. Keyword-filter-then-assign is
+chicken-and-egg. **Self-hosted batch on rented GPU, once, then
+tear down** is the affordable path and is the resume gap that now
+has a real job. Do not start that job until the lung API gate
+clears. Cost it then.
+
+### Still do not
+
+- Let the model emit CUIs.
+- Assign more than one subject per rule.
+- Change the direction rule.
+- Replace gene-symbol matching.
+- Start Steps 6 or 7.
+- Start TREC-scale assignment.
+
+---
+
+## Spike 2 — UMLS corrections (2026-09-30, before the lung API run)
+
+**Committed before any UMLS REST call and before any Metathesaurus
+download.** The brief is not a wholesale swap of the six-name matcher.
+
+### Do not download the full Metathesaurus unless smaller options fail
+
+Order: (1) scispaCy bundled subset — only if it has concept is-a;
+(2) UMLS REST API for the lung-slice gate; (3) standalone RxNorm +
+MeSH if the API test passes and we need a local index; (4) SNOMED CT
+only if those two are insufficient; (5) full Metathesaurus +
+MetamorphoSys last. External disk is fine for raw files. Query a
+small SQLite index on the internal drive, not the external disk.
+
+### scispaCy check (do this first)
+
+If the bundled KB has no concept-to-concept is-a, it cannot do
+containment and is unused. The Semantic Network type tree is not a
+substitute. Do not install it as a hierarchy.
+
+### Gene symbols stay as they are
+
+Do **not** put `driver_mutation` through UMLS. It is 99.9% recall on
+plain gene-symbol / closed-name matching and is the strongest filter.
+UMLS coverage of specific variants (EGFR L858R, ALK fusion, KRAS G12C)
+is thin. Trading the best component for the weakest is forbidden.
+UMLS is for diseases, comorbidities, drugs and drug classes, and lab
+tests — the parts a hand-written list cannot enumerate.
+
+### Lung-slice gate still holds, via the API
+
+Same 20 patients, 1,307 trials, same answer key. Mean recall ≥84%
+(within 10 points of 93.9%). False pickup ≤5%. Report per fact.
+Markers reported from the existing matcher, not from UMLS.
+
+A few thousand lookups. No bulk download. Lookup miss → keep the
+literal phrase and match on the string (degrade to current behaviour;
+do not drop the rule). Report the miss rate.
+
+### TREC assignment is not a frontier-model bill
+
+Do not spend ~$5,100 (judged pool) or ~$40,000 (snapshot) on gpt-5.4.
+Cheap hosted (~$1,500) is still too much. Shrinking to 30 of 125
+topics harms the scoreboard. Keyword-filter-then-assign is
+chicken-and-egg. **Self-hosted batch on rented GPU, once, then
+tear down** is the affordable path and is the resume gap that now
+has a real job. Do not start that job until the lung API gate
+clears. Cost it then.
+
+### Still do not
+
+- Let the model emit CUIs.
+- Assign more than one subject per rule.
+- Change the direction rule.
+- Replace gene-symbol matching.
+- Start Steps 6 or 7.
+- Start TREC-scale assignment.
+
 
 
 
