@@ -1086,6 +1086,95 @@ is worth it.
 Write `*_after_fix.json`. Leave the previous JSON reports in place.
 Do not regenerate the Will extra-exclusion sheet.
 
+---
+
+## Spike 2 — clarifying-question agent
+
+**Committed 2026-09-30, before the patient records were extended, before
+conditional rules were assigned to questions, and before any recovery
+number existed.**
+
+About half the rules are conditional. That is what caps the ceiling at
+51.9% instead of 78.2% (the 79.0% figure was the same gap before the
+remaining-list fixes). Those points are locked in questions nobody asked.
+This step asks them.
+
+Until now, "can't tell" always kept the trial. Once a question is
+answered, a rule can discard. This feature trades safety for narrowing.
+The wrongly-discarded gate does **not** move.
+
+### Closed vocabulary
+
+Do not generate a fresh question per rule. Assign each conditional rule
+to one or more names from the fixed list in `questions_design.json`,
+the same way quotes were assigned to six field names. A rule may tag
+several names from that list (treated *and* stable four weeks) but
+must not invent a 401st wording.
+
+Ask for a **value**, not yes-or-no. Different trials set 2 weeks, 4
+weeks, 8 weeks, 3 months on the same condition. The coordinator answers
+once; each trial is compared against its own stored threshold. An
+answer never settles a rule with a different threshold.
+
+Numeric comparison happens once per question, not once per trial.
+
+### Ranking
+
+Rank per patient. A question only counts on pairs where the condition
+is live (the patient's situation actually interacts with the rule).
+Brain questions are worthless for a patient with no brain involvement.
+
+Score = how many currently-unsettled live trials list that question.
+Do not peek at the oracle answer when ranking.
+
+### Loop
+
+LangGraph, capped at **3 rounds**. Each round: narrow, rank, ask the
+current top question, fold the value in. Stop early if the top question
+unlocks zero remaining trials.
+
+The simulated coordinator answers from the extended structured record.
+Where that record has no value, it returns "don't know", which keeps
+the trial.
+
+### Oracle extension (free, before assignment)
+
+Seed **202609303**, in `questions_design.json`. Existing fields on the
+20 patients stay unchanged. Only new fields are drawn. Written to
+`data/fake_patients_questions.json` and committed before any assignment
+or recovery number.
+
+### Gates (must exist before the run)
+
+Current matching-gated narrowing is 43.0%. Current perfect-finder
+ceiling is 51.9%. Optimistic ceiling (conditionals treated as if
+settled against the patient) is 78.2%. Half of that 26.3-point gap is
+13.15 points → **65.0%**. A quarter is 6.6 points → **58.5%**.
+
+| Measure | Gate |
+|---|---|
+| Perfect-finder narrowing after 3 ranked questions | must reach **65.0%** (half the 51.9→78.2 gap) |
+| Same, lower bound | below **58.5%** (a quarter of the gap) → the complexity is not earning itself; report and stop |
+| Wrongly discarded | under **10%**. Unchanged. Overrides everything above. Measured as lost-joinable on existing Step 8 reads against the new matching-gated discarded set (questions included). If this exceeds 10%, the recovery figure is a bad trade even if it clears 65%. |
+| Ranked 3 questions vs 3 random ones | ranked must **settle at least 1.5× as many trials** (mean across 20 patients). Random draws from questions that have at least one live trial for that patient. If ranked fails this, drop the ranking and ask a fixed order. |
+
+### Also measure, no gate
+
+- Recovery curve at 1, 2, 3, and 5 ranked questions (5 is a probe past the cap).
+- Ranked-3 against asking every live question. If ranked-3 gets most of the way, the ranking is doing real work.
+- Does round two earn itself? If round 1 captures nearly everything, this is one extra step, not a loop, and the write-up says so. Do not retrofit a LangGraph justification.
+- Questions that unlock zero trials, per patient.
+- Cost, rounds, and elapsed time per patient.
+- Matching-gated narrowing after 3 ranked questions (operational number). No separate recovery gate; the 65% gate is on the perfect-finder arm, which is where the 51.9→78.2 gap lives.
+
+### Do not
+
+- Generate a fresh question per rule.
+- Let an answer settle a rule with a different threshold.
+- Relax the 10% wrongly-discarded gate for any amount of recovery.
+- Regenerate Will's check sheets.
+- Start Steps 6 or 7.
+
 
 
 
