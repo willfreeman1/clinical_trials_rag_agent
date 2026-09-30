@@ -1277,6 +1277,110 @@ project does not have.
 - Start Steps 6 or 7.
 - Regenerate Will's check sheets.
 
+---
+
+## Spike 2 — UMLS vocabulary (TREC scoreboard, lung diagnostic)
+
+**Committed 2026-09-30, before any ClinicalTrials.gov live-API
+probe, before any UMLS file was installed, and before any concept
+was assigned.** Snapshot existence is checked from the TREC track
+pages first; live-API rates do not decide usability if that dump
+is still downloadable.
+
+The six hand-written names work on lung cancer. The mechanism —
+assign both sides to the same fixed vocabulary, then match by exact
+identifier — does not depend on those names. It depends on there
+being a fixed vocabulary. UMLS is that vocabulary. The lung slice
+stays as the diagnostic bench. TREC 2021/2022 is the scoreboard.
+They do different jobs. Do not discard the lung slice. Do not start
+Steps 6 or 7.
+
+### Task A — TREC retrievability (blocker)
+
+Judgments refer to trials as they existed in 2021–2022. If a large
+share cannot be retrieved, the scoreboard is holed.
+
+**Check for an archived snapshot first.** TREC distributed an
+April 27, 2021 ClinicalTrials.gov dump. If that collection is still
+downloadable, it is the correct corpus and the live-API rate does
+not decide usability.
+
+If **no** archived snapshot exists:
+
+| Measure | Gate |
+|---|---|
+| Unique judged NCT IDs retrievable from the current ClinicalTrials.gov API, **at each relevance level** (0 not relevant, 1 excluded, 2 eligible) | **≥70% at every level**. Below 70% at any level → stop, TREC is not the scoreboard, revert to the lung slice |
+| Skew | Report retrievable fraction **per relevance level**, not only overall. Eligible gone / irrelevant remaining is a biased leftover even at a decent overall rate |
+
+Sample at least a few hundred judged identifiers if the snapshot is
+absent. Do not start TREC-scale concept assignment until this
+section has a result and the cost estimate below is agreed.
+
+### Task B — local UMLS, half a day
+
+Install and query locally. The REST API is rate-limited and too
+slow for bulk assignment. Need: phrase → CUI; is-a hierarchy;
+drug-to-class (RxNorm / ATC). Restrict by semantic type
+(diseases/syndromes, findings, pharmacologic substances, drug
+classes, therapeutic procedures, lab results) and by source
+(SNOMED CT, RxNorm, MeSH). Report how many concepts survive.
+If setup fights past half a day, stop and record it.
+
+### Task C — six constraints (already bitten once)
+
+1. The model never emits a CUI. It extracts a subject phrase;
+   UMLS resolves it. Invented identifiers are the same failure as
+   invented quotes.
+2. One subject concept per rule, not every concept in the sentence.
+   Flooding is how brain matching hit 45.5% false pickup.
+3. Containment is required on day one. Patient carboplatin vs trial
+   platinum-based chemotherapy are different CUIs; is-a is what
+   joins them.
+4. Direction rule unchanged: same→same is normal comparison;
+   patient narrower / trial broader → rule applies; patient broader
+   / trial narrower → can't tell, keep; unrelated → keep. Never
+   promote or demote either side.
+5. Lookup miss → keep the literal phrase and match on the string.
+   Report the miss rate. Do not drop the rule.
+6. Extraction prompt is disease-agnostic. No hard-coded field list.
+   Will rewrites this prompt; coordinate, do not duplicate.
+
+### Task D — lung-slice diagnostic (before TREC)
+
+Same 20 patients, same 1,307 trials, same answer key as the
+six-name system. Compare recall and false pickup directly.
+
+Six-name mean recall after the hierarchy fix: **93.9%**.
+
+| Result | Decision |
+|---|---|
+| Mean recall **≥84%** (within 10 points of 93.9%) | Acceptable. Hand-written names were tuned on this slice. Proceed to TREC |
+| Mean recall **below 84%** | Not ready. Diagnose before going near TREC |
+| False-pickup rate **above 5%** | Vocabulary restriction too loose. Tighten semantic types and re-run |
+
+Report per fact, not only the mean. Genetic marker was 99.9% and is
+the strongest filter; loss there matters most.
+
+Do not start TREC-scale assignment before this gate has a result.
+
+### Cost (bring to Will; do not start)
+
+After Task A reports the judged pool size, estimate assignment cost
+at frontier-model rates (~43 rules/trial, gpt-5.4). Options: a
+cheap model for assignment, or assign only rules relevant to facts
+the patients mention. Do not start TREC-scale assignment until the
+estimate is agreed.
+
+### Do not
+
+- Let the model output identifiers.
+- Assign more than one subject concept per rule.
+- Change the direction rule.
+- Discard the lung slice.
+- Start Steps 6 or 7.
+- Start TREC-scale concept assignment before Task A, Task D, and
+  the cost agreement.
+
 
 
 
