@@ -132,9 +132,7 @@ def write_sheet() -> None:
         "Mark: **agree** / **disagree** / **needs medical knowledge**.",
         "",
         f"Seed **{spec['seed']}**. Only `barred` and `required`. Weighted by",
-        "narrowing. Model notes are **not** on this page; they are in",
-        "`docs/step9_consequential_notes.md` — open that only after you record",
-        "a judgment.",
+        "narrowing. The model's reasoning note is not on this page.",
         "",
         "Gates (THRESHOLDS.md): disagreement among checkable rows under 5% →",
         "quote the numbers; 5–10% → add to the 6.3% lost-joinable discussion;",
@@ -160,8 +158,10 @@ def write_sheet() -> None:
         lines += [
             f"## {i}. {item['nct_id']}",
             "",
-            f"_{title}_" if title else "",
-            "",
+        ]
+        if title:
+            lines += [f"_{title}_", ""]
+        lines += [
             f"- fact: {item['fact']}",
             f"- label: **{item['label']}**",
             f"- quote: {quote or '(empty)'}",

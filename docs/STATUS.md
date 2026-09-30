@@ -218,11 +218,13 @@ patients were written to test it. UMLS was not used and is not needed for this h
 not, and cannot, score acceptances. Do not quote 6.3% or 87% as "the system is 87%
 accurate."
 
-**The answer key has never been checked by a human.** Every number here is measured against one
-model's reading of 1,307 trials, corrected by hand in four places. Checking it is Step 9 and it
-has not been run. On the six-fact labelling run, an automated quote check flagged **52% of rows**
-— mostly stage quotes stitched together from separate sentences — and that flag was noted rather
-than resolved. Will's 20-row sheet from Step 8 is a quote-vs-claim check, not a key audit.
+**The answer key has never been checked by a human on the labels that discard trials.**
+Step 9's first 40-row sheet was aimed at `unclear` / `both` / `barred_with_exception`
+and was superseded before anyone scored it. The replacement is 30 `barred`/`required`
+rows in `docs/step9_consequential_check.md`. The 52% quote-flag rate was recategorised:
+D+E (paraphrase or absent) is **1.3%**, next to the reader's 1.2%. The rest was
+stitched quotes and word-list misses. On the six-fact labelling run, an automated
+quote check had flagged 52% of Step 5b trials — mostly stitched stage quotes.
 
 **The test set is 20 invented patients, balanced by design rather than realistic.** Half carry
 brain metastases where a real clinic would see nearer a third. So no average across these

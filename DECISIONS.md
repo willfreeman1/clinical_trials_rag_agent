@@ -966,5 +966,15 @@ mechanical recategorisation of the 52% quote flags, D+E gate 5%; (2) 30
 consequential rows weighted by narrowing, disagreement bands under 5% /
 5–10% / above 10% read against the 6.3% lost-joinable figure.
 
+### Task 1 result (same day)
+
+4,384 quote-slots. Originally flagged 1,353. Among those: A 619 (45.8%),
+B 3, C 675 (49.9%), D 13, E 43. **D+E = 57 / 4,384 = 1.3%**, under 5%,
+next to Step 8's 1.2% missing-quote rate. The 52% was stitching and
+word-lists, not fabrication. 334 platinum C-flags are generic
+chemotherapy/systemic sentences; the platinum word list was not widened
+to hide that.
+
+
 
 
