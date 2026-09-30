@@ -1,9 +1,11 @@
 # Where this project stands
 
-**As of 30 September 2026.** This is a status document, not the final write-up. Two steps of
-the plan have not been run, and one of them is the one that measures whether the answers are
-actually any good. The platinum hole is closed; that is in the table below, not in "what is
-still broken."
+**As of 30 September 2026.** This is a status document, not the final write-up. Step 8
+(the reader) has now been run. Step 9 — a human check of the answer key — has not.
+Steps 6 and 7 stay on hold. The platinum hole is closed. **44.7% is not withdrawn:**
+on discarded trials, gpt-5.4 called the patient a candidate 6.3% of the time, under
+the 10% unsafe gate. There is still no overall accuracy figure. Acceptances cannot be
+verified with a six-fact key, and that number was not attempted.
 
 
 Plain language throughout. Everything is explained where it first appears.
@@ -66,7 +68,7 @@ machinery is the decision to make.
 
 ---
 
-## The five things that have been measured
+## The six things that have been measured
 
 Each with its deciding number written down and committed to version control *before* the run
 that produced it.
@@ -171,6 +173,25 @@ If those details were available, elimination would rise from 54.2% to **79.0%**.
 more facts.** That is a design conclusion with a number behind it, and it holds regardless of
 what happens to the rest of the project.
 
+### 6. The reader, measured without pretending acceptances are knowable
+
+gpt-5.4 read 250 trials per patient × 6 patients, discarded and kept stratified, plus 20 pairs
+twice. Mini did the same sample.
+
+On trials the cheap filter had thrown away, gpt-5.4 still called the patient a candidate
+**6.3%** of the time (38 of 600). The gate to withdraw 44.7% was 10%. It holds. Mini was
+**10.8%** — the wrong side of that line, and that comparison had no gate.
+
+1.2% of gpt-5.4's judged quotes were missing from the trial text (gate 5%). Mini: 7.7%.
+Where the six-fact key definitely excludes the patient, gpt-5.4 also excluded 87.0% of the
+time (gate 85%). Mini: 81.6%. Published doctor–doctor agreement on this task is 64–70%;
+do not read the 80s as failure. Mini still fails the gates written for a production reader.
+
+The reader also excluded 352 kept trials the six facts do not exclude. Twenty of those are in
+`docs/step8_will_check.md` for Will — does the quote say what is claimed, not a medical call.
+
+There is **no overall accuracy figure**. The key cannot confirm an acceptance.
+
 ---
 
 ## What is still broken
@@ -192,16 +213,16 @@ patients were written to test it. UMLS was not used and is not needed for this h
 
 ## What has NOT been measured — read this before quoting any number above
 
-**Nobody has checked whether the system's answers are correct.** Every figure in this document
-is about *how many trials get thrown away* and *whether rules get found*. None of them says
-anything about whether the final answer given to a coordinator is right. That measurement is
-Step 8 of the plan and it has not been run.
+**There is still no overall accuracy figure.** Step 8 measured four verifiable things
+(lost joinables, fabricated quotes, agreement on key exclusions, extra catches). It did
+not, and cannot, score acceptances. Do not quote 6.3% or 87% as "the system is 87%
+accurate."
 
 **The answer key has never been checked by a human.** Every number here is measured against one
 model's reading of 1,307 trials, corrected by hand in four places. Checking it is Step 9 and it
 has not been run. On the six-fact labelling run, an automated quote check flagged **52% of rows**
 — mostly stage quotes stitched together from separate sentences — and that flag was noted rather
-than resolved.
+than resolved. Will's 20-row sheet from Step 8 is a quote-vs-claim check, not a key audit.
 
 **The test set is 20 invented patients, balanced by design rather than realistic.** Half carry
 brain metastases where a real clinic would see nearer a third. So no average across these
@@ -224,7 +245,8 @@ the 20 patients produce only a handful of distinct outcomes.
 | Labelling six facts across all trials | $15.62 |
 | Closed-name matching | $2.36 |
 | Prior-therapy hierarchy (re-assignment + five extra patients) | $0.79 |
-| **Total** | **~$34.4** |
+| The reader, two models, 3,040 reads | ~$18 |
+| **Total** | **~$52** |
 
 No graphics-card time has been rented. Nothing has been trained.
 
@@ -232,35 +254,22 @@ No graphics-card time has been rented. Nothing has been trained.
 
 ## The decision to make
 
-The cheap filter works. It removes about 45% of the reading cost, and fixing take-apart would
-take that to 52%, next to a 54% ceiling. That is real but it is not the tenfold reduction that
-would make the full cancer registry trivially cheap, and the ceiling of 54% means no amount of
-further work on matching gets there either. The platinum definition is settled: three named
-levels, containment at comparison time, case 3 returns can't-tell.
+The cheap filter works, and the full read of what it throws away does not find a pile of
+joinable trials (6.3%, under 10%). Mini is not a drop-in for that read. The ceiling of 54%
+still means matching work cannot reach the original 70% target.
 
 **Three options.**
 
-**A. Stop here and write it up.** The project has produced four measured negative results, one
-useful positive one, a working costed baseline, and a clean engineering finding about why
-free-text matching fails and fixed vocabularies don't. Everything was measured against
-thresholds committed in advance. This is a legitimate outcome and it is what two previous
-projects did.
+**A. Stop here and write it up.** Narrowing, matching, and the reader are now all measured.
+The honest hole left is that acceptances were never scored, because they cannot be with this
+key.
 
-**B. Finish the measurement first, then write it up.** Run Step 8 — how accurate is the whole
-thing, and how accurate is reading everything — and Step 9, the human check on the answer key.
-Roughly $19 and two days. This is the difference between "we measured how much gets thrown away"
-and "we measured whether the thing works," and right now only the first is true.
+**B. Check the answer key (Step 9), then write it up.** Free, 90 minutes of reading. Will's
+20 extra-exclusion rows from Step 8 can be done in the same sitting.
 
-**C. Keep building** — fix the parsing gap, then train a small model to judge rules. Steps 6
-and 7, about $15, currently on hold. UMLS is a different test (names this hierarchy does not
-cover), not a repair.
+**C. Keep building** — fix take-apart, or try Qwen3 on Lambda as the cheap reader. Steps 6
+and 7 stay on hold: mini is not close enough that a trained judge is the next cost win, and
+the expensive reader is already the one you would ship.
 
-**Recommendation: B, then decide between A and C.**
-
-Option C is the weakest of the three right now, because training a model to judge rules more
-cheaply is an optimisation of a system whose accuracy nobody has measured. And option A is
-premature for the same reason — a write-up that reports elimination rates without a single
-accuracy number invites the obvious question and has no answer.
-
-Step 8 is the missing leg. It is two days and $19, and it turns a collection of measurements
-into a result.
+**Recommendation: B, then A.** Option C waits on Qwen or on a real-notes sample that looks
+like V01, where lost-joinable was 13%.

@@ -39,8 +39,12 @@ def load_reads() -> list[dict]:
     rows = []
     with READS.open(encoding="utf-8") as handle:
         for line in handle:
-            if line.strip():
+            if not line.strip():
+                continue
+            try:
                 rows.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
     return rows
 
 

@@ -30,7 +30,7 @@ from step8_common import (  # noqa: E402
 SAMPLE = DATA / "step8_sample.json"
 OUT = DATA / "step8_reads.jsonl"
 SUMMARY = DATA / "step8_read_summary.json"
-WORKERS = 6
+WORKERS = 32
 TIMEOUT = 180
 
 SYSTEM = """You are a trial-screening assistant. You read one patient's description and one trial's eligibility criteria. You never decide that the patient qualifies. You never tell anyone they are eligible or should enroll.

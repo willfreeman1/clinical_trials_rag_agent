@@ -858,3 +858,79 @@ so the 44.7% (measured on named drugs) overstates operational narrowing, and
 the 169 kept platinum-named trials per vague patient become the typical
 case. Or a later UMLS test beating 44.7% on a vocabulary this hierarchy
 cannot name — that is the generalisation question, not this hole.
+
+---
+
+## 2026-09-30 — Step 8: the reader is measurable; 44.7% stands
+
+**Decision: do not withdraw the 44.7% narrowing figure.** On trials the
+filter discarded, gpt-5.4 called the patient a candidate **6.3%** of the
+time (38 of 600), under the 10% unsafe gate. There is still no overall
+accuracy number, and there should not be: acceptances are unverifiable
+with a six-fact key.
+
+Thresholds and the model pair were committed in `aebee10` before any
+sample or read. Cheap arm is **gpt-5.4-mini**, not Qwen3. Cost about
+**$18** across both models (plus a few dollars of duplicate calls from
+restarting at 32 workers). 3,040 reads, six patients, 100 discarded + 150
+kept each, plus 20 pairs twice.
+
+### Against the committed gates (expensive model is the reference)
+
+| Measure | Gate | gpt-5.4 | gpt-5.4-mini |
+|---|---|---:|---:|
+| Discarded trials called a candidate | >10% withdraws 44.7% | **6.3%** (38/600) | 10.8% (65/600) |
+| Quotes missing from the trial text | >5% is fabrication | **1.2%** (54/4,516) | 7.7% (283/3,692) |
+| Agreement on verifiable key exclusions | <85% investigate | **87.0%** (663/762) | 81.6% (622/762) |
+| Cheap vs expensive on measurement 1 | no gate | — | **+4.5 points** |
+
+Doctors in published work on this task agreed with each other 64–70% on
+per-rule questions. 87% is not a human ceiling; 81.6% on mini is not
+automatically poor. Mini still fails the two gates that were written for
+a production reader.
+
+### What else moved
+
+- **Per patient, expensive, lost-joinable (n=100, Wilson):** P12 1.0%
+  (0.2–5.5%), P02 and P09 3.0% (1.0–8.5%), P01 5.0% (2.2–11.2%), **P03
+  and V01 13.0% (7.8–21.0%)**. The pooled 6.3% hides two patients over
+  the 10% line. V01 is the vague-history case.
+- **Same-rule given an exclusion:** 73.6% expensive, 64.0% mini. The
+  reader often excludes, but not always citing the fact the key used.
+- **Extra exclusions the six facts miss:** 352 expensive, 384 mini, on
+  kept trials. A 20-row sheet is in `docs/step8_will_check.md` for Will.
+  Reading comprehension only.
+- **Not enough information** is used, not avoided. Highest on previous
+  immunotherapy (45.9% of that fact's rules) and tumour genetic marker
+  (34.1%) for gpt-5.4 — the facts that are often conditional.
+- **Consistency, 20 pairs, Wilson:** expensive 15% changed (5.2–36.1%);
+  mini 5% (0.9–23.6%). n=20 is too small to prefer mini on stability.
+- **Off-topic quotes** (in the trial, but keyword-miss for the claimed
+  six facts): 586 expensive. Not in the 5% gate. Open facts are 1,238.
+- **Cost / time per patient, pass 1:** gpt-5.4 about **$2.36** and 5.5 s
+  mean per read; mini about **$0.65** and 2.3 s. Wall clock at 32 workers
+  was minutes, not an hour.
+
+Quotes that appear after whitespace normalisation count as present, same
+as the answer-key checker.
+
+### What this does to the architecture
+
+The cheap filter's discarded pile is mostly not full of joinable trials,
+if gpt-5.4 is the reference full-read. Mini is not a drop-in reader: it
+fabricates more, agrees with the key less, and sits on the wrong side of
+the 10% lost-joinable line. Steps 6–7 stay on hold; a trained judge has
+little to win if the expensive reader is the one you ship, and mini is
+not close enough that training is the next cost win.
+
+Qwen3 on Lambda is still unmeasured. Mini failing does not prove Qwen
+would fail.
+
+### What would reverse this
+
+Will's 20 extra-exclusion rows disagreeing often enough that measurement
+4 is invention rather than extra work. Or P03/V01's 13% lost-joinable
+holding up on a larger discarded sample, which would mean the pooled 6.3%
+is the wrong summary for those patient types. Or Qwen matching gpt-5.4
+on measurement 1 at GPU-hour prices.
+
