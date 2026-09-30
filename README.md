@@ -13,6 +13,7 @@ what to read first and which parts of the older files are still true.
 
 | Order | File | Status | What it is |
 |---|---|---|---|
+| 0 | `docs/STATUS.md` | **CURRENT — read first** | Where the project stands, in plain language: every number measured so far, what is still broken, what has not been measured at all, and the decision to make. |
 | 1 | `CONTEXT.md` | **CURRENT** | What the project is for, the medical words, who would use it, and every decision that has been argued and settled. Read all of it. |
 | 2 | `SPIKE_2_PLAN.md` | **CURRENT — this is the work** | The seven steps to run, with thresholds. The thresholds are deliberately arbitrary placeholders; they get replaced before each step runs. |
 | 3 | `report.md` | **HISTORICAL RECORD** | What spike 1 measured. The measurements are accurate and worth knowing. **Its two closing sections, "What this means" and "Paths discussed after the result", are superseded — do not follow their recommendations.** It carries a note saying so at the top. |
