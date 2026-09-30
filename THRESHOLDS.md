@@ -935,6 +935,96 @@ in full. Do not fold a small count into a percentage.
 
 Check 3 splits word-list misses into C1 (hierarchy parent), C2 (synonym), C3 (unrelated). C1 is only defined for the prior-therapy family. C3 is added to D+E and re-checked against the committed 5% support gate.
 
+---
+
+## Spike 2, Step 9 — gate breached; scoped re-label then re-score
+
+**Committed 2026-09-30, before the scope-detector ran, before any
+re-labelling, and before any downstream number was re-scored.**
+
+The 30-row check was a second-model agreement check, not a human
+audit (DECISIONS.md). 4 of 29 checkable rows disagreed (13.8%),
+above the 10% band. Every disagreement was a wrongful discard.
+Cause: a criterion scoped to another tumour type, read as general.
+
+Previous headline numbers stay in the record. They are not
+overwritten. Both sets go in the write-up, with this reason.
+
+### Task 1 — size the basket-trial population (free)
+
+No gate. Report: how many of 1,307 trials list more than one cancer
+type in `conditions`; how many of the 30 sampled rows came from
+those trials; how many quotes anywhere in the key name a cancer
+other than lung, per fact. The scope-detector is mechanical.
+
+### Task 2 — close the title-as-quote hole in bucket E (free)
+
+`NCT07444814`'s stage quote is the trial title and is not in the
+eligibility text. It should have been bucket E and was not. Find
+why, close that hole, re-run bucket E, report the corrected D+E.
+The 1.3% figure is not to be quoted until this is understood.
+
+### Task 3 — re-label with a scoping instruction
+
+Add, in substance: a criterion explicitly scoped to a tumour type,
+cohort, or study part other than this patient's does not apply.
+"Subjects with ovarian cancer must have had platinum" is not a
+platinum requirement for a lung-cancer patient. Record
+`not_mentioned` unless the trial states the same rule for this
+patient's tumour type.
+
+Re-label every trial the Task 1 detector flagged, plus a random
+sample of 100 unflagged trials (seed **202609302**) to test whether
+the error also occurs where the detector does not fire. If it does
+at a material rate, widen the re-label to the whole corpus and say
+so.
+
+Cost is about $0.012 per trial. A few hundred trials is a few
+dollars. Stop and ask if spend would exceed **$25**.
+
+Do not re-run the 30-row sheet with a model and call it
+verification. If a fresh sample is judged by a model, label it as
+such.
+
+### Task 4 — qualifier convention
+
+A qualifier that narrows a bar makes it conditional. Words such as
+active, uncontrolled, untreated, symptomatic, within N months push
+a `barred` rule to `barred_with_exception`, not `barred`.
+
+Why: the design errs toward keeping trials. A qualifier means we
+cannot be certain the patient falls inside the bar, and certainty
+is the standard for discarding.
+
+Adopting this will move rules into the conditional bucket, which
+**lowers the ceiling and lowers the 44.7% headline**. That is
+correct behaviour, not a regression. Report it that way.
+
+### Task 5 — re-score, in this order
+
+1. Perfect-finder ceiling (was 54.2%).
+2. Matching-gated narrowing (was 44.7%).
+3. Step 8 lost-joinable (was 6.3%), re-scored against the corrected
+   key. The 10% gate still applies, unchanged. If the corrected
+   figure exceeds 10%, the narrowing figure is withdrawn pending
+   investigation.
+
+Write new report files. Leave the previous JSON reports on disk.
+
+### Citation rule going forward
+
+The labeller must emit a quote that is a verbatim substring of the
+eligibility text (normalised whitespace allowed). If it is not, reject
+and retry up to twice. Do not quote the trial title. This closes the
+class NCT06868485 showed: right label, invented source.
+
+### Brain C3 re-label (37 rows)
+
+Re-label only the 37 brain slots whose quote names metastatic disease
+and never the brain. A sentence about spread anywhere is not a
+brain-metastases rule. Immuno labels on those trials are left alone.
+Snapshot the yes/no key first. Do not start the scoped basket re-label.
+
 
 
 
