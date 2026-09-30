@@ -1540,3 +1540,57 @@ review. Do not send them to Will.
   gene-symbol matching.
 - Start Steps 6 or 7.
 
+---
+
+## Spike 2 — TREC hybrid retrieval, stages 1–2 only (before any run)
+
+**Committed 2026-09-30, before keyword generation, before MedCPT
+encoding, before any recall number.** This replaces the six-name
+narrowing measurement as the thing under test. The six-name code
+stays on disk as a measured negative. Do not call it from this run.
+
+Stages 1 and 2 only: an LLM reads the **patient note** and writes
+search keywords; each keyword is retrieved with BM25 and with
+MedCPT; the lists are fused with reciprocal rank fusion
+(`1 / (60 + rank)`). No reader. No reranker. No ranking stage.
+No LLM call sees trial text.
+
+Collection is the **judged pool** for that year, same as TrialGPT
+and TrialMatchAI. Unjudged counts as irrelevant. 2021 and 2022 use
+the 27 April 2021 ClinicalTrials.gov dump. 2023 uses a later dump
+— confirm the date from the track page and write it down; do not
+assume it is the 2021 dump.
+
+MedCPT (PubMed search logs) is out of domain here. TrialGPT used
+it anyway. Note the mismatch. Cross-encoder is downloaded and not
+run (that is a later stage).
+
+### Reproduction checks (implementation, not research)
+
+If either fails, the run is wrong. Fix it before reporting.
+
+| Check | If it fails |
+|---|---|
+| Hybrid beats BM25 alone **and** MedCPT alone | Fusion is misimplemented |
+| LLM-generated keywords beat the raw patient note | The keyword prompt is bad; rewrite it |
+
+### Research gate
+
+| Measure | Gate |
+|---|---|
+| Recall of **eligible** trials (label 2) at **6% of collection** | **≥85%** is the same league as the papers. **Below 70%** → stop and diagnose. Two papers independently exceed 90%. |
+
+Also report, no gate: recall of eligible and of relevant (labels 1+2)
+at depths 10, 20, 50, 100, 200, 500, and as a share of collection
+size, each year. Ablations: raw note vs keywords; BM25 vs MedCPT vs
+hybrid; MedCPT vs `text-embedding-3-small`.
+
+### Do not
+
+- Use the six-name vocabulary, closed-name matching, containment
+  hierarchy, or the fact-extraction prompt.
+- Build the reader, the reranker, or the ranking stage.
+- Send trial text to a hosted LLM.
+- Start Steps 6 or 7.
+- Delete the narrowing record.
+
