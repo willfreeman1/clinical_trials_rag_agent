@@ -1,0 +1,35 @@
+{
+  "seed": 202609304,
+  "n_patients": 20,
+  "k_min": 0,
+  "k_max": 6,
+  "draws_per_k": 2,
+  "n_configurations": 280,
+  "target_matching_gated": 0.4299,
+  "facts": [
+    "driver_mutation",
+    "disease_stage",
+    "prior_immunotherapy",
+    "prior_platinum_chemo",
+    "brain_metastases",
+    "autoimmune_disease"
+  ],
+  "checklist_order": [
+    "driver_mutation",
+    "disease_stage",
+    "prior_immunotherapy",
+    "prior_platinum_chemo",
+    "brain_metastases",
+    "autoimmune_disease"
+  ],
+  "free_fields": ["age", "sex", "disease_nsclc", "setting"],
+  "stop_increment_pp": 0.02,
+  "gates": {
+    "half_gap_levels": [0, 1, 2],
+    "agent_vs_checklist_max_delta": 0.02,
+    "agent_mean_questions_max": 3.0,
+    "stop_within_one_min": 0.70,
+    "wrongly_discarded_max": 0.10
+  },
+  "note": "Random subsets committed before note generation. Not a fixed ladder. Do not resolve conditionals. 79% is not a target."
+}

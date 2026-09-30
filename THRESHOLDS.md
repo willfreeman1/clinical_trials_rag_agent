@@ -1175,6 +1175,108 @@ settled against the patient) is 78.2%. Half of that 26.3-point gap is
 - Regenerate Will's check sheets.
 - Start Steps 6 or 7.
 
+---
+
+## Spike 2 — sparse-input asking (recover missing facts)
+
+**Committed 2026-09-30, before the 280 subsets were scored, before any
+note was generated, and before any recovery number existed.**
+
+The previous clarifying-question run measured condition-resolution on
+complete descriptions. The prize was 5.8 points, and 41% of those
+conditions are about the trial's own structure. That test does not
+answer what asking is worth when the note is incomplete.
+
+**Retire 79.0% / 78.2% optimistic-as-discard from this project's
+vocabulary.** It assumed every conditional resolves as a discard. Many
+resolve in the patient's favour and keep the trial. It is not reachable
+under any design. Do not use it as a target, a gap, or a ceiling.
+
+This run measures fact recovery. With none of the six facts, matching-
+gated narrowing is near zero. With all six it is **43.0%**. That range
+is the prize. Age, sex, disease (NSCLC), and setting come free from
+registry structure and are always in the note. They are not one of the
+six.
+
+Do not resolve conditional rules in this run.
+
+### Configurations
+
+Seed **202609304**. For each of 20 patients and each completeness
+k = 0..6, two random subsets of size k from the six facts.
+**280 configurations.** Random subsets, not a fixed ladder. Subsets
+are in `sparse_configs.json`, committed before generation.
+
+Six facts, checklist order (measured discard power):
+
+1. tumour genetic marker (`driver_mutation`)
+2. disease stage
+3. previous immunotherapy
+4. previous platinum chemotherapy
+5. cancer spread to the brain
+6. autoimmune disease
+
+### Notes and parse
+
+The large model writes a short coordinator-style note containing only
+the subset (plus the free fields). Mechanical leak check: no excluded
+fact's value may appear in the note. Reject and regenerate on failure.
+Report the leak rate.
+
+Parse each note with the existing Step 4 parser. Do not construct the
+fact list by hand. Do not write a Will check sheet.
+
+### Agent vs checklist
+
+The baseline is a **fixed checklist** in the order above, asking every
+fact the note does not already contain. The agent must beat it on
+*fewer questions for the same narrowing* and *knowing when to stop*.
+A checklist of the three highest-value facts is already close to
+optimal on order, so the edge is stopping, not a clever permutation.
+
+Right stop: the last question after which the next adds **less than 2
+percentage points** of matching-gated narrowing (checklist order among
+missing facts). Agent stop is observed increment < 2 points, or no
+facts left.
+
+### Gates (must exist before the run)
+
+Matching-gated full-six figure is **43.0%**. Starting narrowing at
+level k is measured from the parsed note, not from the intended subset.
+
+| Measure | Gate |
+|---|---|
+| At levels 0, 1, and 2: matching-gated after 3 checklist-order questions | must reach **half the gap** from that level's starting narrowing to 43.0% |
+| Same, lower bound | below **a quarter of the gap** at any of 0–2 → asking isn't earning itself; report and stop |
+| Agent vs full 6-question checklist | agent mean narrowing within **2 points** of the checklist, while asking **3 or fewer** questions on average |
+| Stopping accuracy | agent stop within one question of the right stop on **≥70%** of the 280 configurations |
+| Wrongly discarded | under **10%**. Unchanged. Overrides everything above. Measure fresh on the agent's discarded set using existing Step 8 reads. Last time's 10.4% was condition-resolution; this may differ. |
+
+### Also report, no gate
+
+- Narrowing against completeness k, and against number of questions asked.
+- Which facts the agent asks first at each k, vs discard-power order.
+- Questions that recovered a fact but changed narrowing by zero.
+- Parse quality at low k (listed facts vs intended subset).
+- Cost and rounds per configuration.
+
+### Limitations (must appear in the write-up)
+
+Sparsity is synthetic: complete descriptions with facts removed, not
+what a coordinator would type. The result is an **upper bound** on
+realistic input. The honest fix is real coordinator notes, which this
+project does not have.
+
+### Do not
+
+- Use a fixed stripping order.
+- Skip the leak check.
+- Do any further work on resolving conditional rules.
+- Relax the 10% wrongly-discarded gate.
+- Quote 79% / 78.2% as a target.
+- Start Steps 6 or 7.
+- Regenerate Will's check sheets.
+
 
 
 
