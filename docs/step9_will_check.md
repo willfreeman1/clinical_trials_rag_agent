@@ -1,4 +1,15 @@
-# Step 9 — Will check: 40 least-sure answer-key rows
+# Step 9 — SUPERSEDED — 40 least-sure answer-key rows
+
+**Superseded 2026-09-30, before any of these 40 rows were scored.** No
+results were seen. This sample was the key's least-sure labels
+(`unclear`, `both_classifications`, `barred_with_exception`). Those labels
+keep the trial, so a wrong one cannot change any number in the project.
+`unclear` is also near-unverifiable from a single quote.
+
+The replacement is `docs/step9_consequential_check.md`: 30 `barred` /
+`required` rows, weighted by narrowing. Do not mark this sheet.
+
+---
 
 Reading comprehension only. For each row: does the quoted sentence say
 what the **classification** claims, in plain English?

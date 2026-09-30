@@ -943,4 +943,28 @@ Will marked agree on all 20 rows in `docs/step8_will_check.md`. Those rows
 were gpt-5.4 only. Mini produced 384 extra exclusions on the same kept
 stratum; they were not hand-checked.
 
+---
+
+## 2026-09-30 — Step 9 sample redesigned before any of the 40 were scored
+
+**Decision: audit definite labels (`barred` / `required`), not the
+least-sure ones.** The 40-row sheet in `docs/step9_will_check.md` is
+superseded. **None of those 40 rows had been scored.** No results were
+seen. Goalposts were not moved.
+
+The old sample had no consequences: `unclear`, `both_classifications`,
+and `barred_with_exception` all keep the trial. A wrong label there
+cannot change 44.7%, 6.3%, or any other number. `unclear` also cannot
+be verified from a single quote.
+
+What can cause harm is a wrong `barred` or `required`: the system
+discards a trial a patient could have joined, permanently. Those labels
+had never been audited.
+
+Replacement, committed in THRESHOLDS.md before either new run: (1)
+mechanical recategorisation of the 52% quote flags, D+E gate 5%; (2) 30
+consequential rows weighted by narrowing, disagreement bands under 5% /
+5–10% / above 10% read against the 6.3% lost-joinable figure.
+
+
 

@@ -845,39 +845,78 @@ accuracy figure.
 
 ## Spike 2, Step 9 — check the answer key as far as reading can
 
-**Committed 2026-09-30, before the 40-row sheet was written.** Free. No
-API. Will checks English, not medicine.
+**SUPERSEDED 2026-09-30, before any of the 40 rows were scored.** The
+sample was the key's least-sure labels (`unclear`, `both_classifications`,
+`barred_with_exception`). Those labels keep the trial, so a wrong one
+cannot change any number in the project. Replaced by the section below.
+The 40-row sheet in `docs/step9_will_check.md` is kept as a record, marked
+superseded. No results were seen. Goalposts were not moved.
 
-### Sample
+---
 
-40 rows, seed **20260930**, from `data/answer_key.jsonl` only (the two
-traits the original key was built on). Least-sure labels first:
+## Spike 2, Step 9 (revised) — audit support, then audit definite labels
 
-| Bucket | How many |
-|---|---:|
-| Immunotherapy `unclear` | all 12 |
-| Brain `unclear` | all 7 |
-| Brain `both_classifications` | all 7 |
-| Immunotherapy `both_classifications` | 8 of 22 |
-| Immunotherapy `barred_with_exception` | 3 of 87 |
-| Brain `barred_with_exception` | 3 of 417 |
+**Committed 2026-09-30, before the quote-flag recategorisation and before
+the 30-row consequential sample was drawn.** Free.
 
-This is not a random sample of the key. It is biased toward the labels
-the model itself was least sure about, which is the point.
+### Task 1 — mechanical quote flags (no human)
 
-### What Will marks
+The six-fact labelling run flagged 52% of Step 5b trials. Recategorise
+every flagged quote into:
 
-agree / disagree / needs medical knowledge. The last is unresolvable in
-this project. Report all three. The gate uses only the checkable ones
-(agree + disagree).
+| Bucket | Meaning |
+|---|---|
+| A | Stitched: two or more real passages from the same trial joined |
+| B | Whitespace, markdown, or punctuation only |
+| C | Real passage; word-list spelling miss |
+| D | Paraphrased — close, not a quote |
+| E | Absent — no such text in that trial |
 
-### Threshold
+A, B, and C are checker or stitching artifacts. D and E are real support
+problems. Residual flag rate = (D + E) / all checked quote-slots.
+
+Step 8 found 1.2% of reader quotes missing. D+E should land near 1–2%.
+If much higher, the labelling prompt differs from the reader prompt and
+that difference gets written down.
 
 | Measure | Gate |
 |---|---|
-| Disagree / (agree + disagree) | above **25%** → rework the labelling instructions and redo the key before quoting anything that depends on it |
+| (D + E) / all checked quote-slots | above **5%** → the key has a support problem; affected rows need re-labelling before numbers that rest on them are quoted |
 
-The share marked needs-medical-knowledge is reported, not gated. That is
-the part of the key nobody here can verify.
+### Task 2 — 30 consequential rows for Will
+
+Only `barred` and `required`. Weight by contribution to narrowing:
+
+| Fact | Rows |
+|---|---:|
+| Tumour genetic marker | 8 |
+| Disease stage | 8 |
+| Previous platinum chemotherapy | 5 |
+| Previous immunotherapy | 5 |
+| Cancer spread to the brain | 3 |
+| Autoimmune disease | 1 |
+
+Within each fact, split barred / required in proportion to how many of
+each exist. Seed **202609301**. Drawn trial ids committed before the
+sheet is generated. Model notes live in a separate file, not on the
+sheet.
+
+The question: does this quote say that the trial bars / requires this
+thing? agree / disagree / needs medical knowledge.
+
+Reasoned from Step 8's 6.3% lost-joinable against a 10% gate. Errors in
+barred/required add to that same figure.
+
+| Disagreement / checkable (agree + disagree) | Reading |
+|---|---|
+| Under **5%** | Definite labels hold. Quote the numbers as they stand. |
+| **5–10%** | Note it. Add it to the lost-joinable discussion: 6.3% plus label error is the honest figure. |
+| Above **10%** | Definite labels are unreliable enough to matter. Re-examine 6.3% before quoting it. |
+
+Needs-medical-knowledge is reported as a limitation, not gated.
+
+For every disagreement: record what the label should be, then check
+whether that trial was discarded for any of the 20 invented patients.
+
 
 
