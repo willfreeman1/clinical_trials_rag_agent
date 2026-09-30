@@ -1025,6 +1025,67 @@ and never the brain. A sentence about spread anywhere is not a
 brain-metastases rule. Immuno labels on those trials are left alone.
 Snapshot the yes/no key first. Do not start the scoped basket re-label.
 
+---
+
+## Spike 2, Step 9 — remaining list before the numbers can be trusted
+
+**Committed 2026-09-30, before the 12 stage labels were cleared, before
+the 70 crossings were re-labelled, before the qualifier convention was
+applied, and before any of 54.2% / 44.7% / 6.3% was re-scored.**
+
+A missing quote is not a wrong label. The 12 title-inferred stage
+requirements are wrong labels. The 70 mixed-polarity / heuristic-disagree
+crossings are small enough to re-label directly. Then one policy call,
+one free count, one re-score. Do not re-score with known errors still
+in the data.
+
+Previous headline numbers stay on disk. Both sets go in the write-up.
+
+### 1. Twelve known-wrong stage labels
+
+Clear `allowed_stages`, `refused_stages`, `stage_quote`, and
+`stage_condition` on these twelve trials. The eligibility text states
+no stage rule; the label was inferred from the title. Mechanical. No
+model. These 12 caused 212 wrong discards among the 20 patients.
+
+### 2. Seventy crossing rows
+
+Re-label the 50 mixed-polarity stitches and the 20 where the polarity
+check disagreed with the stored label. Model. Verbatim eligibility
+substring required; retry on failure. A criterion scoped to another
+tumour type, cohort, or study part does not apply.
+
+### 3. Qualifier convention
+
+A word that narrows a bar makes it conditional. `active`,
+`uncontrolled`, `untreated`, `symptomatic`, and `within N months` on a
+`barred` quote push the label to `barred_with_exception`, which keeps
+the trial.
+
+This will **lower the ceiling and the 44.7% headline**. That is
+correct behaviour, not a regression. A smaller number that discards
+fewer joinable trials is the better system.
+
+Applied to the four yes/no facts after the 12 and the 70 are fixed.
+
+### 4. Scope count (free)
+
+How many of 1,307 trials list more than one cancer type in
+`conditions`. How many quotes in the key name a cancer other than
+lung, per fact. No gate. This sizes whether a wider basket re-label
+is worth it.
+
+### 5. Re-score, in this order
+
+1. Perfect-finder ceiling (was 54.2%).
+2. Matching-gated narrowing (was 44.7%).
+3. Step 8 lost-joinable (was 6.3%), against the corrected key, using
+   existing reads. The 10% gate is unchanged. If the corrected figure
+   exceeds 10%, the narrowing figure is withdrawn pending investigation.
+
+Write `*_after_fix.json`. Leave the previous JSON reports in place.
+Do not regenerate the Will extra-exclusion sheet.
+
 
 
 
