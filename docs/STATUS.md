@@ -264,12 +264,12 @@ still means matching work cannot reach the original 70% target.
 The honest hole left is that acceptances were never scored, because they cannot be with this
 key.
 
-**B. Check the answer key (Step 9), then write it up.** Free, 90 minutes of reading. Will's
-20 extra-exclusion rows from Step 8 can be done in the same sitting.
+**B. Check the answer key (Step 9), then write it up.** Free, 90 minutes of reading.
+The 20 extra-exclusion rows from Step 8 are done (20/20 agree).
 
 **C. Keep building** — fix take-apart, or try Qwen3 on Lambda as the cheap reader. Steps 6
 and 7 stay on hold: mini is not close enough that a trained judge is the next cost win, and
 the expensive reader is already the one you would ship.
 
-**Recommendation: B, then A.** Option C waits on Qwen or on a real-notes sample that looks
+**Recommendation: Step 9, then write it up.** Option C waits on Qwen or on a real-notes sample that looks
 like V01, where lost-joinable was 13%.

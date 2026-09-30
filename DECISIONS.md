@@ -934,3 +934,13 @@ holding up on a larger discarded sample, which would mean the pooled 6.3%
 is the wrong summary for those patient types. Or Qwen matching gpt-5.4
 on measurement 1 at GPU-hour prices.
 
+---
+
+## 2026-09-30 — Will agrees 20/20 on extra-exclusion quotes
+
+**Decision: measurement 4 is extra work the six facts miss, not invention.**
+Will marked agree on all 20 rows in `docs/step8_will_check.md`. Those rows
+were gpt-5.4 only. Mini produced 384 extra exclusions on the same kept
+stratum; they were not hand-checked.
+
+

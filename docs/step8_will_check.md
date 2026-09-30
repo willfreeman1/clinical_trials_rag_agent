@@ -7,6 +7,9 @@ cannot tell from the quote.
 Drawn with seed 20260930 from the expensive model (`gpt-5.4`).
 20 of 352 extra exclusions on kept trials.
 
+**Will, 2026-09-30: 20 of 20 agree.** Quote says what the model claims. Not a
+medical judgment. Mini's extra exclusions were not in this sheet.
+
 ## 1. P01 / NCT06839105
 
 _A Clinical Study to Evaluate the Safety and Tolerability of AWT020 in Patients With Advanced Malignancies_
