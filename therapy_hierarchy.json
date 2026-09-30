@@ -1,0 +1,8 @@
+{
+  "comment": "Child → parent. Consulted only at comparison time. Neither side is rewritten. Immunotherapy is under systemic treatment, not under chemotherapy.",
+  "child_to_parent": {
+    "previous platinum chemotherapy": "previous chemotherapy (any kind)",
+    "previous chemotherapy (any kind)": "previous systemic anticancer treatment (any kind)",
+    "previous immunotherapy": "previous systemic anticancer treatment (any kind)"
+  }
+}

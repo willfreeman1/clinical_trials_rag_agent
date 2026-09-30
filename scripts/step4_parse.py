@@ -68,7 +68,15 @@ Worked examples:
 - "stage IV lung adeno" → {"name": "disease stage", "kind": "one_of_many", "situation": "value", "value": "IV"} and {"name": "histology", "kind": "one_of_many", "situation": "value", "value": "adenocarcinoma"}
 - "67F" → {"name": "sex", "kind": "one_of_many", "situation": "value", "value": "female"}
 
-Other traits keep a stable name with no direction and no number: "previous platinum chemotherapy", "previous immunotherapy", "cancer spread to the brain". Do not turn a drug name into a yes_no named after that drug if the fact is membership of a class — "carbo/pemetrexed" is previous platinum chemotherapy, "pembrolizumab" is previous immunotherapy.
+Other traits keep a stable name with no direction and no number. Use these exact names for prior therapy, at the level the description actually states — do not promote or demote:
+
+- previous platinum chemotherapy — carboplatin, cisplatin, oxaliplatin, or the words "platinum" / "platinum-based"
+- previous chemotherapy (any kind) — the description says chemotherapy and does not name platinum or a platinum drug
+- previous immunotherapy — checkpoint inhibitors, PD-1, PD-L1, or a named drug in that class
+- previous systemic anticancer treatment (any kind) — the description says systemic therapy / systemic treatment and does not name chemotherapy vs immunotherapy vs a drug
+- cancer spread to the brain
+
+Do not record previous platinum chemotherapy when the note only says "chemotherapy" with no drug. Do not record previous immunotherapy when the note only says "systemic therapy". "carbo/pemetrexed" is previous platinum chemotherapy. "pembrolizumab" is previous immunotherapy.
 
 Do not list the alternatives a one_of_many patient lacks.
 
