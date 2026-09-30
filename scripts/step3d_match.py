@@ -23,6 +23,7 @@ from therapy_containment import (  # noqa: E402
     MATCH,
     _self_check,
     comparison,
+    load_child_to_parent,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -107,9 +108,9 @@ def all_canonical_names(traits: list[dict]) -> list[str]:
     return names
 
 
-def trial_hits(query_name: str, trial_names: set[str], allow_cant_tell: bool) -> bool:
+def trial_hits(query_name: str, trial_names: set[str], allow_cant_tell: bool, edges: dict[str, str]) -> bool:
     for trial_name in trial_names:
-        result = comparison(query_name, trial_name)
+        result = comparison(query_name, trial_name, edges)
         if result == MATCH:
             return True
         if allow_cant_tell and result == CANT_TELL:
@@ -117,11 +118,16 @@ def trial_hits(query_name: str, trial_names: set[str], allow_cant_tell: bool) ->
     return False
 
 
-def retrieve(query_name: str, trial_names_by_nct: dict[str, set[str]], allow_cant_tell: bool) -> set[str]:
+def retrieve(
+    query_name: str,
+    trial_names_by_nct: dict[str, set[str]],
+    allow_cant_tell: bool,
+    edges: dict[str, str],
+) -> set[str]:
     return {
         nct
         for nct, names in trial_names_by_nct.items()
-        if trial_hits(query_name, names, allow_cant_tell)
+        if trial_hits(query_name, names, allow_cant_tell, edges)
     }
 
 
@@ -195,6 +201,7 @@ def original_20_have_vague_history(parse: dict) -> dict:
 
 def main() -> None:
     _self_check()
+    edges = load_child_to_parent()
     rows = load_assigned()
     yes_no = load_yes_no()
     markers = load_markers()
@@ -238,8 +245,8 @@ def main() -> None:
                 found_symmetric[pid][fact] = set()
                 continue
             query = listed[fact]
-            found_by_patient[pid][fact] = retrieve(query, trial_names, allow_cant_tell=False)
-            found_symmetric[pid][fact] = retrieve(query, trial_names, allow_cant_tell=True)
+            found_by_patient[pid][fact] = retrieve(query, trial_names, False, edges)
+            found_symmetric[pid][fact] = retrieve(query, trial_names, True, edges)
 
     per_patient = []
     for p in patients:
@@ -319,7 +326,7 @@ def main() -> None:
                 found_complete[p["id"]][fact] = set()
             else:
                 query = FACT_TO_NAME[fact]
-                found_complete[p["id"]][fact] = retrieve(query, trial_names, allow_cant_tell=False)
+                found_complete[p["id"]][fact] = retrieve(query, trial_names, False, edges)
     gated_if_complete_parse = gated_ceiling(patients, yes_no, markers, extra, found_complete, FACTS)
 
     oracle_union = None
@@ -384,7 +391,7 @@ def main() -> None:
         cant_tell_platinum = set()
         for query in names:
             for nct in platinum_named:
-                result = comparison(query, PLATINUM_NAME)
+                result = comparison(query, PLATINUM_NAME, edges)
                 if result == MATCH:
                     retrieved_platinum.add(nct)
                     vague_wrong_pairs.append({"patient_id": pid, "nct_id": nct, "query": query})

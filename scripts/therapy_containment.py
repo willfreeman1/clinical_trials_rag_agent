@@ -7,7 +7,9 @@ and used only to decide whether a trial rule applies to this patient.
 from __future__ import annotations
 
 import json
+from functools import lru_cache
 from pathlib import Path
+from typing import Optional
 
 ROOT = Path(__file__).resolve().parents[1]
 HIERARCHY_PATH = ROOT / "therapy_hierarchy.json"
@@ -17,8 +19,9 @@ CANT_TELL = "cant_tell"
 NO_MATCH = "no_match"
 
 
-def load_child_to_parent(path: Path = HIERARCHY_PATH) -> dict[str, str]:
-    data = json.loads(path.read_text(encoding="utf-8"))
+@lru_cache(maxsize=4)
+def load_child_to_parent(path: Optional[str] = None) -> dict[str, str]:
+    data = json.loads((Path(path) if path else HIERARCHY_PATH).read_text(encoding="utf-8"))
     return dict(data["child_to_parent"])
 
 

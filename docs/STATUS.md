@@ -1,8 +1,10 @@
 # Where this project stands
 
-**As of 29 September 2026.** This is a status document, not the final write-up. Two steps of
+**As of 30 September 2026.** This is a status document, not the final write-up. Two steps of
 the plan have not been run, and one of them is the one that measures whether the answers are
-actually any good.
+actually any good. The platinum hole is closed; that is in the table below, not in "what is
+still broken."
+
 
 Plain language throughout. Everything is explained where it first appears.
 
@@ -29,16 +31,18 @@ impossible. So the question the project has been testing is:
 
 | | Share of trials thrown out |
 |---|---:|
-| What the system actually achieves now | **40.6%** |
-| What it would achieve if the patient descriptions were parsed perfectly | 48.6% |
+| What the system actually achieves now | **44.7%** |
+| What it would achieve if the patient descriptions were parsed perfectly | 51.9% |
 | The ceiling, if rules were always found perfectly | 54.2% |
 | The ceiling, if we could also settle conditional rules | 79.0% |
 | The target that originally justified building this | 70% |
 
 Two things to take from that table.
 
-**The 40.6% is real and hard-won.** A week ago the same measurement said 23.2%, and before the
-fix described below it looked like the approach had failed.
+**The 44.7% is real and hard-won.** Closed names got this from 23.2% to 40.6%. A three-level
+prior-therapy hierarchy, consulted only at comparison time, got the rest. Platinum recall went
+from 37.2% to 88.8%. The 70% elimination target is still out of reach: the ceiling with these
+six facts is 54.2%, and that is a property of the trial text, not of matching.
 
 **But even the 54.2% ceiling misses the 70% target.** That target was never reachable with these
 six facts, regardless of how good the matching got. The reason is explained under "the ceiling"
@@ -52,12 +56,12 @@ measured cost of $0.0068 per trial read:
 | | Trials left to read | Cost per patient |
 |---|---:|---:|
 | No cheap filter at all | 1,500 | **$10.13** |
-| **Current system, 40.6%** | 891 | **$6.06** |
-| With parsing fixed, 48.6% | 771 | $5.24 |
+| **Current system, 44.7%** | 829 | **$5.64** |
+| With parsing fixed, 51.9% | 721 | $4.90 |
 | With perfect rule-finding, 54.2% | 687 | $4.64 |
 | The original 70% target | 450 | $3.04 |
 
-**So the cheap step as built removes about 40% of the cost.** Whether that justifies the
+**So the cheap step as built removes about 45% of the cost.** Whether that justifies the
 machinery is the decision to make.
 
 ---
@@ -126,25 +130,35 @@ trial's rule becomes `tumour genetic marker`. Then matching is exact string equa
 similarity scores, no cutoffs, nothing to tune. The hard translation happens once on each side,
 by a model that can do it, and the matching becomes trivial by construction.
 
-Result: realistic elimination went from **23.2% to 40.6%**, and the rules are now found
-reliably:
+Result: realistic elimination went from **23.2% to 40.6%**. Five of six facts cleared 81%.
+Platinum was 37.2%, because 284 of its rules said "no prior chemotherapy" or "no prior
+systemic treatment" and never named platinum — the list had nowhere to file them.
+
+**Then containment.** Two broader names were added, and a three-level hierarchy
+(`therapy_hierarchy.json`) is consulted only when comparing. A patient who had platinum sits
+inside a ban on any chemotherapy. A patient whose note only says "chemotherapy" is *not*
+thrown out of a trial that bars platinum specifically. Immunotherapy sits under systemic
+treatment, not under chemotherapy. Realistic elimination is now **44.7%**. Platinum recall
+is **88.8%**.
 
 | Fact | Share of its rules found | Wrongly picked up |
 |---|---:|---:|
-| Tumour genetic marker | **99.9%** | 0.2% |
-| Autoimmune disease | 99.4% | 0.0% |
-| Cancer spread to the brain | 93.9% | 0.0% |
-| Disease stage | 93.3% | 0.0% |
-| Previous immunotherapy | 81.4% | 0.0% |
-| Previous platinum chemotherapy | **37.2%** | 0.0% |
-| **Mean** | **84.2%** | **0.03%** |
+| Tumour genetic marker | **99.9%** | 0.3% |
+| Autoimmune disease | 99.6% | 0.0% |
+| Cancer spread to the brain | 94.2% | 0.0% |
+| Disease stage | 93.4% | 0.0% |
+| Previous platinum chemotherapy | **88.8%** | 6.4% |
+| Previous immunotherapy | 87.7% | 4.1% |
+| **Mean** | **93.9%** | **1.8%** |
 
-Two bugs were also fixed in the same round. Patients with no genetic marker previously retrieved
-no marker rules at all, because "none" doesn't resemble a gene name — and those were exactly the
-patients the ceiling throws out most. That is now handled as a rule rather than a search: if the
-patient has no marker, every trial demanding one is out. And brain matching previously picked up
-45.5% of trials wrongly because the phrase "cancer spread to the brain" shares the word "cancer"
-with almost every stage rule. Removing the shared word index took that to 0.0%.
+Wrongly-picked-up on platinum and immunotherapy rose because they share a parent. A method
+that matched nothing would score 0% there; do not read those two columns alone. On five
+invented patients with deliberately vague treatment history, wrongly applying a
+platinum-specific rule was **0%**.
+
+Two earlier bugs stay closed. Patients with no genetic marker retrieve marker rules by the
+name `tumour genetic marker`, not the value `none`. Brain matching no longer shares a word
+index with stage, so the 45.5% false pickup is still 0.0%.
 
 ### 5. The one positive finding worth reporting on its own
 
@@ -161,21 +175,18 @@ what happens to the rest of the project.
 
 ## What is still broken
 
-Neither of these is a matching problem.
-
-**Previous platinum chemotherapy finds only 37% of its rules — and it is a definitional
-disagreement, not a failure.** Most of those rules never mention platinum. They say "no prior
-systemic treatment" or "any previous chemotherapy." The answer key counts those as platinum
-rules, because a blanket ban on previous treatment does bar platinum. The name-assigner, which
-sees only the sentence and not the question, files them as `other`. Both readings are defensible
-and the disagreement needs settling before the number means anything. Five of the six facts
-clear 81%.
-
 **Six of twenty patient descriptions omitted the genetic-marker row entirely.** If every
-description had listed every always-relevant fact, elimination would be 48.6% rather than 40.6%.
-So roughly eight percentage points are being lost to the description-parsing step, not to
+description had listed every always-relevant fact, elimination would be 51.9% rather than 44.7%.
+So roughly seven percentage points are being lost to the description-parsing step, not to
 matching. The parsing instructions have already been revised once, which is all the plan
 permits, so this needs a decision rather than another silent retry.
+
+The platinum hole is closed. The 284 generic "no prior chemotherapy / no prior systemic
+treatment" sentences now have a place to go. Immunotherapy sits under systemic treatment and
+not under chemotherapy; that distinction was tested and held. A patient whose note only says
+"chemotherapy," with no drug named, is not thrown out of a trial that bars platinum
+specifically. None of the original 20 was that case — they all name a drug — so five extra
+patients were written to test it. UMLS was not used and is not needed for this hole.
 
 ---
 
@@ -212,7 +223,8 @@ the 20 patients produce only a handful of distinct outcomes.
 | Parsing patient descriptions, twice | $0.30 |
 | Labelling six facts across all trials | $15.62 |
 | Closed-name matching | $2.36 |
-| **Total** | **~$33.6** |
+| Prior-therapy hierarchy (re-assignment + five extra patients) | $0.79 |
+| **Total** | **~$34.4** |
 
 No graphics-card time has been rented. Nothing has been trained.
 
@@ -220,10 +232,11 @@ No graphics-card time has been rented. Nothing has been trained.
 
 ## The decision to make
 
-The cheap filter works. It removes about 40% of the reading cost, and with two known fixes it
-would remove closer to 49%. That is real but it is not the tenfold reduction that would make the
-full cancer registry trivially cheap, and the ceiling of 54% means no amount of further work on
-matching gets there either.
+The cheap filter works. It removes about 45% of the reading cost, and fixing take-apart would
+take that to 52%, next to a 54% ceiling. That is real but it is not the tenfold reduction that
+would make the full cancer registry trivially cheap, and the ceiling of 54% means no amount of
+further work on matching gets there either. The platinum definition is settled: three named
+levels, containment at comparison time, case 3 returns can't-tell.
 
 **Three options.**
 
@@ -238,8 +251,9 @@ thing, and how accurate is reading everything — and Step 9, the human check on
 Roughly $19 and two days. This is the difference between "we measured how much gets thrown away"
 and "we measured whether the thing works," and right now only the first is true.
 
-**C. Keep building** — settle the platinum definition, fix the parsing gap, then train a small
-model to judge rules. Steps 6 and 7, about $15, currently on hold.
+**C. Keep building** — fix the parsing gap, then train a small model to judge rules. Steps 6
+and 7, about $15, currently on hold. UMLS is a different test (names this hierarchy does not
+cover), not a repair.
 
 **Recommendation: B, then decide between A and C.**
 

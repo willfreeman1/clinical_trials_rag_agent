@@ -36,8 +36,9 @@ A patient description gets taken apart into separate facts by a large model. Eve
 every trial has already been read once, in advance, by the same model. **Both sides are
 assigned to the same short, fixed list of fact names**, so matching them is exact string
 equality rather than any kind of similarity score — that one change lifted realistic
-elimination from 23.2% to 40.6%, and it is the project's main engineering finding. A fact
-only throws a trial out on confident evidence; silence and "can't tell" both keep the
+elimination from 23.2% to 40.6%. A three-level prior-therapy hierarchy, used only at
+comparison time, then closed the platinum hole and took the realistic figure to **44.7%**.
+A fact only throws a trial out on confident evidence; silence and "can't tell" both keep the
 trial. A large model then reads the survivors in full. See `docs/STATUS.md` for the
 measured numbers and the ceiling that caps them at 54.2%.
 
@@ -55,7 +56,9 @@ measured numbers and the ceiling that caps them at 54.2%.
 | `answer_key_markers.jsonl` | The genetic-marker fact, list-shaped, across all trials | **Yes — the strongest filter** |
 | `answer_key_*` for platinum, autoimmune, stage | The other three facts | Yes |
 | `step2_ceiling.json` | Perfect-rule-finding ceiling, six facts: 54.2% | Yes |
-| `step3c_closed_names.jsonl`, `step3c_match_report.json` | Closed-name assignment and the 40.6% realistic figure | **Yes — the current result** |
+| `step3c_closed_names.jsonl`, `step3c_match_report.json` | Closed-name assignment and the 40.6% figure | Historical — the names-only result |
+| `step3d_closed_names.jsonl`, `step3d_match_report.json` | Hierarchy + containment and the 44.7% realistic figure | **Yes — the current result** |
+| `therapy_hierarchy.json` | Child → parent for the prior-therapy family | **Yes — inspectable, not buried in code** |
 | `step3_report.json`, `step3b_match_report.json` | The two failed free-text matching attempts, 10% and 32% | Historical, but the negatives matter |
 | `step4_parse.json`, `step4_check.md` | Patient-description parsing and its hand check | Yes |
 | `fake_patients.md`, `fake_patients_draw.json` | The 20 invented patients, seed 20260929 | Yes |
@@ -101,7 +104,8 @@ this is the short list.
    whole-document similarity (spike 1), free-text phrase matching (10% recall), and
    free-text matching after tidying the wording (32%). The pairs that should match scored
    *lower* than a pair that should not — brain versus bone spread at 0.86 — so no cutoff
-   works. Closed names with exact equality reached 84% recall. Use that.
+   works. Closed names with exact equality reached 84% recall; a three-level therapy
+   hierarchy at comparison time took the mean to 94% and platinum from 37% to 89%. Use that.
 4. **A filter's ground truth is every trial with any rule about the fact**, not the
    trials that refuse it. In answer-key terms that is every label except
    `not mentioned` — 750 trials for immunotherapy, 719 for brain metastases. Measuring

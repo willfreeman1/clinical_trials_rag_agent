@@ -755,3 +755,106 @@ are the real ceiling and closed-name matching was not the missing piece.
 Or counting the 84.2% mean as a fail because it is just under 85% —
 the committed band calls that workable, and says to quote the gated
 number.
+
+---
+
+## 2026-09-30 — Step 3d: containment closes the platinum hole
+
+**Decision: keep the hand-written hierarchy. Do not install UMLS for this.**
+Platinum recall is **88.8%**, from 37.2%, against a 70% gate. Matching-gated
+six-fact narrowing is **44.7%**, from 40.6%, against a 54.2% perfect-oracle
+ceiling. Quote 44.7%. UMLS remains a separate test: generalising beyond these
+field names.
+
+Thresholds were committed in `f93ce2c`, hierarchy and comparison logic in
+`739dd4f`, both before re-assignment. Cost **$0.79** (parse $0.04 + 1,338
+quotes $0.76). No embeddings. Steps 6 and 7 stay on hold.
+
+### What was run
+
+Two names added to the closed list: `previous chemotherapy (any kind)` and
+`previous systemic anticancer treatment (any kind)`. Hierarchy in
+`therapy_hierarchy.json`. Containment at comparison time only; neither side
+is rewritten. Re-assigned platinum-source, immunotherapy-source, and
+then-`other` quotes (1,338). Copied the other four facts' names and re-scored
+them. Five vague-history patients (V01–V05) parsed with the extended names.
+
+### Against the committed gates
+
+| Measure | Gate | Result |
+|---|---|---|
+| Platinum recall | ≥70%, from 37.2% | **88.8%** (485 of 546) |
+| Every other fact's recall | drop ≤3 points | none dropped; immuno **+6.3** |
+| Wrongly-picked-up, any fact | <20% | max **6.4%** (platinum) |
+| Vague-history patients vs platinum-named rules | 0% | **0 of 845** pairs |
+| Six-fact narrowing | must rise from 40.6% | **44.7%** (25.3–54.8%) |
+
+Recovering all 284 generic-chemotherapy sentences was estimated at about 89%.
+88.8% is that recovery, not a near-miss against 70%.
+
+### Which numbers moved, and which did not
+
+| Fact | Recall 3c → 3d | Wrongly picked up 3c → 3d |
+|---|---:|---:|
+| Platinum chemotherapy | 37.2% → **88.8%** | 0.0% → **6.4%** |
+| Immunotherapy | 81.4% → **87.7%** | 0.0% → **4.1%** |
+| Brain metastases | 93.9% → 94.2% | 0.0% → 0.0% |
+| Disease stage | 93.3% → 93.4% | 0.0% → 0.0% (n=101 negatives; Wilson 0.0–3.7%) |
+| Tumour genetic marker | 99.9% → 99.9% | 0.2% → 0.3% |
+| Autoimmune disease | 99.4% → 99.6% | 0.0% → 0.0% |
+| **Mean** | 84.2% → **93.9%** | 0.03% → **1.8%** |
+
+Brain, stage, marker, and autoimmune did not move in any way that matters.
+They were re-scored because comparison changed; exact name equality is
+unchanged for facts outside the hierarchy. The small recall ticks are
+re-assignment of a handful of `other` quotes, not containment.
+
+Immunotherapy recall rose because an immunotherapy patient sits inside a ban
+on any systemic treatment. That is case 2, the same direction as platinum.
+
+Wrongly-picked-up rose because the shared parent also matches the *other*
+child. A platinum patient now retrieves some immunotherapy-source sentences
+assigned `previous systemic anticancer treatment (any kind)`, and the
+reverse. That is expected, it is under 20%, and it is why a method that
+matched nothing would still look perfect on this gate alone. Do not read
+the 6.4% without the 88.8%.
+
+### The original 20 are not a vague-history case
+
+None of P01–P20 parsed at a broader therapy level without also naming a
+specific drug or class. Case 3 was untested there. Stated, not papered over.
+It is tested on V01–V05.
+
+### Price of the safety valve
+
+On the original 20, **zero** trials are now kept as can't-tell that a
+both-directions comparison would have narrowed. Those patients are the
+narrower side, so case 3 does not arise.
+
+On the five vague-history patients, **169 platinum-named trials per patient**
+are kept as can't-tell (845 patient–trial pairs). Wrongly-picked-up on those
+pairs is 0%. A trial that bars platinum specifically is not applied to a
+note that only says "chemotherapy" or "systemic therapy". That is the
+visible cost of not promoting the trial's rule up.
+
+Immunotherapy is not under chemotherapy. A patient who had only
+immunotherapy is not caught by a chemotherapy ban; 36 immunotherapy-source
+quotes assigned `previous chemotherapy (any kind)` do not match an
+immunotherapy query.
+
+### What this does to the architecture
+
+Write-once-and-look-up still holds. The leftover matching hole was a missing
+rung on a three-level ladder, not a need for UMLS, embeddings, or a trained
+retriever. Steps 6–7 stay on hold. The remaining drag on the gated number is
+take-apart: six of twenty parses still omit `tumour genetic marker`. If
+every patient queried every always-on fact, the gated union would be
+**51.9%**, next to 44.7% official and 54.2% oracle.
+
+### What would reverse this
+
+Finding that a coordinator's real notes are usually as vague as V01–V05,
+so the 44.7% (measured on named drugs) overstates operational narrowing, and
+the 169 kept platinum-named trials per vague patient become the typical
+case. Or a later UMLS test beating 44.7% on a vocabulary this hierarchy
+cannot name — that is the generalisation question, not this hole.
