@@ -1,11 +1,13 @@
 # Clinical-trial eligibility retrieval — start here
 
-**Where the project is right now:** spike 1 is finished and reported. Spike 2 is
-written and has not been started. Nothing has been built — no service, no vector
-database, no agent framework, no container.
+**Where the project is right now:** spike 1 is finished. Spike 2 is run through the
+cheap-filter measurements. Steps 6, 7, 8 and 9 have not been run, and Step 8 is the one
+that would measure whether any answer the system gives is correct. Still no service, no
+vector database, no agent framework, no container.
 
-**Your task is `SPIKE_2_PLAN.md`.** Everything else on this page exists to tell you
-what to read first and which parts of the older files are still true.
+**Read `docs/STATUS.md` first** — it has every number measured so far and the decision
+that is open. This page tells you what to read and which parts of the older files are
+stale.
 
 ---
 
@@ -28,18 +30,16 @@ worth it.
 
 ---
 
-## The current plan in one paragraph
+## The design that actually works, in one paragraph
 
-A question like *"67-year-old, stage IIIB lung cancer, EGFR exon 20 insertion, ECOG 1,
-prior carboplatin and pemetrexed, creatinine clearance 55, within 200 miles"* gets taken
-apart into separate facts. Each fact becomes a **timid filter** that eliminates a trial
-only when it is confident the trial cannot take this patient — a trial that never
-mentions kidney function has no kidney rule, so silence is a pass. The filters run one
-after another, most eliminative first, so each reads only what survived the last. A
-frontier model then reads the few dozen trials left and decides properly. Because the
-filters are joined by *and*, they narrow multiplicatively, which means **precision per
-filter hardly matters and recall per filter is everything.** Spike 2 tests whether that
-architecture holds up.
+A patient description gets taken apart into separate facts by a large model. Every rule in
+every trial has already been read once, in advance, by the same model. **Both sides are
+assigned to the same short, fixed list of fact names**, so matching them is exact string
+equality rather than any kind of similarity score — that one change lifted realistic
+elimination from 23.2% to 40.6%, and it is the project's main engineering finding. A fact
+only throws a trial out on confident evidence; silence and "can't tell" both keep the
+trial. A large model then reads the survivors in full. See `docs/STATUS.md` for the
+measured numbers and the ceiling that caps them at 54.2%.
 
 ---
 
@@ -51,7 +51,14 @@ architecture holds up.
 |---|---|---|
 | `nsclc_recruiting.jsonl` | The 1,308 recruiting lung-cancer trials, downloaded 2026-09-28 | **Yes. Do not re-download.** |
 | `nsclc_recruiting_meta.json` | The API query that produced them | Yes |
-| `answer_key.jsonl` | A frontier model's label for each trial, for two facts (prior immunotherapy, brain metastases), plus a verbatim quote. Includes four hand edits. | **Yes — this is the development ground truth for spike 2** |
+| `answer_key.jsonl` | Labels for two facts (immunotherapy, brain), plus verbatim quotes. Four hand edits. | **Yes — core ground truth** |
+| `answer_key_markers.jsonl` | The genetic-marker fact, list-shaped, across all trials | **Yes — the strongest filter** |
+| `answer_key_*` for platinum, autoimmune, stage | The other three facts | Yes |
+| `step2_ceiling.json` | Perfect-rule-finding ceiling, six facts: 54.2% | Yes |
+| `step3c_closed_names.jsonl`, `step3c_match_report.json` | Closed-name assignment and the 40.6% realistic figure | **Yes — the current result** |
+| `step3_report.json`, `step3b_match_report.json` | The two failed free-text matching attempts, 10% and 32% | Historical, but the negatives matter |
+| `step4_parse.json`, `step4_check.md` | Patient-description parsing and its hand check | Yes |
+| `fake_patients.md`, `fake_patients_draw.json` | The 20 invented patients, seed 20260929 | Yes |
 | `answer_key_summary.json` | Label counts, cost, the four edited trial ids | Yes |
 | `keyword_report.json` | Word-search counts and the section split | Yes, as a reference |
 | `search_test_report.json` | Precision and recall for the four spike-1 lookups | Historical |
@@ -70,9 +77,11 @@ architecture holds up.
 
 ### Git
 
-One commit so far (`Initial commit: spike brief and a repeatable registry word-search
-check`). The later scripts and `report.md` are uncommitted. There is no remote
-repository. `data/`, `.env` and `.specstory/` are gitignored.
+Every step's deciding numbers were committed to `THRESHOLDS.md` *before* the run that
+produced them, and `DECISIONS.md` records each outcome including two cases where the
+pre-committed reasoning turned out to be wrong. That ordering is visible in the history and
+is part of what the project demonstrates. There is still no remote. `data/`, `.env` and
+`.specstory/` are gitignored, so the data files above exist locally only.
 
 ---
 
@@ -88,11 +97,11 @@ this is the short list.
    abbreviation `ICI` as a plain substring matches 242 of 300 trials; as
    `\bICIs?\b` it matches 10. The difference is *participants*, *toxicity*,
    *immunodeficiency*, *physician*.
-3. **Never embed a whole patient question or a whole trial record.** Spike 1 measured
-   why: every 3,581-character eligibility text landed within a narrow band of the
-   question, and the gap between "requires it" and "refuses it" was about 0.01 while the
-   scatter inside one group was about 0.10. Facts get embedded one at a time, against
-   criteria bullets one at a time.
+3. **Do not match text by similarity at all.** Three attempts failed and are measured:
+   whole-document similarity (spike 1), free-text phrase matching (10% recall), and
+   free-text matching after tidying the wording (32%). The pairs that should match scored
+   *lower* than a pair that should not — brain versus bone spread at 0.86 — so no cutoff
+   works. Closed names with exact equality reached 84% recall. Use that.
 4. **A filter's ground truth is every trial with any rule about the fact**, not the
    trials that refuse it. In answer-key terms that is every label except
    `not mentioned` — 750 trials for immunotherapy, 719 for brain metastases. Measuring
