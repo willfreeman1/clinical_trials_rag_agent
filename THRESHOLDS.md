@@ -701,3 +701,143 @@ wrongly-picked-up gate alone.
   a therapy name to a sentence that was never about therapy. That would show
   up as wrongly-picked-up.
 - UMLS is not part of this run.
+
+---
+
+## Spike 2, Step 8 — measure the reader, not overall accuracy
+
+**Committed 2026-09-30, before any sample was drawn or any trial was sent
+to a reader.** The $20 spend is approved. Steps 6 and 7 stay on hold.
+
+### Why this is not an accuracy number
+
+The answer key covers six facts. A trial has about 43 rules. Exclusions
+on those six facts are verifiable: if the key says a trial bars previous
+immunotherapy and the patient had it, that trial excludes them. Acceptances
+are not: if none of the six facts excludes the patient, the other 37 rules
+might. The key cannot confirm an acceptance.
+
+So this step does **not** produce an overall accuracy figure. It measures
+four things that are each verifiable, and reports them separately.
+
+In published work on this task, doctors agreed with each other only
+**64–70%** of the time on per-rule eligibility questions. Do not treat 90%
+as a human ceiling, and do not read a figure in the 80s as poor.
+
+### Models under test — decided before the run
+
+Two models, not three.
+
+| Role | Model | Price |
+|---|---|---|
+| Expensive | `gpt-5.4` | $2.50 / $15 per million tokens |
+| Cheap | `gpt-5.4-mini` | $0.75 / $4.50 per million tokens |
+
+**Not Qwen3 on a Lambda GPU this run.** That is a self-hosted serving
+question (vLLM, GPU-hours, a different cost model) and there is no serving
+stack in this repo. It stays a follow-up: if mini reads nearly as well as
+5.4, Qwen is how you go cheaper still; if mini is much worse, that does
+not prove Qwen would fail, and the write-up must say so.
+
+**Not all three.** The $20 envelope and the two-day window are sized for
+one cheap/expensive pair on the same sample. Mini is the sharp cheap
+comparator because it already failed the related labelling task in spike 1
+(bone counted as brain; a concurrent drug counted as prior immunotherapy).
+This measurement asks whether that failure repeats on a full patient-vs-trial
+read.
+
+Same sample, same prompt, both models. The gap on measurement 1 is a cost
+decision, not a pass/fail.
+
+### What is being measured
+
+1. **Does narrowing lose joinable trials?** Among trials the Step 3d
+   matching-gated filter discarded, how often does the reader call the
+   patient a candidate (`candidate_needs_human_check`)? The full read is
+   the reference. No external ground truth. This is the number that can
+   withdraw the 44.7% figure.
+2. **Does the reader fabricate?** Every judgment that is not "not enough
+   information" must carry a word-for-word quote. Check mechanically that
+   the quote appears in that trial's eligibility text (exact, or the same
+   normalised-whitespace match used on the answer key). Also flag quotes
+   that appear in the trial but do not mention the claimed fact, using the
+   existing keyword lists for the six labelled facts; open facts are
+   reported separately and are not in the 5% gate.
+3. **Does the reader agree with the key where the key is authoritative?**
+   On sampled trials the six-fact key definitely excludes this patient
+   (unconditional bar or unmet requirement, not a conditional), does the
+   reader exclude them? Same-rule agreement (the excluding quote is about
+   the same fact the key used) is reported next to that, not gated on its
+   own.
+4. **Does the reader catch exclusions the six facts miss?** Kept trials
+   where the key does not exclude and the reader does. Sample 20 for Will.
+   The check is: does the quoted sentence plainly say what the model
+   claims. Not a medical judgment.
+
+Also reported, no gate: cost and elapsed time per patient for both models;
+the "not enough information" rate per fact; consistency on 20 pairs run
+twice (how often the overall verdict changes).
+
+### Sample
+
+Six patients, seed **20260930**. Four cells of prior-immunotherapy × brain
+metastases, one extra original-20 patient, one vague-history patient.
+
+| Patient | Immuno | Brain | Why this one |
+|---|---|---|---|
+| P01 | no | yes, untreated | cell (no, yes) |
+| P02 | no | no | cell (no, no); HIV; CrCl 37 |
+| P03 | yes | yes, treated/stable | cell (yes, yes); conditional brain |
+| P12 | yes | no | cell (yes, no); autoimmune, ILD |
+| P09 | yes | yes, untreated | extra; EGFR; untreated vs P03's treated |
+| V01 | vague chemo, no drug named | no | the safety-valve case; not in the original 20 |
+
+Per patient, without replacement, from the Step 3d matching-gated discarded
+and kept sets on the 1,307-trial universe:
+
+- **100** discarded (measurement 1)
+- **150** kept (what production would send the reader)
+
+If a patient has fewer than 100 discarded, take all of them and say so.
+20 consistency pairs: 10 discarded + 10 kept from P01's sample, read a
+second time by each model.
+
+Do not read all 1,307 for anyone.
+
+### Reader output
+
+Per relevant rule: `excludes_this_patient` / `does_not_exclude` /
+`not_enough_information`; a verbatim quote; one sentence of reasoning.
+Overall: `definitely_excluded` / `candidate_needs_human_check` /
+`never_eligible`. The system never says the patient qualifies.
+"Not enough information" is a correct answer. It is not penalised.
+
+A discarded trial counts as a lost joinable trial only when overall is
+`candidate_needs_human_check`. `never_eligible` and `definitely_excluded`
+are not lost joinables.
+
+### Thresholds
+
+| Measure | Gate |
+|---|---|
+| Discarded trials the reader calls a candidate | above **10%** → narrowing is unsafe and the 44.7% figure must be withdrawn |
+| Quotes that do not appear in the trial text | above **5%** → fabrication problem; headline finding either way |
+| Agreement with the key on verifiable exclusions | below **85%** → reader or key is wrong; investigate before reporting anything |
+| Cheap vs expensive on measurement 1 | **no gate.** Report the gap. |
+
+Wilson 95% intervals on any sample under 200. Do not produce an overall
+accuracy figure.
+
+### Known limits, recorded before results exist
+
+- Acceptances are unverifiable. A "candidate" call on a kept trial is not
+  scored as correct or incorrect.
+- The 10% lost-joinable gate uses the expensive model as the reference
+  full-read. The cheap model is compared to it, not used to withdraw 44.7%
+  on its own, unless the write-up says otherwise after seeing the gap.
+- Mini failing does not settle Qwen3. That limitation is in the model
+  table above.
+- Will's 20-row check is reading comprehension, not medicine.
+- Conditional key exclusions (`barred_with_exception`, marker/stage
+  conditions) are not in the verifiable-exclusion set.
+
