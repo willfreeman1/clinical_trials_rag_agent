@@ -918,5 +918,23 @@ Needs-medical-knowledge is reported as a limitation, not gated.
 For every disagreement: record what the label should be, then check
 whether that trial was discarded for any of the 20 invented patients.
 
+---
+
+## Spike 2, Step 9 — three mechanical quote checks
+
+**Committed 2026-09-30, before any of the three checks ran.** Free. No
+human. Does not touch the 30-row consequential sheet.
+
+These are not pass/fail numbers. If the count is non-zero, it is named
+in full. Do not fold a small count into a percentage.
+
+| Check | If non-zero |
+|---|---|
+| Stitched quotes that mix the can-join list and the cannot-join list | Finding. Report trial ids and facts, plus one example in full. Unresolvable splits (loose heading or no heading) are reported separately, not counted as clean. |
+| Bucket E (`barred` / `required`) labels that actually discarded a trial for any of the 20 patients | Finding. Name patient, trial, fact, label, and the quote that does not exist. |
+
+Check 3 splits word-list misses into C1 (hierarchy parent), C2 (synonym), C3 (unrelated). C1 is only defined for the prior-therapy family. C3 is added to D+E and re-checked against the committed 5% support gate.
+
+
 
 
