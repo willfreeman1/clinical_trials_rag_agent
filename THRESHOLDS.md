@@ -617,3 +617,87 @@ recall that no matcher can beat).
 - Trials with a rule but an empty quote cannot be retrieved.
 - Only the six labelled facts are on the list. A quote about something
   else should come back `other`.
+
+---
+
+## Spike 2, Step 3d — containment over a hand-written prior-therapy hierarchy
+
+**Committed 2026-09-30, before any re-assignment, extra patients, or rescoring.**
+Closes the platinum hole without UMLS. UMLS is a separate test: generalising
+beyond these field names. Embeddings are not used. Steps 6 and 7 stay on hold.
+
+### Why
+
+Closed-name assignment recalled 81–99.9% of rules on five facts and **37.2%**
+on previous platinum chemotherapy. 284 of 545 platinum-source sentences say
+"no prior chemotherapy" or "no prior systemic treatment" and never name
+platinum. The assigner had no broader name to file them under, so it returned
+`other`. That is a missing label, not a matching failure.
+
+The fix is **containment at comparison time**. Neither side is rewritten to a
+different level. The hierarchy is consulted only to ask whether one level
+contains the other.
+
+| | Patient's fact | Trial's rule | Result |
+|---|---|---|---|
+| 1 | same level | same level | ordinary comparison |
+| 2 | narrower | broader | rule applies — the patient's case sits inside the ban |
+| 3 | broader | narrower | **can't tell → keep the trial** |
+| 4 | unrelated | unrelated | no match → keep the trial |
+
+Case 2 is the platinum hole and is safe: a patient who had platinum sits
+inside a ban on any chemotherapy. Case 3 must not narrow: a trial that bars
+platinum specifically cannot be applied when all we know is the patient had
+some chemotherapy. Promoting the trial's rule up to chemotherapy would
+exclude people who had a different kind of chemotherapy.
+
+Immunotherapy sits under systemic anticancer treatment and **not** under
+chemotherapy. Those two broader levels stay distinct.
+
+### What is being measured
+
+1. Two names are added to the closed list: `previous chemotherapy (any kind)`
+   and `previous systemic anticancer treatment (any kind)`.
+   `previous platinum chemotherapy` and `previous immunotherapy` stay as they
+   are. The hierarchy is a committed JSON file, not logic buried in code.
+2. Re-assign only: quotes whose answer-key source is platinum or
+   immunotherapy, plus every quote currently assigned `other`. The other four
+   facts' assigned names are copied forward unchanged, then **re-scored**,
+   because comparison changed.
+3. Five extra invented descriptions with vague treatment history and no
+   named drug. These test case 3. The original 20 are checked first; if none
+   of them is a vague-history case, that is stated, not papered over.
+4. No embeddings. No UMLS. Verdicts (required, barred, barred-with-condition)
+   still come from the answer key.
+
+Recall and wrongly-picked-up are defined as in Step 3c. The headline is still
+the matching-gated six-fact narrowing rate on the original 20 patients, next
+to 40.6% (names alone) and 54.2% (perfect finder).
+
+Also reported, no gate until seen: how many trials are now kept as can't-tell
+that a both-directions containment would have narrowed. That is the price of
+the safety valve.
+
+### Thresholds
+
+| Measure | Gate |
+|---|---|
+| Platinum recall | must reach **70%**, from 37.2%. Recovering all 284 sentences would give about 89%, so 70% is a real bar with headroom. |
+| Every other fact's recall | must not fall by more than **3 points** versus Step 3c. |
+| Wrongly-picked-up, any fact | stays **under 20%**. |
+| Wrongly-picked-up on the 5 vague-history patients, for trials whose assigned name is `previous platinum chemotherapy` | must be **0%**. Narrowing a vague-history patient on a platinum-specific rule is a wrong narrowing. |
+| Matching-gated six-fact narrowing on the original 20 | should **rise** from 40.6%. If it falls, stop and say so. |
+
+Wilson 95% intervals on any sample under 200. Do not select on the
+wrongly-picked-up gate alone.
+
+### Known limits, recorded before results exist
+
+- The original 20 were written with named drugs on purpose. Case 3 is
+  untested there unless a vague-history patient is found on a re-read.
+- Containment is only defined for the prior-therapy family. Brain, marker,
+  stage, and autoimmune stay exact name equality.
+- Re-assigning `other` quotes from the four untouched facts can still attach
+  a therapy name to a sentence that was never about therapy. That would show
+  up as wrongly-picked-up.
+- UMLS is not part of this run.
