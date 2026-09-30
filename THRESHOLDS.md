@@ -1504,3 +1504,39 @@ clears. Cost it then.
 
 
 
+
+---
+
+## Spike 2 — UMLS coverage of Step 1 phrases (before lookup)
+
+**Committed 2026-09-30, before any of the 5,578 Step 1 phrases
+were looked up.** No Metathesaurus download. No new extraction.
+No TREC. Gene-symbol / marker matching stays as it is.
+
+Phrases are the short `concept` strings in `data/step1_concepts.jsonl`
+(the 5,578 distinct noun phrases), not eligibility sentences.
+
+### Gates
+
+| Measure | Gate |
+|---|---|
+| Coverage by **occurrence** | below **60%** → UMLS cannot supply this corpus's vocabulary. Report and stop. Six-name approach stays. |
+| Coverage by occurrence | **60–85%** → partial. Usable with literal-phrase fallback. Write-up says what share falls back. |
+| Resolution precision (automatable: input phrase vs returned canonical name) | below **90%** of resolved phrases → resolution too noisy to match on, regardless of coverage |
+
+Also report, no gate: coverage of **distinct** phrases; both numbers
+broken down by the existing Step 1 categories. Biomarker/mutation
+coverage is reported but is **not** a reason to replace gene-symbol
+matching.
+
+Disagreements from the automatable check are listed for Claude to
+review. Do not send them to Will.
+
+### Do not
+
+- Download the Metathesaurus.
+- Start TREC assignment.
+- Put `biomarker_or_mutation` through UMLS as a replacement for
+  gene-symbol matching.
+- Start Steps 6 or 7.
+
