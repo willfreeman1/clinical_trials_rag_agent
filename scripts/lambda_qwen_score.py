@@ -50,8 +50,9 @@ Answer with a single digit: 0, 1, 2, or 3."""
 
 ELIG_SLICE = 800
 BATCH_START = {"topical_title_cond": 32, "topical_title_cond_slice": 24, "elig_full": 8}
-MAX_LEN = {"topical_title_cond": 768, "topical_title_cond_slice": 1024, "elig_full": 4096}
-SOFT_BUDGET_SEC = 10 * 3600
+BATCH_START_24GB = {"topical_title_cond": 16, "topical_title_cond_slice": 8, "elig_full": 2}
+MAX_LEN = {"topical_title_cond": 768, "topical_title_cond_slice": 1024, "elig_full": 3072}
+SOFT_BUDGET_SEC = 8 * 3600
 
 
 def touch() -> None:
@@ -252,12 +253,15 @@ def main() -> None:
     started = time.time()
     pairs_done = 0
     sample_elig = False
+    mem_gb = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
+    batch_table = BATCH_START_24GB if mem_gb < 30 else BATCH_START
+    progress(f"gpu mem {mem_gb:.1f}GiB batches {batch_table}")
 
     for arm_name, system in ARMS:
         bucket = payload["arms"].setdefault(arm_name, {})
         fn = DOC_FN[arm_name]
         max_len = MAX_LEN[arm_name]
-        batch_size = BATCH_START[arm_name]
+        batch_size = batch_table[arm_name]
         use_sample = sample_elig if arm_name == "elig_full" else False
         topics = topic_ids(pack, use_sample)
         missing_before = n_missing(bucket, topics, pack)

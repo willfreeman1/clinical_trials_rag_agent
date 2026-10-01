@@ -22,6 +22,7 @@ TYPE_PREF = (
     "gpu_1x_a100_sxm4",
     "gpu_1x_a100",
     "gpu_1x_a6000",
+    "gpu_1x_a10",
 )
 NAME = "trec-score-qwen"
 REMOTE = "ubuntu"
