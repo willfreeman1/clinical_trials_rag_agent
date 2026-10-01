@@ -1594,3 +1594,100 @@ hybrid; MedCPT vs `text-embedding-3-small`.
 - Start Steps 6 or 7.
 - Delete the narrowing record.
 
+---
+
+## Spike 2 — TREC condition-field baseline (2021/2022 only)
+
+**Committed 2026-09-30, before any condition-field match rate or
+matched-depth recall.** 2023 stays stopped. This asks whether the
+free ClinicalTrials.gov `conditions` field already does the
+retrieval step's job. Keyword hybrid reached 91.6% / 91.4%
+eligible recall at 6% of the judged pool; BM25 alone was 87.8% /
+88.5%; recall at 10 was 5.7% / 7.4%. Eligible trials are nearly
+by definition trials for the patient's condition. The same field
+already cut the live registry from 604,566 trials to 1,308 in one
+query at the start of this project.
+
+### Years and collection
+
+2021 and 2022 only. Same judged pool, same 27 April 2021 dump,
+same already-generated keywords (`data/trec/keywords.json`). Do
+not touch 2023. Do not regenerate keywords. Do not use the
+six-name vocabulary or anything from the narrowing work.
+
+### Disease term
+
+The **first keyword** in that list. The keyword prompt asked for
+terms most important first; that first item is treated as the
+patient's condition. Later keywords (symptoms, drugs, procedures)
+are not used for the filter. They are used only for the
+keyword-retrieval comparison and the combination arm, same as the
+previous hybrid run.
+
+### Matching strengths
+
+The field is inconsistently populated (the same cancer appears as
+`NSCLC`, `Lung Neoplasms`, and `Carcinoma, Non-Small-Cell Lung`).
+
+- **Strict** — lowercase, punctuation stripped to spaces; any
+  `conditions` string equals the disease term.
+- **Loose** — strict, or substring either way, or token overlap
+  after dropping `{the,a,an,of,to,for,on,in,and,or,with,by,from,
+  into,as,at,is,are}` and tokens shorter than 2 characters.
+
+No embeddings. No ranking on the filter arms. A trial with an
+empty `conditions` field cannot match.
+
+### What is reported
+
+Per patient and in aggregate, for each matching strength:
+
+- trials retained (count and share of the judged pool)
+- share of eligible trials (label 2) among those retained
+
+A filter does not rank. Compare at **matched depth**: if the
+filter retains *k* trials for that patient, report keyword-hybrid
+eligible recall at depth *k* next to the filter's eligible
+recall. Aggregate is the mean of those per-patient pairs.
+
+Also one combination, nearly free: **loose filter first**, then
+the same keyword hybrid (BM25 + MedCPT, RRF) inside what
+survives. Report that combination's eligible recall at the same
+depths as the previous hybrid run, including 6% of the original
+collection.
+
+Wilson 95% intervals on any sample under 200. Do not invent an
+overall accuracy. Never say a patient qualifies.
+
+### Empty or unmatchable
+
+Report, before reading the recall numbers as a product claim:
+
+- share of pool trials whose `conditions` field is empty
+- share of eligible trials whose `conditions` field is empty
+- share of patients for whom the filter retains zero trials
+
+An empty or unmatchable field is the failure mode that makes the
+field unusable regardless of recall.
+
+### Thresholds — read after the run
+
+Compare the filter's eligible recall to keyword-hybrid recall at
+matched depth. Read from **loose** as the operational filter
+(strict is reported so the synonym problem is visible). Apply the
+same table per year.
+
+| Result | Reading |
+|---|---|
+| Condition filter alone comes within **3 points** of retrieval at matched depth | Retrieval is not earning itself. Say so plainly; it is a database query with extra steps |
+| Filter is more than **10 points** worse | Retrieval is doing real work beyond disease matching. Report which patients the filter loses and why |
+| Anything between | Report both, and report the filter's retained-trial count, since a cheaper filter at similar recall is still the better first stage |
+
+### Do not
+
+- Touch 2023.
+- Build the reranker. This decides what it sits on top of.
+- Use the six-name vocabulary or anything from the narrowing work.
+- Start Steps 6 or 7.
+- Send trial text to a hosted LLM.
+
