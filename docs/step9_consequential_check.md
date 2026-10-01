@@ -1,5 +1,11 @@
 # Step 9 — 30 consequential answer-key rows
 
+**Will could not complete this sheet.** Nearly every row needs medical
+knowledge he does not have. Claude judged the 30 instead, as a
+second-model agreement check, not a human audit. Scores and the
+limitation are in DECISIONS.md. The `Will:` blanks below were left
+blank on purpose.
+
 Does this quote say that the trial **bars** / **requires** this thing?
 
 Mark: **agree** / **disagree** / **needs medical knowledge**.

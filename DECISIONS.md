@@ -975,6 +975,746 @@ word-lists, not fabrication. 334 platinum C-flags are generic
 chemotherapy/systemic sentences; the platinum word list was not widened
 to hide that.
 
+## 2026-09-30 — Step 9 three mechanical quote checks
+
+### What was run
+
+Free, scripted, no human. Thresholds (name any non-zero crossing or
+E-discard in full, not as a percentage) committed in THRESHOLDS.md
+before this ran. The 30-row consequential sheet was not touched. No
+row was re-labelled. Steps 6 and 7 were not started.
+
+### Check 1 — stitched quotes that mix the two lists
+
+**282.** Not zero. Named in `docs/step9_three_checks.md`: 254 trials,
+mostly stage (118) and marker (79). One example in full:
+`NCT07103395` immunotherapy quote joins an inclusion "no prior
+immunotherapy" sentence to an exclusion "prior anti-PD-1" sentence.
+57 stitched quotes sat on the 46 loose-heading or 28 no-heading
+trials and were reported as unresolvable, not as clean.
+
+### Check 2 — unsupported quotes that actually discarded a trial
+
+**441 patient–trial pairs, from 34 labels.** That is a count of bad
+citations, not of wrong labels. Triage is in the next section.
+
+### Check 3 — split of the 675 word-list misses
+
+| Sub-bucket | n | of 675 |
+|---|---:|---:|
+| C1 hierarchy parent | 410 | 60.7% |
+| C2 missing spelling | 130 | 19.3% |
+| C3 unrelated | 135 | 20.0% |
+
+C1 only on the prior-therapy family (299 platinum, 111 immunotherapy).
+C1 is large: independent evidence that trials state rules broader
+than the labelled fact, corroborating the hierarchy.
+
+C2 missing spellings worth widening later: `advanced`, `metasta` for
+stage; `ICI` / hyphenation of PD-L1; `auto-immune`; drug names
+`durvalumab`, `tislelizumab`, `cemiplimab`. Not done here — no
+re-label without a further DECISIONS entry.
+
+**D+E+C3 = 192 / 4,384 = 4.4%**, under the committed 5% support gate
+(D+E alone was 1.3%). Remaining C3 is real: brain labels on
+"metastatic disease" with no brain word; immuno/platinum labels on
+"treatment-naïve", which sits above the written hierarchy and was
+not absorbed into C1.
+
+### What this does not settle
+
+The 30-row human sheet on consequential labels is still outstanding.
+282 crossings and 441 E-discards were not folded into a disagreement
+rate; they sit next to it. No overall accuracy figure.
+
+
+## 2026-09-30 — Step 9 30-row check: the gate was breached
+
+**This was not a human audit.** Will could not judge the 30 rows —
+nearly all need medical knowledge he does not have. Claude judged
+them instead, and pulled the source trial text for the doubtful ones.
+The plan called for a human check and did not get one. What follows
+is a second-model agreement check: it bounds careless error, not
+the kind where two models misread the same convention identically.
+Do not describe Step 9 as a human audit in the write-up.
+
+### The result
+
+| | Rows |
+|---|---:|
+| Agree | 22 |
+| Disagree | 4 |
+| Borderline — label stronger than the quote warrants | 3 |
+| Can't judge from the quote alone | 1 |
+
+**4 of 29 checkable = 13.8%.** The committed gate was: above 10% →
+re-examine the 6.3% lost-joinable figure before quoting it.
+**Breached.** Counting the three borderlines it is 24%.
+
+Every one of the four errs in the same direction: wrongly discarding
+a trial. None wrongly keeps one. That is the direction that costs
+patients.
+
+### The cause: a criterion scoped to a different cancer, read as general
+
+Three of the four are basket trials. The labeller read a criterion
+written for another tumour type and applied it as if it applied to
+lung.
+
+- `NCT07064018` — genetic marker **required**. The marker is attached
+  only to the pancreatic arm; the lung arm needs none.
+- `NCT04282044` — platinum **required**. The quote literally reads
+  "Subjects with Ovarian cancer must have received... a platinum-based
+  regimen."
+- `NCT07444814` — stage **required**. The quote is the trial's title,
+  not a criterion, and the eligibility text states no stage
+  requirement at all.
+- `NCT05766800` — platinum **barred**. A lung-only trial whose
+  exclusion is about prior treatment for thymic epithelial tumour.
+  Same shape: a criterion about another disease read as general.
+
+The three borderline rows are a different convention: a bar narrowed
+by a qualifier ("active central nervous system metastases", "active
+autoimmune disease", platinum "planned to start") labelled as a
+plain unconditional bar.
+
+### What this does to the numbers
+
+6.3% was measured against this key. The 10% gate on lost-joinable
+is breached as a *reason to re-examine*, not yet as a new figure.
+Scoping re-label is **held** until the 34-label triage (below) is
+read. A missing quote is not a wrong label.
+
+
+## 2026-09-30 — missing quote ≠ wrong label; triage of 34 and 282
+
+**Decision: 441 is a citation-quality finding, not 441 lost trials.**
+The worked example is the CorpFam shape — right verdict, invented
+source — and sharper here because a valid sentence was sitting in
+the eligibility text. The evidence layer caught it.
+
+### The 34 labels that discarded someone
+
+Search of eligibility, not of the quoted string.
+
+| Verdict | Labels |
+|---|---:|
+| Supported — wrong citation only | 22 |
+| Unsupported — no stage (or other) sentence in eligibility | 12 |
+| Ambiguous | 0 |
+
+NCT06868485 is supported: eligibility says "Documented EGFR mutation."
+The model cited the title anyway.
+
+The 12 unsupported are all `disease_stage` / `required`, inferred
+from the title, with no stage language in the criteria. They
+discarded **212** patient–trial pairs:
+
+- 19 patients each: NCT06943521, NCT03193567, NCT05363319,
+  NCT05902988, NCT06737107, NCT06775678, NCT06281678, NCT04977453,
+  NCT06896422, NCT07117890, NCT07241039
+- 3 patients (P08, P14, P20): NCT06983743
+
+Those 12 are real lost trials. They were not re-labelled here.
+Ids and patients are in `docs/step9_triage.md`.
+
+### The 282 crossings
+
+| Outcome | n |
+|---|---:|
+| Same direction (redundant, like NCT07103395) | 142 |
+| Fact named on only one list (other piece is padding) | 56 |
+| Mixed polarity — stitch can flip the label | 50 |
+| Stored label vs piece heuristic disagreed | 20 |
+| No piece names the fact | 14 |
+
+**50** is the harm-pattern count, not 282. NCT07103395 is both-bar:
+inclusion "no prior immunotherapy" and exclusion "prior anti-PD-1"
+point the same way. Mixed-polarity ids are in the triage doc.
+Some of those 50 are cohort/basket scoping, which is still held.
+
+### Hierarchy top level
+
+Added `previous anticancer therapy of any kind` above systemic.
+C1/C2/C3 re-run: C1 **410 → 433**, C3 **135 → 112**, C2 130.
+D+E+C3 **4.4% → 3.9%**. 23 treatment-naïve rows moved into C1
+where they belong. Brain C3 stayed 37.
+
+### 37 brain-on-metastatic-disease re-label
+
+$0.14. Snapshot `data/answer_key_pre_brain37.jsonl`. 32 of 37
+became `not_mentioned` (the quote was spread-anywhere, not brain).
+5 had a real brain/CNS sentence and were re-cited. Immuno labels
+untouched.
+
+### Citation rule going forward
+
+Labeller must emit a verbatim eligibility substring. Reject and
+retry up to twice if it quotes the title or anything else. Wired
+into the three labelling scripts. Does not re-run the corpus.
+
+### Still held
+
+Scoped basket re-label, qualifier convention applied to the key,
+and downstream re-score of 54.2% / 44.7% / 6.3%. The 12
+unsupported stage labels are the next small re-label if we
+continue, not a wholesale key rewrite. Steps 6 and 7 not started.
+
+---
+
+## 2026-09-30 — Remaining list done; quote 43.0% next to 44.7%
+
+**Decision: the qualifier convention is adopted.** A word that narrows
+a bar (`active`, `uncontrolled`, `untreated`, `symptomatic`, `within N
+months`) makes it `barred_with_exception`, which keeps the trial.
+Applied to 147 yes/no quotes (immuno 12, brain 34, platinum 9,
+autoimmune 92). The headline fell. That is correct behaviour, not a
+regression.
+
+**Decision: do not withdraw the narrowing figure.** Lost-joinable on
+the corrected matching-gated discarded set is **5.6%** (32/569), under
+the 10% gate. 43.0% stands. Previous reports stay on disk.
+
+### What was run, in the committed order
+
+1. Twelve title-inferred stage labels cleared. Mechanical. 212 wrong
+   discards among the 20 patients.
+2. Seventy mixed-polarity / heuristic-disagree slots re-labelled.
+   gpt-5.4, ~$0.97. All 70 quotes are a verbatim eligibility substring.
+3. Qualifier pass, above.
+4. Free scope count. **281 of 1,307** (21.5%) list a named cancer other
+   than lung on `conditions`. **308 quotes / 231 trials** name another
+   cancer. The 34 missing-quote labels were not a basket problem; the
+   corpus is. Wholesale scoping re-label is still held — this is the
+   size that would justify it.
+5. Re-score into `*_after_fix.json`. Ceiling **54.2% → 51.9%**.
+   Matching-gated **44.7% → 43.0%**. Lost-joinable **6.3% → 5.6%**.
+   Will sheet not regenerated.
+
+### What would reverse it
+
+Lost-joinable above 10% on the corrected discarded set would withdraw
+43.0%. A scoped basket re-label of the 231 other-cancer-quote trials
+would be the next key change, not another mechanical pass on the 12.
+
+---
+
+## 2026-09-30 — Clarifying questions do not recover the ceiling
+
+**Decision: do not ship the clarifying-question agent.** Three ranked
+questions take the perfect-finder ceiling from **51.9% to 56.0%**,
+below the 58.5% stop line (a quarter of the 51.9→78.2 gap). Matching-
+gated goes 43.0% → 48.0%. Wrongly discarded goes **5.6% → 10.4%**,
+over the 10% gate, which overrides recovery. Asking every live
+question still only reaches 57.7%.
+
+The 78.2% optimistic figure assumed a settled conditional discards.
+For these patients it often keeps: treated-and-stable brain mets,
+no autoimmune disease on 19/20, and 789 of 1,918 assigned rules
+were `other` (cohort / trial histology / protocol part). Those points
+were not sitting in unasked questions.
+
+Ranking missed 1.5× (1.21×). Drop it. Round 1 already has 54.2% of
+the 56.0%; LangGraph is heavier than the problem, and the write-up
+says so rather than retrofitting a framework justification.
+
+Thresholds, seed **202609303**, and the oracle field draw were
+committed before assignment. Assignment cost **$1.79**. Will sheets
+untouched. Steps 6 and 7 not started.
+
+### What would reverse it
+
+A patient sample where most people with brain mets fail the
+exception, and where wrongly-discarded stays under 10% at ≥65%
+narrowing. That is a different clinic, not a better ranker.
+
+---
+
+## 2026-09-30 — Sparse-input asking recovers facts and fails safety
+
+**Decision: do not ship fact-recovery asking.** The previous test
+measured condition-resolution on complete notes (prize 5.8 points).
+This one measures recovering the six facts when the note is incomplete
+(prize 0% → 43.0%, or 50.2% listed perfectly).
+
+**79.0% / 78.2% is retired from this project's vocabulary.** It assumed
+every conditional discards. Many keep. It is not reachable under any
+design.
+
+280 configurations, seed **202609304**, random subsets of size k=0..6,
+two draws per patient per k. Notes leak-checked (0/280 first drafts).
+Parsed with the Step 4 parser. Checklist baseline in discard-power
+order. Agent: same order, stop after observed increment < 2pp.
+
+| Measure | Result | Gate |
+|---|---|---|
+| k=0, 1, 2 after 3 questions | 45.0%, 47.6%, 48.9% | cleared half-gap to 43.0% |
+| Agent vs 6-question checklist | 49.8% vs 50.2%, 2.96 questions | cleared |
+| Stopping within one of right stop | 100% (by construction on this policy) | cleared 70% |
+| Wrongly discarded | **11.4%** (66/581 unique pairs) | **BREACHED — overrides recovery** |
+
+On trials the original 43.0% system already discarded, the reader still
+agrees (4.6%). The breach is the extra discards from a complete fact
+list: 41.5% of originally-kept trials the agent now throws away are
+still candidates according to the reader. The 10% gate held at 43.0%
+and fails at 50.2%.
+
+A two-line note parses more reliably than a full one (recall 100% at
+k=0, 71% at k=6). The parser never invented a fact.
+
+Sparsity is synthetic. Upper bound on real coordinator input, which
+this project does not have.
+
+Cost $1.56. Will sheets untouched. No further condition-resolution
+work. Steps 6 and 7 not started.
+
+### What would reverse it
+
+Wrongly discarded under 10% on the agent's discarded set at this
+recovery, on real coordinator notes rather than stripped complete
+ones. A better ranker is not the gap.
+
+---
+
+## 2026-09-30 — TREC snapshot exists; do not assign at TREC scale yet
+
+**Decision: TREC 2021/2022 is usable as the scoreboard.** Both years
+share one April 27, 2021 ClinicalTrials.gov dump, still downloadable
+from trec-cds.org (`2021_data/ClinicalTrials.2021-04-27.part1–5.zip`,
+all five HEAD 200, ~1.71 GB). Use that text, not the live registry.
+
+125 patient descriptions (75 + 50). 71,226 judgments. 48,714 unique
+NCT IDs. Relevance: 0 not relevant, 1 excluded, 2 eligible.
+
+Live API sample (450 IDs, 150 per level, seed 202609305): 100% still
+resolve at every level. That does not decide usability; the snapshot
+does. The 70% per-level gate was for the no-snapshot case.
+
+**Do not start TREC-scale concept assignment on a frontier model.**
+Judged pool at gpt-5.4 is about $5,100; the snapshot ~$40k. Cheap
+hosted is still too much. **Self-hosted batch on a rented GPU, once,
+then tear down** is the path if the lung API gate clears. Gene-symbol
+matching is not replaced by UMLS. scispaCy has no concept is-a.
+No Metathesaurus for the lung test.
+
+Gates: THRESHOLDS.md commits **03d95b5** (retrievability) and
+**a2dfda5** (UMLS corrections). Write-up:
+`docs/trec_retrievability.md`.
+
+### What would reverse it
+
+The five zip parts disappearing and a later live-API sample falling
+below 70% retrievable at any relevance level — then TREC is not the
+scoreboard.
+
+---
+
+## 2026-09-30 — UMLS API lung pass is not a vocabulary result
+
+**Decision: do not proceed to TREC assignment or a RxNorm/MeSH
+download.** The REST run resolved **13 of 3,390** quotes (miss
+99.62%). Mean recall 94.4% / false pickup 3.7% is the six-name
+matcher with a 13-quote overlay. Stage false pickup rose to 11.4%
+(was 0.0%) on those hits. Marker matching was left untouched
+(99.9%). scispaCy unused. No Metathesaurus.
+
+The lookup must be a **short subject phrase**, not the eligibility
+sentence. That is Will's prompt, then the API. Until miss rate is
+low, the 84% / 5% gates are not measuring UMLS.
+
+### What would reverse it
+
+Quote (or extracted-phrase) miss rate low enough that most
+retrieve decisions are CUI + is-a, and mean recall still ≥84%
+with mean false pickup ≤5%, marker row still the existing matcher.
+
+---
+
+## 2026-09-30 — UMLS does not cover this corpus's vocabulary
+
+**Decision: stop. UMLS cannot supply the vocabulary. The six-name
+approach stays. Generalising needs a different answer.**
+
+Looked up all **5,578** distinct Step 1 `concept` phrases
+(`data/step1_concepts.jsonl`) via the UMLS REST API. No download. No
+new extraction. No TREC. Gates committed in **107c1e2** before the
+lookups. Gene-symbol matching was not replaced.
+
+| Measure | Result | Gate |
+|---|---|---|
+| Coverage by occurrence | **56.4%** (7,351 / 13,033) | STOP below 60% |
+| Coverage of distinct phrases | 30.5% (1,700 / 5,578) | reported; 76.7% of phrases appear once |
+| Excluding biomarker/mutation | 58.4% | still below 60% |
+| Resolution precision (name agreement) | **66.2%** (1,125 / 1,700) | BREACHED below 90% |
+
+Labs, infection, pregnancy, demographics, and performance status resolve
+often (82–98% of occurrences). The categories this dictionary was meant
+to own do not: prior systemic therapy 15.2%, disease or stage 57.6%,
+comorbidity 64.6%, concurrent medication 47.4%. Common misses include
+`absolute neutrophil count`, `written informed consent`,
+`leptomeningeal disease`, `prior immunotherapy`, `stage iv nsclc`.
+
+When a phrase does resolve, string agreement against the canonical name
+is 66.2%. Claude review of the 575 disagreements (`docs/step13_umls_disagreements.md`):
+many are true synonyms the automatable check is too strict on, and many
+are genuine wrongs — `measurable disease` → Newcastle disease virus
+antibody, `non-squamous nsclc` → squamous NSCLC, `ecog` →
+electrocorticogram, `her2 amplification` → amplification not detected.
+A generous re-score still leaves polarity flips and unrelated CUIs well
+above 10%.
+
+Write-up: `docs/step13_umls_coverage.md`. JSON:
+`data/step13_umls_coverage.json`.
+
+---
+
+## 2026-09-30 — TREC hybrid retrieval: 2021/2022 match the papers; 2023 does not
+
+**Decision: stop on the written gate.** Eligible recall at 6% of
+the judged pool is **91.6%** (2021) and **91.4%** (2022), and
+**65.4%** (2023). The gate is below 70% → stop and diagnose. The
+two reproduction checks passed: hybrid beat BM25 and MedCPT alone;
+LLM keywords beat the raw note.
+
+Stages 1–2 only. Judged pool as the collection. 2021/2022: 27 April
+2021 dump. 2023: 8 May 2023 dump. No trial text to an LLM. No
+six-name code. MedCPT article vectors from a rented A10, then
+terminated. Truncation to 512 tokens, same as TrialGPT.
+
+2023 is a different query: questionnaire fields, not admission
+notes. Mean 315 eligible and 604 relevant trials per topic. 6% of
+that collection is 1,026 rows, enough to hold every eligible trial,
+so 65% is a miss, not a short list. BM25 is almost the whole
+hybrid; MedCPT loses to words. The papers that exceed 90% were
+measured on 2021/2022.
+
+On those two years, keyword + `text-embedding-3-small` is as good
+as MedCPT (91.8% / 90.3%). The earlier whole-note embedding miss
+was the query shape.
+
+Write-up: `docs/trec_hybrid_retrieval.md`. Do not start the reader
+or a reranker from the 2023 number.
+
+### What would reverse it
+
+A 2023 keyword prompt that lifts eligible recall at 6% to ≥70%
+without breaking 2021/2022, or a decision to score the gate only
+on the note-shaped years the papers used. Neither is claimed here.
+
+---
+
+## 2026-09-30 — The conditions field does not replace retrieval
+
+**Decision: keep keyword hybrid as the first stage on 2021/2022.
+Do not treat the free `conditions` field as the retriever. Do not
+start a reranker from this measurement.**
+
+Gates committed in **9ffa03b** before any match rate. 2023 not
+run. Disease term = first already-generated keyword. Strict =
+normalised equality. Loose = strict or substring either way or
+token overlap. Comparison is at matched depth *k* (the filter's
+retained count for that patient). Combination = loose filter,
+then the same BM25 + MedCPT + RRF inside the survivors.
+
+| Year | Loose recall | Hybrid @ *k* | Gap | Mean *k* | Reading |
+|---|---:|---:|---:|---:|---|
+| 2021 | 62.3% | 73.3% | 11.0 pts | 994 | more than 10 worse |
+| 2022 | 49.2% | 62.2% | 13.0 pts | 581 | more than 10 worse |
+
+Empty `conditions`: 7 / 26,162 and 3 / 26,585. Zero patients with
+zero loose matches. The field is usable and still loses.
+
+The 604,566 → 1,308 NSCLC query is a single-disease cut. TREC
+notes are multi-problem admission notes. Eligible trials are often
+for a second problem (ESRD note, *C. diff* trials), a synonym
+with no shared token (`Depression` vs `major depressive
+disorder`, `Stroke` vs `Cerebrovascular Accident`), or a parent
+heading (Kallmann → hypogonadism). Retrieval is reading the rest
+of the note. The field, given one string, is not.
+
+Combo @ 6% of the pool is 62.2% / 49.2% — the filter's ceiling —
+against hybrid 91.1% / 91.2%. It does not beat both.
+
+Write-up: `docs/trec_condition_baseline.md`. JSON:
+`data/trec/trec_condition_baseline.json`.
+
+### What would reverse it
+
+A conditions match — still one disease term, still no trial text
+to an LLM — coming within 3 points of hybrid at matched depth on
+both years. A synonym list that closed the 11–13 point gap would
+be a different method, not this baseline.
+
+---
+
+## 2026-09-30 — Reranking the shortlist is not earning itself
+
+**Decision: stop. Do not ship a reranker. Do not start a reader
+or a trained ranker from this lift.**
+
+Gates committed in **44878a7** before any score. 2023 not run.
+Shortlist = keyword hybrid, top 6%. Arms: MedCPT-CE, MS MARCO
+MiniLM-L-12, `gpt-4o-mini` (2021, top 200, raw note), and the
+unre-ranked hybrid. Query: keywords and raw note on the
+cross-encoders. Documents: 512-token `[title, body]` truncation.
+Chunk-and-max skipped (MedCPT truncated pass was 74 minutes on
+an A10; the written start budget was 25 minutes).
+
+| 2021 arm | R@10 eligible | NDCG@10 | P@10 eligible |
+|---|---:|---:|---:|
+| Hybrid (no rerank) | 5.7% | 39.9% | 28.5% |
+| `gpt-4o-mini` raw, top 200 | **9.0%** | 51.0% | 38.4% |
+| MedCPT-CE keywords | 8.2% | 49.3% | 36.9% |
+| MedCPT-CE raw note | 8.1% | 47.8% | 34.8% |
+| MS MARCO keywords | 4.2% | 29.7% | 22.8% |
+| MS MARCO raw note | 3.0% | 25.5% | 18.9% |
+
+Best 2021 Recall@10 is 9.0%, below doubling (11.4%) and below
+17%. Full-shortlist recall stayed 91.6% / 91.4% on every
+cross-encoder arm.
+
+The medical cross-encoder beat the generic one. The raw note
+did not beat keywords. Both were the open questions from
+retrieval, and both land the other way here.
+
+Write-up: `docs/trec_rerank.md`. JSON:
+`data/trec/trec_rerank_results.json`.
+
+### What would reverse it
+
+A reranker — same shortlist, same years, no 2023 — with 2021
+eligible Recall@10 above 17%, full-depth recall still 91.6% /
+91.4%. Below 11.4% the stop stands.
+
+---
+
+## 2026-10-01 — The shortlist is 91% junk; cheap fusion does not clean it
+
+**Decision: do not replace unweighted RRF. Do not start a reader
+from this.**
+
+Task 1 gates **697d808**. The 144 / 91% guess holds.
+
+| 2021, mean of 1,570 | Count | Share |
+|---|---:|---:|
+| Eligible (2) | 67 | 4.3% |
+| Excluded (1) | 73 | 4.7% |
+| Judged not relevant (0) | 143 | 9.1% |
+| Unjudged for this patient | 1,287 | 82.0% |
+| Disease-relevant (1+2) | 140 | 8.9% |
+| Junk (0 + unjudged) | 1,430 | 91.1% |
+
+Excluded recall at 6% is 92.1%, eligible 91.6%. Retrieval does
+not distinguish "right disease, cannot join" from "can join."
+The leftover is unjudged-for-this-patient, clustered on generic
+keywords.
+
+Tasks 2 and 3 gates **c178dc4**. Best official 2021 Recall@10
+**6.3%** (IDF + section), from 5.7%, under +3 points. Full
+shortlist recall stayed 91.6% / 91.4%. Full-collection IDF
+probe dropped it to 89.8% / 90.1% and is rejected.
+
+Write-up: `docs/trec_shortlist_diagnosis.md`,
+`docs/trec_shortlist_fix.md`.
+
+### What would reverse it
+
+A reorder of this same shortlist, no discards, 2021 Recall@10
+at least 8.7%, full-depth still 91.6% / 91.4%. A new first
+stage that raises Recall@10 without dropping 6% recall would
+be a different method and would need its own gates.
+
+### What would reverse it
+
+A later lookup of these same 5,578 phrases — not a new extraction —
+reaching ≥60% occurrence coverage **and** ≥90% name-agreement
+precision, without replacing gene-symbol matching. Below 60% the
+six-name system stays. Between 60% and 85% would have been partial
+(literal-phrase fallback for the miss share). Neither happened.
+
+---
+
+## 2026-10-01 — Cheap topical pass does not earn a pipeline slot
+
+**Decision: do not filter the 1,570. Do not run full scale. Do not
+start the per-criterion reader from this.**
+
+Gates `b3431c6`, before any keep/drop score. 30 patients, seed
+20261001, 2021/2022 only. Question: could this trial conceivably be
+about this patient's problem? Unsure keeps.
+
+No candidate hit both ≥90% disease-relevant recall and ≤50%
+retention.
+
+| Arm | Best recall | Best retention at that point | Gate |
+|---|---:|---:|---|
+| Lexical first keyword | 63.5% | 20.0% | reject recall |
+| MedCPT-CE, logit > 0 | 13.0% | 1.7% | reject recall |
+| Qwen2.5-7B | 96.6% | 61.7% | fail retention |
+| gpt-4o-mini | 88.7% | 50.7% | mixed recall |
+
+Mini with an eligibility-slice keeps 41.7% (retention clears) at
+86.0% recall (still mixed). Qwen with the slice is 92.6% / 51.5%.
+A KEEP-only probe (unsure drops; not the gate) gets retention down
+to 23–32% and recall to 79–85%. Still no joint window.
+
+MedCPT-CE at logit > 0 keeps almost nothing. A threshold sweep
+finds no cut that hits both bars. Extra trial text does not open
+one. The 110M encoder is not a free topical filter on this
+shortlist.
+
+Hosted mini was run. The reader's 10.8% wrongly-discarded figure
+was not used as a reason to skip it.
+
+Cost on the sample: mini **$2.61**; Qwen on an A100 SXM about
+**$1.53**; A10 for CE (and a failed Qwen start) under a dollar.
+Wall-clock is in `docs/trec_cheap_pass.md`.
+
+The question is not mis-posed. Qwen keeps 97% of disease-relevant
+rows from title+conditions. The two bars cannot be met together.
+
+### What would reverse it
+
+A keep/drop on this same 30-patient sample, 2021/2022 only, with
+disease-relevant recall ≥90% **and** retention ≤50%, measured
+before seeing a new operating point. Changing the unsure-keeps
+rule after seeing scores is not a reversal; it is a new gate.
+
+---
+
+## 2026-10-01 — Shallow-depth recall hid the first page; three stops are three different mistakes
+
+**Decision: keep the original gates on disk. Do not treat the 17%
+recall@10 stop as a physical impossibility, and do not flip
+reranking to a pass. Fusion still failed the first page. Cheap-pass
+retention stays a cost finding, not a 10-in-20 finding.**
+
+Recompute from stored rankings. No new run. 2023 not touched.
+Write-up: `docs/trec_precision.md`.
+
+2021 eligible-trial counts: mean 74.3, **median 62**, min 6, max 203.
+One patient has fewer than 10 eligible trials; nine have fewer than
+20. 2022: mean 78.8, median 59.5, min 10, max 306.
+
+Recall@10 ceiling, mean of per-patient min(1, 10/n): **24.7%** (2021),
+not 10/76 = 13%. Precision@20 ceiling: **95.1%**. Will's 50% of 20 is
+52.6% of that ceiling — almost 50% of perfect. The mean-n error was
+on recall, not precision.
+
+Product bar (≥10 eligible in top 20), 2021, 75 patients, possible
+for 74/75:
+
+| Arm | Patients meeting the bar |
+|---|---|
+| Keyword hybrid | **9/75** |
+| Best rerank (`gpt-4o-mini` top 200) | **22/75** |
+| MedCPT-CE keywords | 20/75 |
+| MS MARCO keywords | 9/75 |
+
+Best rerank: 3.8 eligible in 10, 7.6 in 20. Hybrid: 2.9 and 5.2.
+“9.0% recall ≈ 7 of 10” was mean-recall × mean-n. The on-disk P@10
+was already 38%.
+
+Three stops, three kinds:
+
+1. **Reranking.** The 17% recall@10 gate sits *below* the real
+   ceiling (24.7%), so it was not impossible. It was the wrong
+   target. On the product bar the stage still fails (22/75, 30% of
+   those for whom 10-in-20 is possible). Do not flip to a pass.
+2. **Weighted fusion + section ranking.** +3 recall points was
+   achievable and stiff. Stored P@10 does not move (28.5% → 28.4%).
+   Genuine fail on the first page.
+3. **Cheap pass.** 50% retention was a cost sketch. On the 30-patient
+   sample the first page barely moves (hybrid 6/30 at 10-in-20; mini
+   slice 7/30; CE as a filter hurts). Reader-cost finding stands;
+   it is not a 10-in-20 finding.
+
+Aggregation: macro mean of per-patient precision, plus the patient
+count for the product bar. Fusion per-patient lists were not saved,
+so 10-in-20 is not scored for those arms.
+
+### What would reverse the product reading of rerank
+
+On these same 75 2021 patients, a reorder of the existing shortlist
+that puts ≥10 eligible trials in the top 20 for a large majority of
+the 74 for whom that is possible. 22/75 is not that.
 
 
 
+
+
+
+---
+
+## 2026-10-01 — Qwen was never tested as a reranker; the free preview says it should be
+
+**Decision: run Qwen2.5-7B as a scoring reranker on the full shortlist,
+with a continuous score, against `gpt-4o-mini` extended to the same
+depth. Do not put Qwen in the pipeline on the strength of this preview.**
+
+### The gap
+
+Qwen2.5-7B was run once, in the cheap-pass experiment, and asked a
+**keep / unsure / drop** question. That is a filter. It was never asked
+a scoring question, so the reranking run compared `gpt-4o-mini` and two
+cross-encoders and left the free model out of the stage where the paid
+model won. That is an omission in the experiment design, not a result.
+
+### What was recomputed
+
+No run. The three existing labels were sorted into blocks — keep, then
+unsure, then drop — ties broken by the fused rank, on the 30-patient
+cheap-pass sample. `scripts/trec_qwen_preview.py`,
+`docs/trec_qwen_preview.md`.
+
+Equivalent depth, as a multiple of the baseline's own equivalent depth
+at the same N (the baseline row is calibration: plateaus in its recall
+curve make every arm look negative if read against N):
+
+| Arm | 2021 @500 | 2022 @500 |
+|---|---:|---:|
+| `gpt-4o-mini` top 200 | 1.00x (capped) | not run |
+| MedCPT-CE keywords | **0.93x** | 0.95x |
+| MedCPT-CE raw note | 1.05x | 1.24x |
+| Qwen three buckets | **1.90x** | 1.39x |
+| Qwen three buckets + slice | 1.75x | **1.49x** |
+
+Qwen is the only arm still working at depth 500. MedCPT-CE on keywords
+is *worse than not reordering*. `gpt-4o-mini`'s 1.00x is by
+construction — it scored 200 trials and past that it is the baseline.
+
+Qwen loses at depths 10 and 20, as three buckets predict: hundreds of
+trials tie inside `keep` and fall back to fused order.
+
+### Why this changes the reading of the reranking run
+
+The original run measured the paid model only where it was strong — the
+top 200. Qwen, handicapped to three buckets and asked the wrong
+question, beats it everywhere past depth 100. The conclusion "the cheap
+paid model is the best reranker" was an artefact of the depth each arm
+was given.
+
+It does not reverse the product stop. 22/75 on the 10-in-20 bar stands.
+
+### What the next run must separate
+
+A continuous score should raise the **shallow** numbers, by breaking
+ties inside the keep block. It should *not* be expected to raise the
+depth-500 numbers, where the win already comes from block separation.
+If the write-up credits a continuous score with the deep win, that is a
+misattribution.
+
+### Open question this preview raises
+
+Reranking exists only because the eligibility read was assumed
+expensive. If Qwen can judge eligibility directly on all 1,570 trials
+for a few dollars, a separate topical reranking stage has no purpose —
+the eligibility judgement is itself the ranking, which is what TrialGPT
+does. That has not been tested and should be tested before the
+reranking stage is built out.
+
+### What would reverse this
+
+A continuous-score Qwen run on all 125 patients that does not beat
+`gpt-4o-mini` at the same depth. 15 patients per year and three buckets
+is a reason to run the test, not a result.
