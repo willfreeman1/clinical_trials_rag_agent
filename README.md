@@ -11,14 +11,15 @@ stale.
 
 ---
 
-## Read these three files, in this order
+## Read these files, in this order
 
 | Order | File | Status | What it is |
 |---|---|---|---|
-| 0 | `docs/STATUS.md` | **CURRENT — read first** | Where the project stands, in plain language: every number measured so far, what is still broken, what has not been measured at all, and the decision to make. |
-| 1 | `CONTEXT.md` | **CURRENT** | What the project is for, the medical words, who would use it, and every decision that has been argued and settled. Read all of it. |
-| 2 | `SPIKE_2_PLAN.md` | **CURRENT — this is the work** | The seven steps to run, with thresholds. The thresholds are deliberately arbitrary placeholders; they get replaced before each step runs. |
-| 3 | `report.md` | **HISTORICAL RECORD** | What spike 1 measured. The measurements are accurate and worth knowing. **Its two closing sections, "What this means" and "Paths discussed after the result", are superseded — do not follow their recommendations.** It carries a note saying so at the top. |
+| 0 | `HANDOFF.md` | **CURRENT — read before anything else** | Why the architecture is shaped this way, the measurement errors behind four retired gates, what is in flight, the dead ends not to re-run, and how Will wants to be worked with. Also: **`data/` is gitignored and is 2.0 GB, so a fresh clone can reproduce nothing** until the data is moved separately. |
+| 1 | `docs/STATUS.md` | **CURRENT — the numbers** | Where the project stands, in plain language: every number measured so far, what is still broken, what has not been measured at all, and the decision to make. |
+| 2 | `CONTEXT.md` | **CURRENT** | What the project is for, the medical words, who would use it, and every decision that has been argued and settled. Read all of it. |
+| 3 | `SPIKE_2_PLAN.md` | **CURRENT — this is the work** | The seven steps to run, with thresholds. The thresholds are deliberately arbitrary placeholders; they get replaced before each step runs. |
+| 4 | `report.md` | **HISTORICAL RECORD** | What spike 1 measured. The measurements are accurate and worth knowing. **Its two closing sections, "What this means" and "Paths discussed after the result", are superseded — do not follow their recommendations.** It carries a note saying so at the top. |
 
 There is no other documentation. `SPIKE_PLAN.md`, the original spike brief, has been
 **deleted** because its steps were executed and its architecture assumption turned out
