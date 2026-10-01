@@ -1861,3 +1861,69 @@ section work
 - Use the six-name vocabulary.
 - Start Steps 6 or 7.
 
+---
+
+## Spike 2 — weighted fusion and section ranking (2021/2022 only)
+
+**Committed 2026-10-01, before any new ranking score.** Task 1
+(`697d808`) found the 144 / 91% estimate holds: 2021 mean
+shortlist is 140 disease-relevant (8.9%) and 1,430 junk (91.1%).
+Excluded recall at 6% is 92.1%, next to eligible 91.6%. Junk is
+mostly unjudged-for-this-patient, and it clusters on generic
+keywords (`hypertension`, `nausea`, `pain`, `genetic disorder`).
+That is the premise for these two cheap reorderings. 2023 stays
+stopped.
+
+### What is being changed
+
+The official arms **reorder the existing 1,570 / 1,595**. They
+do not drop a trial and they do not pull a new set. Full-shortlist
+eligible recall must stay **91.6% / 91.4%**. If it moves, there
+is a bug.
+
+A full-collection IDF-RRF is run as a **probe only**, because
+freezing the set may be the wrong framing if the junk arrived
+through fusion. The probe is allowed to pick a different 1,570.
+If its eligible recall at 6% **falls**, it is rejected. If it
+rises, say that the written invariance was leaving headroom. The
+probe is not the gate.
+
+Nothing is discarded. No reader. No trained ranker. No six-name
+vocabulary. No trial text to a hosted LLM.
+
+### Arms
+
+| Arm | What it does |
+|---|---|
+| Baseline | Current unweighted RRF order |
+| 2a | RRF, each keyword's lists (BM25 and MedCPT) weighted by the **rarest-token IDF** of that keyword. `idf = log((N+1)/(df+1))`. Unweighted RRF is the published TrialGPT fusion; this is a departure and must be labelled as such if it helps |
+| 2b | Sum of BM25 scores across keywords, not ranks. Uses the retrieval scores rather than RRF |
+| 3a | Unweighted RRF, then a **multiplier** on a keyword's contribution when that keyword matches the exclusion section only (0.25). Inclusion-only unchanged. Both-sections 0.75. Unsplit: no penalty. Down-rank, never drop |
+| 3b | Unweighted RRF, **tie-break**: at equal fusion score, inclusion-only hits before exclusion-only |
+| 2+3 | 2a weights plus 3a's exclusion multiplier |
+
+Section split reuses `split_sections` from `scripts/keyword_section_check.py`.
+
+### Thresholds
+
+Headline is eligible recall at 10 and 20. 2021 baseline: **5.7%**
+and **10.7%**. Read from the best official (reorder) arm, 2021.
+
+| Measure | Gate |
+|---|---|
+| Recall at 10, 2021 | must beat 5.7%. Below 5.7% → the change hurts; stop. Under **8.7%** (+3 points) → not a pipeline change; report and do not replace unweighted RRF. **11.4%** would be the doubling reranking missed |
+| Recall at 20, 2021 | reported. Same reading at +3 points (13.7%) and at double (21.4%), no separate stop |
+| Full-shortlist recall, official arms | **91.6% / 91.4%** unchanged |
+| Which arm wins | no gate. Report it. If 3 does nothing, the lists are not the cheap signal. If 2 does nothing, generic keywords are not the cheap signal |
+
+Wilson 95% intervals on any sample under 200. Do not invent an
+overall accuracy. Never say a patient qualifies.
+
+### Do not
+
+- Touch 2023.
+- Discard a trial.
+- Build a reader or a trained ranker.
+- Use the six-name vocabulary.
+- Start Steps 6 or 7.
+
