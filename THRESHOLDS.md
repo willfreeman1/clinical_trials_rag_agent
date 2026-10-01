@@ -1927,3 +1927,100 @@ overall accuracy. Never say a patient qualifies.
 - Use the six-name vocabulary.
 - Start Steps 6 or 7.
 
+---
+
+## Spike 2 — cheap topical pass on the shortlist (2021/2022 only)
+
+**Committed 2026-10-01, before any keep/drop score.** 2023 stays
+stopped. The 1,570-trial shortlist is 91% junk. Reading it all is
+about $11 per patient; reading the ~140 disease-relevant trials
+is about $1. This pass asks a weaker question than eligibility:
+**could this trial conceivably be about this patient's problem?**
+Uncertainty keeps the trial. It is not the reader. Mini failing
+the reader's 10% wrongly-discarded gate does not transfer here
+and is not a reason to skip the hosted arm.
+
+### Sample, then winner
+
+30 patients, seed **20261001**, 15 from 2021 and 15 from 2022,
+drawn from the existing shortlist topics and written to
+`data/trec/cheap_pass_sample.json` before any model sees a pair.
+The drawn topic ids are listed below so they sit in this commit
+even though `data/` is gitignored. Compare candidates on that
+sample. Run **one** winner on all 125 topics only if a candidate
+clears the gates below on the sample. Wilson 95% intervals (n=30).
+
+Sample topic ids (drawn with seed 20261001, still before any score):
+
+- 2021: 13, 18, 21, 23, 25, 27, 30, 31, 36, 37, 47, 51, 55, 70, 74
+- 2022: 10, 20, 21, 22, 23, 24, 25, 28, 29, 32, 35, 37, 41, 42, 50
+
+### Query and document text
+
+Query is the already-generated **one-sentence summary** of the
+main problems, not the full keyword list. Generic keywords
+(`hypertension`, `abdominal pain`) are how the junk got in;
+replaying them would ask the pass to keep that junk.
+
+Document text, two official options, full criteria not the
+default:
+
+| Name | What the pass sees |
+|---|---|
+| `title_cond` | title + conditions field |
+| `title_cond_slice` | those plus the first 800 characters of eligibility |
+| `title_body_512` | retrieval's 512-token `[title, body]` truncation — **subset only**, to see what extra context buys. Not used at full scale unless it is the only way a candidate clears |
+
+### Candidates
+
+| # | What | Cost story |
+|---|---|---|
+| 0 | Lexical: first keyword, loose match on title+conditions (the free conditions-field test, now as a filter on the 1570). Fourth candidate because the diagnosis says the junk is other diseases | free |
+| 1 | `ncbi/MedCPT-Cross-Encoder`. Keep if logit **> 0**, committed before seeing scores. A sweep is reported and is not the gate. Rerank failure does not apply: that was ordering by eligibility |
+| 2 | `Qwen/Qwen2.5-7B-Instruct` (7–8B class) on a rented GPU. Keep / drop / unsure; unsure keeps. Shut the card down via the API. Qwen3's thinking mode would spend GPU on a keep/drop token; this is the same size class without that |
+| 3 | `gpt-4o-mini`, same keep / drop / unsure rule | hosted, known price |
+
+The cheap-reader failure (10.8% wrongly discarded) was
+per-criterion eligibility. This is topical. Run arm 3.
+
+### What is counted
+
+On the existing shortlist only. Disease-relevant = TREC labels
+**1 or 2**. Junk = label 0 or unjudged for this patient.
+
+- **Recall** = share of disease-relevant shortlist trials kept
+- **Retention** = share of the 1,570 / 1,595 kept
+- Also report eligible-only (label 2) recall, and the product
+  with retrieval's 91.6% / 91.4% as end-to-end eligible recall
+  **among trials this pass could have seen**. Do not invent an
+  overall accuracy. Never say a patient qualifies.
+
+Cost and wall-clock per patient, including GPU time.
+
+### Thresholds — why these numbers
+
+The project's wrongly-discarded line is 10%. Losing 10% of
+disease-relevant trials in this pass leaves end-to-end eligible
+recall 91.6% × 90% ≈ **82%**. That is the most this pass may
+eat of the retrieval win. Losing 20% leaves ≈73% and has given
+back too much of first-stage recall.
+
+Keeping more than half the shortlist does not pay for a pipeline
+slot: 785 trials is still about $5.50 of reading.
+
+| Measure | Gate |
+|---|---|
+| Disease-relevant recall, on the sample | **≥90%**. Below **80%** → that candidate is rejected (stops being an acceptable trade). 80–90% is mixed; do not ship it as the default pass |
+| Retention | **≤50%** of the shortlist. If a candidate cannot cut at least half, it is not earning its place even at 90% recall |
+| Winner | among sample candidates that clear both bars, the one with the **lowest retention**, then the lowest cost. If none clear both, **do not** run full scale; say so |
+| Full-scale, if run | same two bars, now on all 125 topics. Eligible recall at 6% of collection after this pass is reported; it will be below 91.6% / 91.4% by construction wherever recall is not 100%, and that is not a bug |
+
+### Do not
+
+- Touch 2023.
+- Start the per-criterion reader.
+- Feed full eligibility text by default.
+- Discard trials anywhere except this pass.
+- Use the six-name vocabulary.
+- Leave a paid GPU running. Terminate via the API.
+
