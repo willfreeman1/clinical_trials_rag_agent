@@ -1794,3 +1794,70 @@ ordering, not eligibility reasoning.
 - Leave a paid GPU running after scores are copied off. Terminate
   via the API, not shutdown.
 
+---
+
+## Spike 2 — what is in the TREC shortlist (2021/2022 only)
+
+**Committed 2026-10-01, before any shortlist composition count.**
+2023 stays stopped. Nobody has looked inside the 1,570. This
+diagnoses it. Tasks 2 (weighted fusion) and 3 (section-aware
+ranking) wait on the result. They are not run from this commit.
+
+### What is being counted
+
+Same keyword-hybrid shortlist already on disk
+(`data/trec/rerank_shortlists.json`): 2021 depth 1,570, 2022
+depth 1,595. TREC labels, per patient:
+
+| Bucket | Meaning |
+|---|---|
+| Eligible | label 2 |
+| Excluded | label 1 — right condition, trips an exclusion |
+| Judged not relevant | label 0 for this patient |
+| Unjudged | in the year's judged pool, no label for this patient |
+
+Unjudged-for-this-patient is not "outside the collection." The
+collection is the year's judged pool. A trial judged for another
+patient, and not this one, is unjudged here and counted as
+irrelevant in the published retrieval numbers.
+
+Also report, free:
+
+- Retrieval rate of excluded trials at 6% of collection, next to
+  eligible recall at the same depth. Same rate means fusion does
+  not distinguish "right disease, cannot join" from "can join."
+- Whether judged-0 and unjudged rows in the shortlist cluster on
+  particular keywords. Measured from each keyword's BM25 top-1000
+  (the same per-keyword lists fusion used). No new LLM call. No
+  MedCPT re-encode.
+
+Wilson 95% intervals on any sample under 200. Do not invent an
+overall accuracy. Never say a patient qualifies. Nothing is
+discarded.
+
+### The estimate under test
+
+2021 qrels are 67.7% / 16.8% / 15.5% (0 / 1 / 2). If excluded
+trials are retrieved at the same ~91.6% rate as eligible, a
+typical shortlist would hold about **144** disease-relevant
+trials (label 1+2) and about **91%** junk (label 0 + unjudged).
+That is arithmetic from pool proportions, not a measurement.
+
+### Decision — read after the count, before any fusion or
+section work
+
+| Result | Decision |
+|---|---|
+| Junk (label 0 + unjudged) is the **majority** of the shortlist, and disease-relevant (1+2) is in the neighbourhood of the 144 / 9% guess | Retrieval is imprecise. There is cheap headroom. Commit gates for tasks 2 and 3, then run them |
+| Excluded (label 1) is the **majority**, or disease-relevant (1+2) is the majority | Retrieval did its job. Further filtering is reading. **Do not run** tasks 2 or 3 |
+| Anything else, including a mix that is not junk-majority | The estimate was wrong. Say so. Follow the diagnosis rather than the written tasks. Do not run 2 or 3 just because they are on the page |
+
+### Do not
+
+- Touch 2023.
+- Run weighted fusion or section ranking from this commit.
+- Discard any trial.
+- Build a reader or a trained ranker.
+- Use the six-name vocabulary.
+- Start Steps 6 or 7.
+
