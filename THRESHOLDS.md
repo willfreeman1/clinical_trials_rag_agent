@@ -1691,3 +1691,106 @@ same table per year.
 - Start Steps 6 or 7.
 - Send trial text to a hosted LLM.
 
+---
+
+## Spike 2 — TREC reranking the shortlist (2021/2022 only)
+
+**Committed 2026-09-30, before any rerank score or Recall@10.**
+2023 stays stopped. Reranking reorders the already-retrieved
+shortlist. It discards nothing. Nothing can be lost.
+
+Keyword hybrid put 91.6% / 91.4% of eligible trials in 6% of the
+pool (1,570 / 1,595 slots) and only 5.7% / 7.4% in the top 10.
+A coordinator reading ten sees almost nothing. This step asks
+whether a second model can move eligible trials to the top.
+
+### Years, shortlist, and what is not being built
+
+2021 and 2022 only. Same judged pool, same 27 April 2021 dump,
+same keywords, same keyword-hybrid first stage (BM25 + MedCPT,
+RRF, `RETRIEVE_N=1000` per keyword). The shortlist is the top
+6% of that ranking per year. Do not regenerate keywords. Do not
+touch 2023. Do not use the six-name vocabulary. This is not the
+reader: polarity and conditional rules stay criterion-by-criterion
+with a quote. Never say a patient qualifies. Do not invent an
+overall accuracy.
+
+### Arms
+
+| Arm | What it is |
+|---|---|
+| 1 | `ncbi/MedCPT-Cross-Encoder`, already downloaded. Score each shortlisted trial against the patient, sort by score |
+| 2a | `cross-encoder/ms-marco-MiniLM-L-12-v2` — a general-purpose reranker, not medical. The generic embedding beat MedCPT at retrieval (91.8% vs 88.0%); do not assume the medical cross-encoder wins here |
+| 2b | `gpt-4o-mini` scoring topical relevance, not eligibility. 2021 only, top 200 of the shortlist only |
+| 3 | No reranking: the current keyword-hybrid order |
+
+Arm 2 is two alternatives because the brief asked for at least
+one, named a language-model depth cap, and flagged the medical-
+vs-generic question as open. Cross-encoder arms rerank the full
+shortlist. The language-model arm cannot; compare every arm at
+depth 200 so that comparison is matched. Report the cross-encoders
+at both depths.
+
+### Query and document text
+
+Query side, both, on the cross-encoder arms: the raw patient note,
+and the already-generated summary plus keyword list joined as one
+string. One query string per patient, not a per-keyword pass (that
+would be 25× the GPU bill). The raw note was the worst retrieval
+query (58%) because the disease term was diluted into one vector.
+A cross-encoder reads both texts together, so dilution may not
+apply. That is an open question, not a preference.
+
+Document side: start with the same truncation retrieval used —
+one `[title, body]` pair, 512 tokens. A typical trial is 3,581
+characters, so the tail of eligibility is dropped. Write that
+down. If GPU time remains after the truncated pass, also run
+chunk-and-take-max-score (overlapping 512-token windows, title
+prefixed, keep the max). If that pass is skipped, say so.
+
+The language-model arm uses the raw note (the open query-shape
+question) and the same truncated trial text. Score is a 0–3
+topical-relevance integer. The prompt must not ask whether the
+patient is eligible.
+
+### Depths and metrics
+
+Recall of eligible trials (label 2) at 10, 20, 50, 100, 200 —
+the headline. NDCG@10 using labels 0 / 1 / 2 (unjudged = 0).
+Precision at 10 for eligible (label 2), and also for relevant
+(labels 1+2). Wilson 95% intervals on any sample under 200.
+
+The 0.81 NDCG figure in the literature is on 2023, which is not
+run. Do not treat this NDCG as a comparison to that number.
+
+### Thresholds — read after the run
+
+Read from **2021** Recall@10 of eligible trials, best arm. 5.7%
+is that year's unre-ranked top 10.
+
+| Measure | Gate |
+|---|---|
+| Recall at 10, best arm, 2021 | must at least triple from 5.7%, so **above 17%**. Below doubling (**11.4%**) → reranking is not earning itself; report and stop |
+| Recall at the full shortlist depth after reranking that whole shortlist | must be unchanged at **91.6% / 91.4%**. Reordering cannot change recall at full depth — if it moves, there is a bug |
+| Which arm wins | **no gate.** Report it. The medical specialist losing again is a real possibility and worth stating either way |
+
+2022 Recall@10 is reported the same way (baseline 7.4%; double =
+14.8%; triple = 22.2%) but the written stop is the 2021 row.
+
+### Honest limitation, written before scores exist
+
+MedCPT's cross-encoder was trained to judge whether a PubMed
+article answers a search query — not whether a patient is eligible
+for a trial. MS MARCO MiniLM was trained on web search. The cheap
+model is scoring topical relevance. Expect better topical
+ordering, not eligibility reasoning.
+
+### Do not
+
+- Touch 2023.
+- Use the six-name vocabulary or anything from the narrowing work.
+- Start Steps 6 or 7.
+- Let the language-model arm claim eligibility.
+- Leave a paid GPU running after scores are copied off. Terminate
+  via the API, not shutdown.
+
