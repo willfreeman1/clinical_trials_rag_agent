@@ -2024,3 +2024,193 @@ slot: 785 trials is still about $5.50 of reading.
 - Use the six-name vocabulary.
 - Leave a paid GPU running. Terminate via the API.
 
+---
+
+## Spike 2 — does a reordering stage earn its place? (2021/2022 only)
+
+**Committed 2026-10-01, before any 0–3 topical or eligibility score.**
+2023 stays stopped. The shortlist stays 1,570 / 1,595. Nothing is
+discarded. This replaces the earlier assumption that reranking is a
+stage worth building. Run 1 (topical score) and Run 2 (eligibility
+score) are in competition. Run 3 (frontier vs Qwen vs human) is
+**not** started from this commit.
+
+The original rerank gates (Recall@10 ≥ 17%) stay in this file as
+committed history. They are not the gates for this run. That target
+asked for a share of a long tail. This run asks a cost question:
+which ordering gets more eligible trials into a fixed reading budget.
+
+### Why the binary delete is the wrong gate
+
+"If Run 2 beats Run 1, delete the topical stage" has one number
+deciding one of two futures. Three outcomes are live, and the third
+is the one this project keeps missing:
+
+| Outcome | What it means |
+|---|---|
+| Run 2 wins the reader budget **and** does not lose the first page | Delete topical reordering. The eligibility score is the ranker. TrialGPT's shape. |
+| Run 2 cannot rank (no better than the unreordered shortlist at the reader budget) | A single cheap eligibility score is the wrong instrument. Do not delete topical reordering on this evidence. The architecture question becomes whether only a per-criterion read can rank on eligibility. That finding outranks the horse race. |
+| Split: one arm wins the first page, the other wins the reader budget | Do not delete. They have different jobs. Write that down. |
+
+A second confound is committed here so it cannot be explained away
+after the numbers exist. Run 2 reads the **full** eligibility
+section. Run 1 reads title+conditions, or those plus 800 characters
+of eligibility. If Run 2 wins, that is not automatically "the
+eligibility question won." It may be "more text won." There is no
+third arm (topical prompt + full criteria) in this budget. The
+write-up may claim the question won only if Run 2 also beats Run 1's
+slice arm by enough that length alone is an unlikely explanation.
+
+A continuous score is judged at depths 10 and 20, where ties inside
+a coarse bucket fall back to search order. It does **not** get
+credit for a depth-200 or depth-500 win. Those depths are already
+won or lost by block separation.
+
+### Years, shortlist, models, prompts
+
+2021 and 2022, all 125 patients, same keyword-hybrid shortlist
+already on disk. Do not regenerate keywords. Do not touch 2023.
+Do not re-run MS MARCO MiniLM. Full-shortlist eligible recall must
+stay **91.6% / 91.4%**. If it moves, there is a bug.
+
+| Arm | Model | Question | Document |
+|---|---|---|---|
+| baseline | none | fused search order | — |
+| qwen_topical_digit / `_cont` | Qwen2.5-7B-Instruct | topical 0–3, **same wording** as `scripts/trec_rerank_llm.py` (not eligibility). Output format is a single digit so token probabilities can be read; the scale definitions are not rewritten | `title_cond`, and `title_cond_slice` (800 chars) |
+| mini_full | gpt-4o-mini | same topical prompt as the original mini arm, JSON batches | same document as that arm: `trial_article[:1200]`. Reuse the existing 2021 top-200 scores; score the rest of the shortlist and all of 2022 |
+| qwen_elig_digit / `_cont` | Qwen2.5-7B-Instruct | eligibility 0–3 against the stated criteria. New instructions. Uncertainty lands in the middle of the scale (use 2, not 0 or 3). No written reasoning. No per-criterion loop | title + conditions + **full** eligibility |
+
+Query is the raw patient note for every language-model arm. Digit
+and continuous are separate eval arms. Continuous = expected value
+of the four answer tokens from the softmax of those four logits.
+
+If Run 2's GPU time looks like a bad overrun, cut **patients**, not
+shortlist depth. Depth is the thing being tested. Prefer a 30-patient
+full-depth sample (seed **20261001**, the cheap-pass sample) over a
+shallow pass on 125.
+
+### What is counted
+
+Headline is **equivalent depth**, as a multiple of the baseline's
+own equivalent depth at the same N. The baseline row is calibration,
+not a result. Flat stretches in the baseline recall curve make every
+arm look worse than it is if you read against N.
+
+Equivalent depth at N: reading N trials in this order finds as many
+eligible (label 2) trials as reading how many in the fused order.
+Report the mean of per-patient ratios, and the mean of per-patient
+raw depths. Both years.
+
+Also report, not as the delete-gate:
+
+- Eligible recall at 10, 20, 50, 100, 200, 500, and full shortlist
+- Precision at 10 and 20 (macro mean of per-patient), to slot into
+  `docs/trec_precision.md`
+- Patients with ≥10 eligible in the top 20 (the product bar)
+- Machine time and dollars per arm
+
+Accuracy of the eligibility digit against TREC labels is optional
+and **must not veto** a ranking result. A model that is
+systematically too harsh, in the same direction, ranks fine.
+
+Wilson 95% intervals on any sample under 200. Do not invent an
+overall accuracy. Never say a patient qualifies.
+
+### Thresholds — read after Run 1 and Run 2, not after a preview
+
+Two reading budgets, committed because they are different jobs:
+
+- **Page budget N=20.** What a coordinator sees. Also P@20.
+- **Reader budget N=200.** What you would send to a per-criterion
+  reader if that reader still existed. N=500 is reported as the deep
+  check. It is not the delete-gate: the Qwen-bucket preview already
+  won there from three-way block separation, and a continuous score
+  is not expected to move it.
+
+**Run 1 earns a topical-reordering slot** if the best topical arm
+(Qwen digit, Qwen continuous, or mini; either document) is
+**≥ 1.20×** baseline equivalent depth at 200 on 2021, and is not
+below **1.10×** on 2022. Below **1.10×** on 2021: topical scoring
+does not earn a stage. 1.20× is "about 17% fewer trials to read for
+the same eligible catch." The 15-patient preview was 1.65–1.79× at
+200; if 125 patients land under 1.20×, the sample overstated it.
+
+**Continuous vs digit** is decided at N=20 only. Continuous wins
+that bet if it beats the matching digit arm's P@20 by **≥ 2
+points** (0.40 eligible in 20). No credit at 200 or 500.
+
+**Mini vs Qwen, topical, same depth.** If mini's equivalent depth
+at 200 is **≥ 1.15×** Qwen's best topical arm, the paid model still
+wins the stage. If Qwen is within 10% of mini at 200 (ratio
+**≥ 0.90**), Qwen is the default topical ranker because it is free
+at inference.
+
+**Run 2 vs Run 1 — three outcomes, not two.** Compare Run 2's best
+arm (digit or continuous) to Run 1's best topical arm.
+
+| Result | Decision |
+|---|---|
+| Run 2's equivalent-depth multiple at 200 is **≥** Run 1's on 2021; 2022 is not more than **5% relative** worse than Run 1; and P@20 is not worse than Run 1 by more than **3 points** | Delete the topical stage. Eligibility score is the ranker |
+| Run 2's equivalent-depth multiple at 200 is **≤ 1.05×** baseline on 2021 | Single-score eligibility cannot rank. Do not delete topical reordering on this evidence. Say that a cheap eligibility score may be the wrong instrument, and that the per-criterion read is now the open design, not a luxury for the last page |
+| Split: Run 2 wins 200 (or 500) and Run 1 wins P@20 by more than 3 points, or the reverse | Do not delete. They have different jobs |
+| Tie at 200 (within 5% relative) | Keep the cheaper inference (both Qwen arms are free). Report the tie. Do not invent a preference for keeping the stage |
+
+"Beats" at 200 is the higher mean equivalent-depth multiple. There
+is no extra 1.15× margin between Run 1 and Run 2. That would bake
+in a preference for keeping a stage this run is allowed to delete.
+
+If the two years disagree on the 200 ranking (2021 deletes, 2022
+does not, or the reverse), do not delete. Report the split.
+
+### Run 3 is a separate go/no-go
+
+Not started from this commit. Budget about $14. Combined with
+Runs 1 and 2 that is about $36, above the $25 ask-first line.
+Check in after Runs 1 and 2. Suggested sample if it runs: 30
+patients (seed **20261001**), each patient's top 200 in the **Run 2
+eligibility order**, ~6,000 pairs. Frontier model scores the same
+eligibility question. Both models are measured against NIST labels
+(71,226 judgements), not against each other.
+
+Gates for Run 3, written now so they cannot be fitted to the gap:
+
+- Fine-tuning Qwen is worth considering only if the frontier
+  advantage would change the pipeline: **≥ 8 more patients** over
+  the 10-in-20 bar than Qwen, **or** equivalent depth at 200
+  **≥ 1.20×** Qwen's on that sample.
+- Label-1 vs label-2 separation is reported as AUROC (and as recall
+  of label 2 among judged 1+2 at the score threshold that keeps
+  half of them). If **both** models are **≤ 0.60 AUROC** on that
+  distinction, the ceiling is low; do not fine-tune Qwen to close a
+  gap neither model can use. Retrieval is already blind here
+  (excluded 92.1% vs eligible 91.6%).
+- Agreement with humans (accuracy / QWK on judged pairs) is
+  reported and does not veto a ranking result.
+
+Optional last, only if Runs 1 and 2 finish under budget: MedCPT-CE
+chunk-and-max in half precision on a better card than the A10.
+About 30 minutes and $1. Drop it without ceremony if anything
+above overruns. Do not hold Runs 1–2 for it.
+
+### Cost and machine
+
+Runs 1 and 2 together are about $32 (Qwen ~$16, mini ~$10, Run 2
+the rest). That is the authorized envelope for this commit. Prefer
+H100 then A100 when the options are within a few dollars. Stop and
+ask if a run overruns its estimate by tens of dollars. Copy scores
+off the rented machine before any terminate. Terminate via the API,
+not shutdown. `PYTHONIOENCODING=utf-8` and `encoding="utf-8"` on
+every file read and write.
+
+### Do not
+
+- Touch 2023.
+- Re-run MS MARCO MiniLM.
+- Discard a trial. The shortlist stays 1,570 / 1,595.
+- Start the per-criterion reader.
+- Start Run 3 from this commit.
+- Credit a continuous score with a depth-500 win.
+- Use the six-name vocabulary.
+- Leave a paid GPU running. Terminate via the API.
+- Say a patient qualifies.
+
