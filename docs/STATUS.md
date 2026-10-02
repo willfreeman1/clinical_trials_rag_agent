@@ -48,10 +48,18 @@ Reranking that hybrid shortlist was stopped on a **17% recall@10
 gate that was the wrong target**, not an impossible one (real 2021
 recall@10 ceiling is 24.7%, not 13%). On the product bar — ≥10
 eligible in the top 20, 75 patients, possible for 74 — hybrid is
-**9/75** and the best rerank is **22/75**. About 3.8 eligible in
-the top 10, 7.6 in 20, not 7 of 10. That is a lift, not a pass.
-MS MARCO still hurts. Details: `docs/trec_precision.md`. The
-original 9.0% / 17% figures stay in `THRESHOLDS.md` as committed.
+**9/75** and the old mini-top-200 rerank is **22/75**. Qwen2.5-7B
+as a 0–3 topical scorer, continuous, title+conditions+800-char
+slice, on the full shortlist, is **37/75**. P@20 is 47.9% (9.6
+eligible in 20). Equivalent depth at 200 is **2.73×** baseline
+on 2021 and **2.77×** on 2022, so topical reordering earns a
+slot. A single cheap eligibility score on the full criteria
+(30-patient sample) can rank (2.16× at 200) but does **not**
+beat topical at the reader budget; it does win P@20. Do not
+delete the topical stage. Mini at full depth ($9) loses to
+free Qwen. MedCPT-CE still fades past 100. Product bar still
+fails. Run 3 not started. Details: `docs/trec_score.md`.
+Original 9.0% / 17% figures stay in `THRESHOLDS.md` as committed.
 
 The 1,570 is **91% junk**. Mean 2021 shortlist: 67 eligible,
 73 excluded, 143 judged-not-relevant, **1,287 unjudged** for

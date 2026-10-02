@@ -22,6 +22,7 @@ from trec_score_common import (  # noqa: E402
     REPORT,
     RESULTS,
     RETRIEVAL_ELIGIBLE,
+    SAMPLE_TOPICS,
     THRESHOLDS_COMMIT,
     YEARS,
     curve,
@@ -164,22 +165,26 @@ def main() -> None:
         "qwen_seconds": qwen_raw.get("seconds") or {},
         "qwen_notes": qwen_raw.get("notes") or [],
         "qwen_gpu": qwen_raw.get("gpu"),
+        "qwen_elapsed_sec": qwen_raw.get("elapsed_sec"),
+        "sample_elig": qwen_raw.get("sample_elig"),
         "mini_usd": mini_raw.get("usd"),
         "mini_seconds": mini_raw.get("seconds"),
         "years": {},
+        "sample": {},
     }
 
     for year in YEARS:
         y = str(year)
         labels_all = load_qrels(year)
         topics = short["years"][y]["topics"]
+        sample_ids = set(SAMPLE_TOPICS[y])
         year_rows: dict[str, list] = {}
+        sample_rows: dict[str, list] = {}
         for tid, trow in topics.items():
             base = trow["shortlist"]
             labels = labels_all.get(tid) or {}
             if not any(v == 2 for v in labels.values()):
                 continue
-            rank = {nct: i for i, nct in enumerate(base)}
             cands: dict[str, list[str]] = {"baseline": base}
 
             mini_topic = (mini_scores.get(y) or {}).get(tid) or {}
@@ -199,16 +204,71 @@ def main() -> None:
                     cands[f"medcpt_ce_{qn}"] = order_by(base, lambda n, s=sc: float(s.get(n, -1e9)))
 
             for tag, order in cands.items():
-                year_rows.setdefault(tag, []).append(topic_metrics(order, labels, base))
+                row = topic_metrics(order, labels, base)
+                if not tag.startswith("qwen_elig"):
+                    year_rows.setdefault(tag, []).append(row)
+                if tid in sample_ids:
+                    sample_rows.setdefault(tag, []).append(row)
 
-        year_out = {}
-        for tag, rows in year_rows.items():
-            year_out[tag] = summarize(rows, FULL_DEPTH[year])
-        results["years"][y] = year_out
+        results["years"][y] = {
+            tag: summarize(rows, FULL_DEPTH[year]) for tag, rows in year_rows.items()
+        }
+        results["sample"][y] = {
+            tag: summarize(rows, FULL_DEPTH[year]) for tag, rows in sample_rows.items()
+        }
 
     RESULTS.write_text(json.dumps(results, indent=2), encoding="utf-8")
     REPORT.write_text(render(results), encoding="utf-8")
     print(f"wrote {RESULTS} {REPORT}", flush=True)
+
+
+def _tables(year: int, n: int, year_out: dict, depths_show: tuple, full_bar: float) -> list[str]:
+    lines = [
+        f"### {year} (n={n})",
+        "",
+        "#### Eligible recall (label 2)",
+        "",
+        "| Arm | " + " | ".join(f"@{d}" for d in depths_show) + " | P@10 | P@20 | 10-in-20 |",
+        "|" + "---|" * (len(depths_show) + 4),
+    ]
+    for tag in sorted(year_out, key=_arm_sort):
+        rec = year_out[tag]
+        cells = [pct(rec.get(f"recall@{d}")) for d in depths_show]
+        lines.append(
+            f"| `{tag}` | "
+            + " | ".join(cells)
+            + f" | {pct(rec.get('precision@10'))} | {pct(rec.get('precision@20'))} "
+            + f"| {rec.get('ten_in_20', 0)}/{rec.get('n', 0)} |"
+        )
+    lines.extend(
+        [
+            "",
+            "#### Equivalent depth (multiple of baseline's own)",
+            "",
+            "| Arm | Read 20 | Read 200 | Read 500 |",
+            "|---|---:|---:|---:|",
+        ]
+    )
+    for tag in sorted(year_out, key=_arm_sort):
+        rec = year_out[tag]
+        cells = []
+        for d in (20, 200, 500):
+            mult = rec.get(f"eq_mult@{d}")
+            raw = rec.get(f"eq@{d}")
+            if mult is None:
+                cells.append("—")
+            else:
+                cells.append(f"{mult:.2f}x ({raw:.0f})")
+        lines.append(f"| `{tag}` | " + " | ".join(cells) + " |")
+    full = year_out.get("baseline", {}).get("full_recall")
+    lines.extend(
+        [
+            "",
+            f"Full-shortlist eligible recall (must stay {100 * full_bar:.1f}%): {pct(full)}.",
+            "",
+        ]
+    )
+    return lines
 
 
 def render(results: dict) -> str:
@@ -222,7 +282,8 @@ def render(results: dict) -> str:
         "A continuous score is judged at depths 10 and 20. It does not get",
         "credit for a depth-200 or depth-500 win.",
         "",
-        f"Qwen GPU: {results.get('qwen_gpu') or '—'}. Mini: ${results.get('mini_usd')}.",
+        f"Qwen GPU: {results.get('qwen_gpu') or '—'}. "
+        f"Elapsed {results.get('qwen_elapsed_sec')}s. Mini: ${results.get('mini_usd')}.",
         "",
     ]
     if results.get("qwen_notes"):
@@ -230,50 +291,30 @@ def render(results: dict) -> str:
         lines.append("")
 
     depths_show = (10, 20, 50, 100, 200, 500)
+    lines.append("## Run 1 — all 125 patients (topical scoring)")
+    lines.append("")
+    lines.append("Eligibility is not in these tables. That arm was cut to a sample.")
+    lines.append("")
     for year in YEARS:
         y = str(year)
         year_out = results["years"].get(y) or {}
         if not year_out:
             continue
-        lines.append(f"## {year} (n={next(iter(year_out.values())).get('n', 0)})")
-        lines.append("")
-        lines.append("### Eligible recall (label 2)")
-        lines.append("")
-        header = "| Arm | " + " | ".join(f"@{d}" for d in depths_show) + " | P@10 | P@20 | 10-in-20 |"
-        lines.append(header)
-        lines.append("|" + "---|" * (len(depths_show) + 4))
-        for tag in sorted(year_out, key=_arm_sort):
-            rec = year_out[tag]
-            cells = [pct(rec.get(f"recall@{d}")) for d in depths_show]
-            lines.append(
-                f"| `{tag}` | "
-                + " | ".join(cells)
-                + f" | {pct(rec.get('precision@10'))} | {pct(rec.get('precision@20'))} "
-                + f"| {rec.get('ten_in_20', 0)}/{rec.get('n', 0)} |"
-            )
-        lines.append("")
-        lines.append("### Equivalent depth (multiple of baseline's own)")
-        lines.append("")
-        lines.append("| Arm | Read 20 | Read 200 | Read 500 |")
-        lines.append("|---|---:|---:|---:|")
-        for tag in sorted(year_out, key=_arm_sort):
-            rec = year_out[tag]
-            cells = []
-            for d in (20, 200, 500):
-                mult = rec.get(f"eq_mult@{d}")
-                raw = rec.get(f"eq@{d}")
-                if mult is None:
-                    cells.append("—")
-                else:
-                    cells.append(f"{mult:.2f}x ({raw:.0f})")
-            lines.append(f"| `{tag}` | " + " | ".join(cells) + " |")
-        lines.append("")
-        full = year_out.get("baseline", {}).get("full_recall")
-        lines.append(
-            f"Full-shortlist eligible recall (must stay {100 * RETRIEVAL_ELIGIBLE[year]:.1f}%): "
-            f"{pct(full)}."
-        )
-        lines.append("")
+        n = (year_out.get("baseline") or {}).get("n", 0)
+        lines.extend(_tables(year, n, year_out, depths_show, RETRIEVAL_ELIGIBLE[year]))
+
+    lines.append("## Run 2 vs Run 1 — matched 30-patient sample")
+    lines.append("")
+    lines.append("Same seed **20261001** as the cheap-pass sample. 15 patients per year.")
+    lines.append("This is the only fair Run 1 vs Run 2 comparison.")
+    lines.append("")
+    for year in YEARS:
+        y = str(year)
+        year_out = results["sample"].get(y) or {}
+        if not year_out:
+            continue
+        n = (year_out.get("baseline") or {}).get("n", 0)
+        lines.extend(_tables(year, n, year_out, depths_show, RETRIEVAL_ELIGIBLE[year]))
 
     lines.extend(
         [

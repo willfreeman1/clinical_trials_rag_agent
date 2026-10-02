@@ -1718,3 +1718,153 @@ reranking stage is built out.
 A continuous-score Qwen run on all 125 patients that does not beat
 `gpt-4o-mini` at the same depth. 15 patients per year and three buckets
 is a reason to run the test, not a result.
+
+---
+
+## 2026-10-01 — Qwen topical scoring earns a slot; a single eligibility score does not delete it
+
+**Decision: keep a topical reordering stage. Default ranker is
+Qwen2.5-7B, title+conditions+800-char eligibility slice, continuous
+0–3 score. Do not delete that stage in favour of a single cheap
+eligibility score. Do not start Run 3 from this entry. Do not start
+the per-criterion reader from this.**
+
+Gates were committed in `114cce7` before any 0–3 score. 2023 not
+touched. Shortlist stays 1,570 / 1,595.
+
+### What ran
+
+- Qwen topical 0–3 on all 125 patients, two documents, digit and
+  continuous. Same scale wording as `trec_rerank_llm.py`.
+- `gpt-4o-mini` extended to the full shortlist, both years, same
+  prompt and `trial_article[:1200]` as the original arm. $8.996.
+  Reused the 2021 top-200 scores.
+- Qwen eligibility 0–3 on full criteria, 30-patient sample (seed
+  20261001). Cut from 125 because the remaining GPU time projected
+  past the 8-hour budget. 47,475 pairs, not 197,500.
+- A100 SXM4, 6.36 hours, ~$12. No OOM.
+
+### Run 1 (all 125) — equivalent depth at 200
+
+| Arm | 2021 | 2022 |
+|---|---:|---:|
+| baseline | 1.00x | 1.00x |
+| mini_full | 2.01x | 2.41x |
+| Qwen title+cond, continuous | 2.39x | 2.32x |
+| **Qwen slice, continuous** | **2.73x** | **2.77x** |
+| MedCPT-CE raw | 1.33x | 1.31x |
+
+Best topical is **≥ 1.20×** on 2021 and **≥ 1.10×** on 2022. The
+stage earns a slot. MedCPT-CE is still below 1.10× at 500 (0.92×
+on 2021): it fades, as before.
+
+P@20, 2021: baseline 26.0%, mini 38.0%, Qwen slice continuous
+**47.9%**. 10-in-20: 9/75 → 23/75 (mini) → **37/75**. Product bar
+still fails (74 possible).
+
+Continuous vs digit, slice, P@20: +5.4 points on 2021, +3.1 on
+2022. The continuous-score bet wins at the page. Depth 200/500
+barely moves, as the gate said it should not be credited.
+
+Mini vs Qwen at 200: mini / Qwen = 2.01 / 2.73 = **0.74**. Mini
+does not keep the stage. Extending it past 200 *did* beat the
+stitched 1.00× of the original top-200 run. Qwen is still better.
+
+### Run 2 vs Run 1 (matched 30-patient sample)
+
+| Arm | 2021 @200 | 2022 @200 | 2021 P@20 | 2022 P@20 |
+|---|---:|---:|---:|---:|
+| best topical (slice) | 2.41x | 2.24x | 44.3% | 53.3% |
+| best eligibility (continuous) | 2.16x | 1.86x | **48.7%** | **58.0%** |
+
+Eligibility is **2.16×** baseline at 200 on 2021 — not ≤ 1.05× —
+so a single score *can* rank. It loses the reader budget to
+topical on both years. It wins P@20 by more than 3 points on both
+years. That is the written **split**. Do not delete.
+
+Run 2 read the full criteria and still lost at 200, so this is
+not "more text won." The eligibility question is the better first
+page and the worse 200-deep list.
+
+### What this does not decide
+
+- Fine-tuning Qwen. That is Run 3, still a go/no-go (~$14).
+- Whether a per-criterion read would rank better than either
+  single score. The cheap score is not the wrong instrument; it
+  just does not beat topical at the reader budget.
+- The product bar. 37/75 is not 74/75.
+
+---
+
+## 2026-10-01 — Qwen topical scoring earns a slot; a single eligibility score does not delete it
+
+**Decision: keep a topical reordering stage. Default ranker is
+Qwen2.5-7B, title+conditions+800-char eligibility slice, continuous
+0–3 score. Do not delete that stage in favour of a single cheap
+eligibility score. Do not start Run 3 from this entry. Do not start
+the per-criterion reader from this.**
+
+Gates were committed in `114cce7` before any 0–3 score. 2023 not
+touched. Shortlist stays 1,570 / 1,595.
+
+### What ran
+
+- Qwen topical 0–3 on all 125 patients, two documents, digit and
+  continuous. Same scale wording as `trec_rerank_llm.py`.
+- `gpt-4o-mini` extended to the full shortlist, both years, same
+  prompt and `trial_article[:1200]` as the original arm. $8.996.
+  Reused the 2021 top-200 scores.
+- Qwen eligibility 0–3 on full criteria, 30-patient sample (seed
+  20261001). Cut from 125 because the remaining GPU time projected
+  past the 8-hour budget. 47,475 pairs, not 197,500.
+- A100 SXM4, 6.36 hours, ~$12. No OOM.
+
+### Run 1 (all 125) — equivalent depth at 200
+
+| Arm | 2021 | 2022 |
+|---|---:|---:|
+| baseline | 1.00x | 1.00x |
+| mini_full | 2.01x | 2.41x |
+| Qwen title+cond, continuous | 2.39x | 2.32x |
+| **Qwen slice, continuous** | **2.73x** | **2.77x** |
+| MedCPT-CE raw | 1.33x | 1.31x |
+
+Best topical is **≥ 1.20×** on 2021 and **≥ 1.10×** on 2022. The
+stage earns a slot. MedCPT-CE is still below 1.10× at 500 (0.92×
+on 2021): it fades, as before.
+
+P@20, 2021: baseline 26.0%, mini 38.0%, Qwen slice continuous
+**47.9%**. 10-in-20: 9/75 → 23/75 (mini) → **37/75**. Product bar
+still fails (74 possible).
+
+Continuous vs digit, slice, P@20: +5.4 points on 2021, +3.1 on
+2022. The continuous-score bet wins at the page. Depth 200/500
+barely moves, as the gate said it should not be credited.
+
+Mini vs Qwen at 200: mini / Qwen = 2.01 / 2.73 = **0.74**. Mini
+does not keep the stage. Extending it past 200 *did* beat the
+stitched 1.00× of the original top-200 run. Qwen is still better.
+
+### Run 2 vs Run 1 (matched 30-patient sample)
+
+| Arm | 2021 @200 | 2022 @200 | 2021 P@20 | 2022 P@20 |
+|---|---:|---:|---:|---:|
+| best topical (slice) | 2.41x | 2.24x | 44.3% | 53.3% |
+| best eligibility (continuous) | 2.16x | 1.86x | **48.7%** | **58.0%** |
+
+Eligibility is **2.16×** baseline at 200 on 2021 — not ≤ 1.05× —
+so a single score *can* rank. It loses the reader budget to
+topical on both years. It wins P@20 by more than 3 points on both
+years. That is the written **split**. Do not delete.
+
+Run 2 read the full criteria and still lost at 200, so this is
+not "more text won." The eligibility question is the better first
+page and the worse 200-deep list.
+
+### What this does not decide
+
+- Fine-tuning Qwen. That is Run 3, still a go/no-go (~$14).
+- Whether a per-criterion read would rank better than either
+  single score. The cheap score is not the wrong instrument; it
+  just does not beat topical at the reader budget.
+- The product bar. 37/75 is not 74/75.
