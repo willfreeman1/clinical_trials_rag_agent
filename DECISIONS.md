@@ -1911,3 +1911,21 @@ ineligible.
 The stricter prompt made the model pickier, not more accurate
 on the page. v1 stays the eligibility score if we need one.
 Topical slice continuous remains the default ranker.
+
+---
+
+## 2026-10-02 — GPT-5.4 beats Qwen on 1-vs-2; the TREC prompt does not help
+
+**Decision: there is a real model-size gap (AUROC 0.83 vs 0.72).
+Do not adopt the TREC-worded prompt. If a fine-tune is tried
+later, use human TREC labels, not GPT answers.**
+
+411 judged pairs, prompts and IDs in `99f795c` before any score.
+GPT-5.4 $1.75. Qwen TREC run on an A10, ~$0.23. Total about $2.
+P@20 was not computed.
+
+GPT-5.4 AUROC 0.828 / 0.829 on v1 and TREC. Qwen v1 0.722.
+Qwen TREC 0.647. Both models said “not relevant” on ~170–190
+of the 411 pairs under the TREC prompt. Details:
+`docs/trec_frontier_elig.md`. The system does not say a
+patient qualifies.

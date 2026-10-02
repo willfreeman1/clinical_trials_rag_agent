@@ -73,7 +73,10 @@ Do not replace v1. The commonest call on a judged joinable
 trial was “unsure”; it said no more often than yes. Details:
 `docs/trec_elig_v2.md`. A frontier-model check, if it runs,
 should use judged 1-vs-2 pairs, not another 30 × 1,570
-shortlist. Not started.
+shortlist. That check is now done: GPT-5.4 AUROC **0.83** vs
+Qwen v1 **0.72** on 411 judged pairs. The TREC-worded prompt
+did not help; both models dumped “not relevant.” Details:
+`docs/trec_frontier_elig.md`.
 
 The 1,570 is **91% junk**. Mean 2021 shortlist: 67 eligible,
 73 excluded, 143 judged-not-relevant, **1,287 unjudged** for
