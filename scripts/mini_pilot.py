@@ -36,7 +36,7 @@ TRIAL_IDS = [
 
 SYSTEM = """You read eligibility criteria from clinical trials to categorize what the trial text says about given medical treatments or conditions. Do not decide whether any patient qualifies.
 
-A treatment or condition can be required, allowed, allowed with an exception, barred, barred with an exception, both required and barred, not mentioned, or unclear. Accuracy and evidence matter, so choose a classification only when an exact passage from the trial text supports it, and copy that passage verbatim. If the passage is about a different fact, choose not_mentioned and leave the quote empty. You will return both the classification and the quoted support for that classification.
+A treatment or condition can be required, allowed, allowed with an exception, barred, barred with an exception, both required and barred, not mentioned, or unclear. Accuracy and evidence matter, so choose a classification only when an exact passage from the trial text supports it, and copy that passage verbatim from the eligibility criteria. Do not quote the trial title. If the passage is about a different fact, choose not_mentioned and leave the quote empty. You will return both the classification and the quoted support for that classification.
 
 You will classify two facts.
 
@@ -82,18 +82,25 @@ def load_records() -> dict[str, dict]:
     return found
 
 
-def ask(api_key: str, record: dict) -> dict:
+QUOTE_NOT_VERBATIM = (
+    "The quote you returned is not a verbatim substring of the eligibility "
+    "criteria. Copy a passage exactly from the eligibility text. Do not use "
+    "the trial title as a quote."
+)
+
+
+def ask(api_key: str, record: dict, extra_user: str = "") -> dict:
+    user = (
+        f"Trial {record['nct_id']}: {record['brief_title']}\n\n"
+        f"{record['eligibility_criteria']}"
+    )
+    if extra_user:
+        user += "\n\n" + extra_user
     payload = {
         "model": MODEL,
         "messages": [
             {"role": "system", "content": SYSTEM},
-            {
-                "role": "user",
-                "content": (
-                    f"Trial {record['nct_id']}: {record['brief_title']}\n\n"
-                    f"{record['eligibility_criteria']}"
-                ),
-            },
+            {"role": "user", "content": user},
         ],
         "response_format": {"type": "json_object"},
     }
@@ -119,6 +126,31 @@ def ask(api_key: str, record: dict) -> dict:
             "output_tokens": usage.get("completion_tokens"),
         },
     }
+
+
+def quotes_not_in_text(checks: list[str]) -> bool:
+    return any("not in the trial text" in c for c in checks)
+
+
+def ask_with_verbatim_retry(ask_fn, check_fn, api_key: str, record: dict, max_quote_tries: int = 3):
+    """Call ask_fn until quotes are a substring of eligibility, or tries run out."""
+    extra = ""
+    last = None
+    acc_in = acc_out = 0
+    text = record.get("eligibility_criteria") or ""
+    for attempt in range(max_quote_tries):
+        last = ask_fn(api_key, record, extra) if extra else ask_fn(api_key, record)
+        last["checks"] = check_fn(text, last["answer"])
+        last["quote_retries"] = attempt
+        in_tok = (last.get("usage") or {}).get("input_tokens") or 0
+        out_tok = (last.get("usage") or {}).get("output_tokens") or 0
+        acc_in += in_tok
+        acc_out += out_tok
+        last["usage"] = {"input_tokens": acc_in, "output_tokens": acc_out}
+        if not quotes_not_in_text(last["checks"]):
+            return last
+        extra = QUOTE_NOT_VERBATIM
+    return last
 
 
 BRAIN_WORDS = re.compile(
@@ -197,10 +229,7 @@ def main() -> None:
     input_tokens = 0
     output_tokens = 0
     for nct_id in TRIAL_IDS:
-        result = ask(api_key, records[nct_id])
-        result["checks"] = check_answer(
-            records[nct_id]["eligibility_criteria"], result["answer"]
-        )
+        result = ask_with_verbatim_retry(ask, check_answer, api_key, records[nct_id])
         results.append(result)
         input_tokens += result["usage"]["input_tokens"] or 0
         output_tokens += result["usage"]["output_tokens"] or 0

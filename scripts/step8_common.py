@@ -136,6 +136,8 @@ def canonical_fact(raw: str) -> str:
         "previous chemotherapy": "previous chemotherapy (any kind)",
         "previous systemic anticancer treatment (any kind)": "previous systemic anticancer treatment (any kind)",
         "previous systemic anticancer treatment": "previous systemic anticancer treatment (any kind)",
+        "previous anticancer therapy of any kind": "previous anticancer therapy of any kind",
+        "previous anticancer therapy": "previous anticancer therapy of any kind",
         "autoimmune disease": "autoimmune disease",
         "disease stage": "disease stage",
     }

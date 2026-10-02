@@ -25,6 +25,7 @@ from mini_pilot import (  # noqa: E402
     INPUT_USD_PER_MILLION,
     MODEL,
     OUTPUT_USD_PER_MILLION,
+    ask_with_verbatim_retry,
     load_key,
     quote_match,
 )
@@ -39,7 +40,7 @@ WORKERS = 6
 # the two already labelled.
 SYSTEM = """You read eligibility criteria from clinical trials to categorize what the trial text says about given medical treatments or conditions. Do not decide whether any patient qualifies.
 
-Accuracy and evidence matter, so record a marker only when an exact passage from the trial text supports it, and copy that passage verbatim. If the passage is about a different fact, leave the lists empty and leave the quote empty.
+Accuracy and evidence matter, so record a marker only when an exact passage from the trial text supports it, and copy that passage verbatim from the eligibility criteria. Do not quote the trial title. If the passage is about a different fact, leave the lists empty and leave the quote empty.
 
 A laboratory result about PD-1 or PD-L1 on the tumor is not a genetic marker of the kind asked for here, and is not a treatment history. A drug the trial itself would administer is not something the patient must already have.
 
@@ -91,18 +92,18 @@ def load_done() -> set[str]:
     return done
 
 
-def ask(api_key: str, record: dict) -> dict:
+def ask(api_key: str, record: dict, extra_user: str = "") -> dict:
+    user = (
+        f"Trial {record['nct_id']}: {record['brief_title']}\n\n"
+        f"{record['eligibility_criteria']}"
+    )
+    if extra_user:
+        user += "\n\n" + extra_user
     payload = {
         "model": MODEL,
         "messages": [
             {"role": "system", "content": SYSTEM},
-            {
-                "role": "user",
-                "content": (
-                    f"Trial {record['nct_id']}: {record['brief_title']}\n\n"
-                    f"{record['eligibility_criteria']}"
-                ),
-            },
+            {"role": "user", "content": user},
         ],
         "response_format": {"type": "json_object"},
     }
@@ -166,10 +167,7 @@ def label_one(api_key: str, record: dict) -> dict:
     last_error = "unknown error"
     for attempt in range(5):
         try:
-            result = ask(api_key, record)
-            result["checks"] = check_answer(
-                record["eligibility_criteria"], result["answer"]
-            )
+            result = ask_with_verbatim_retry(ask, check_answer, api_key, record)
             return result
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")[:400]

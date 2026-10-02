@@ -60,15 +60,21 @@ def rule_applies(patient_name: str, trial_name: str, child_to_parent: dict[str, 
 
 def _self_check() -> None:
     """The four cases, plus the immuno-is-not-chemo trap. Fails loud if the file is edited wrong."""
-    p, c, s = (
+    p, c, s, any_rx = (
         "previous platinum chemotherapy",
         "previous chemotherapy (any kind)",
         "previous systemic anticancer treatment (any kind)",
+        "previous anticancer therapy of any kind",
     )
     i = "previous immunotherapy"
     assert comparison(p, p) == MATCH
     assert comparison(p, c) == MATCH
     assert comparison(p, s) == MATCH
+    assert comparison(p, any_rx) == MATCH
+    assert comparison(i, any_rx) == MATCH
+    assert comparison(s, any_rx) == MATCH
+    assert comparison(any_rx, p) == CANT_TELL
+    assert comparison(any_rx, i) == CANT_TELL
     assert comparison(c, p) == CANT_TELL
     assert comparison(s, p) == CANT_TELL
     assert comparison(s, c) == CANT_TELL
