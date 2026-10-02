@@ -12,8 +12,16 @@ from pathlib import Path
 from trec_score_common import SAMPLE_TOPICS
 
 ROOT = Path(__file__).resolve().parents[1]
-SPLITS_PATH = Path(__file__).resolve().parent / "trec_lora_splits.json"
+HERE = Path(__file__).resolve().parent
+SPLITS_PATH = HERE / "trec_lora_splits.json"
+CONFIG_PATH = HERE / "trec_lora_config.json"
+EVAL_PAIRS_PATH = HERE / "trec_lora_eval_pairs.json"
+TRAIN_PAIRS_PATH = HERE / "trec_lora_train_pairs.json"
 LOGIT_RESULTS = ROOT / "data" / "trec" / "trec_elig_logit.json"
+BASE_SCORES = ROOT / "data" / "trec" / "score_qwen_elig_v1_base.json"
+ADAPTER_SCORES = ROOT / "data" / "trec" / "score_qwen_elig_lora.json"
+ADAPTER_DIR = ROOT / "data" / "trec" / "lora_adapter"
+BASE_RESULTS = ROOT / "data" / "trec" / "trec_lora_base_results.json"
 
 FEATURE_NAMES = (
     "topical_title_cond_digit",

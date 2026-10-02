@@ -1,0 +1,22 @@
+{
+  "splits_file": "scripts/trec_lora_splits.json",
+  "sample_seed": 20261001,
+  "pair_seed": 20261003,
+  "prompt": "v1_ELIG_SYSTEM_DIGIT",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "score": "expected_digit",
+  "fallback_score": "logit2_minus_logit1",
+  "mix": {"2v1": 0.5, "2v0": 0.25, "1v0": 0.25},
+  "comparisons_per_patient": 80,
+  "lora_r": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+  "lr": 1e-4,
+  "epochs": 1,
+  "max_len": 3072,
+  "grad_accum": 8,
+  "max_grad_norm": 1.0,
+  "weight_decay": 0.01,
+  "note": "Pairwise logistic loss on the v1 continuous score. Half the comparisons are joinable vs excluded; the rest are those two against not-relevant, so junk stays in the training mix. One epoch is the first setting. The fallback scalar is only if that run stalls. 2023 is not used. This is not a decision that a patient qualifies."
+}
