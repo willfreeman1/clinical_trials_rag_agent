@@ -2214,3 +2214,161 @@ every file read and write.
 - Leave a paid GPU running. Terminate via the API.
 - Say a patient qualifies.
 
+---
+
+## Spike 2 — eligibility prompt v2 on the 30-patient sample (2021/2022 only)
+
+**Committed 2026-10-02, before any v2 eligibility score.**
+2023 stays stopped. Same shortlist, nothing discarded. This is a
+prompt-and-output-shape change on the **same 30 patients** (seed
+**20261001**) as the first eligibility arm. It is not a matched
+model comparison: the question, the labels, and the written check
+all changed. The thing we are allowed to ask is whether **true
+positives** went up — joinable trials (human label 2) higher in
+the list, especially on the first page.
+
+### What changed
+
+Same model (`Qwen/Qwen2.5-7B-Instruct`), same full eligibility
+text, same raw patient note. New instructions: read the whole
+block; hunt timing and specifics; written CHECK then a verdict
+word. Verdict is `ineligible` / `eligible` / `unsure`. Unsure
+**only** when a fact the trial's stated criteria require is
+missing from the note. If the fact is in the note, it must pick
+eligible or ineligible.
+
+Ranking number is **P(eligible)** from the three verdict tokens
+after `VERDICT:`, not a typed decimal and not a 0–3 digit. The
+written word is reported for accuracy; it does not veto ranking.
+
+Do not reuse the old topical prompt. Do not reuse the old
+"if unsure, choose 2" line.
+
+### What is counted
+
+Same 30 patients, full shortlist depth. Both years.
+
+- Eligible hits and macro P@10 / P@20 vs the stored
+  `elig_full_cont` arm on **this same sample**
+- Equivalent depth at 20, 200, 500 (baseline calibration row)
+- 10-in-20 count
+- Verdict mix: eligible / ineligible / unsure
+- Among judged pairs: share of label 2 called eligible (true
+  positive rate of the word); share of label 1 called eligible;
+  label-1-vs-2 AUROC on P(eligible)
+- Machine time and dollars
+
+Accuracy of the word does not veto a ranking lift. Wilson on
+n=30.
+
+### Thresholds — read after this run
+
+Compare to stored `qwen_elig_full_cont` on the same 30
+(2021 P@20 **48.7%**, 2022 P@20 **58.0%**; 2021 10-in-20 **7/15**).
+
+| Result | Decision |
+|---|---|
+| 2021 P@20 is **≥ 2 points** above 48.7% (so **≥ 50.7%**), and 2022 is not more than 2 points worse than 58.0% | The prompt helped the first page. Keep v2 as the eligibility prompt |
+| 2021 P@20 is **≤ 48.7%** and 10-in-20 does not rise | The prompt did not help true positives on the page. Do not replace v1 on this evidence |
+| Split (one year up, one down, or only 10-in-20 moves) | Report. Do not replace v1 |
+| Unsure is **> 50%** of judged disease-relevant (label 1+2) pairs | The model is still dumping. Say so even if P@20 rises |
+| P(eligible) AUROC on judged 1 vs 2 is **≥ 0.80** (v1 continuous was **0.745**) | Say loudly: the 1-vs-2 gap moved |
+
+Equivalent depth at 200 is reported. It is not the replace-gate
+for this run: we are asking about true positives on the page.
+
+### Cost
+
+Written CHECK on 30 × ~1,570 is slower than a single digit.
+Budget about 4–10 hours on H100/A100, about $8–20. Prefer H100
+then A100. Stop and ask if it looks like tens of dollars over
+that. Copy scores off; terminate via the API.
+
+### Do not
+
+- Touch 2023.
+- Discard a trial.
+- Start Run 3 from this commit.
+- Start the per-criterion reader.
+- Leave a paid GPU running. Terminate via the API.
+- Say a patient qualifies.
+
+---
+
+## Spike 2 — eligibility prompt v2 on the 30-patient sample (2021/2022 only)
+
+**Committed 2026-10-02, before any v2 eligibility score.**
+2023 stays stopped. Same shortlist, nothing discarded. This is a
+prompt-and-output-shape change on the **same 30 patients** (seed
+**20261001**) as the first eligibility arm. It is not a matched
+model comparison: the question, the labels, and the written check
+all changed. The thing we are allowed to ask is whether **true
+positives** went up — joinable trials (human label 2) higher in
+the list, especially on the first page.
+
+### What changed
+
+Same model (`Qwen/Qwen2.5-7B-Instruct`), same full eligibility
+text, same raw patient note. New instructions: read the whole
+block; hunt timing and specifics; written CHECK then a verdict
+word. Verdict is `ineligible` / `eligible` / `unsure`. Unsure
+**only** when a fact the trial's stated criteria require is
+missing from the note. If the fact is in the note, it must pick
+eligible or ineligible.
+
+Ranking number is **P(eligible)** from the three verdict tokens
+after `VERDICT:`, not a typed decimal and not a 0–3 digit. The
+written word is reported for accuracy; it does not veto ranking.
+
+Do not reuse the old topical prompt. Do not reuse the old
+"if unsure, choose 2" line.
+
+### What is counted
+
+Same 30 patients, full shortlist depth. Both years.
+
+- Eligible hits and macro P@10 / P@20 vs the stored
+  `elig_full_cont` arm on **this same sample**
+- Equivalent depth at 20, 200, 500 (baseline calibration row)
+- 10-in-20 count
+- Verdict mix: eligible / ineligible / unsure
+- Among judged pairs: share of label 2 called eligible (true
+  positive rate of the word); share of label 1 called eligible;
+  label-1-vs-2 AUROC on P(eligible)
+- Machine time and dollars
+
+Accuracy of the word does not veto a ranking lift. Wilson on
+n=30.
+
+### Thresholds — read after this run
+
+Compare to stored `qwen_elig_full_cont` on the same 30
+(2021 P@20 **48.7%**, 2022 P@20 **58.0%**; 2021 10-in-20 **7/15**).
+
+| Result | Decision |
+|---|---|
+| 2021 P@20 is **≥ 2 points** above 48.7% (so **≥ 50.7%**), and 2022 is not more than 2 points worse than 58.0% | The prompt helped the first page. Keep v2 as the eligibility prompt |
+| 2021 P@20 is **≤ 48.7%** and 10-in-20 does not rise | The prompt did not help true positives on the page. Do not replace v1 on this evidence |
+| Split (one year up, one down, or only 10-in-20 moves) | Report. Do not replace v1 |
+| Unsure is **> 50%** of judged disease-relevant (label 1+2) pairs | The model is still dumping. Say so even if P@20 rises |
+| P(eligible) AUROC on judged 1 vs 2 is **≥ 0.80** (v1 continuous was **0.745**) | Say loudly: the 1-vs-2 gap moved |
+
+Equivalent depth at 200 is reported. It is not the replace-gate
+for this run: we are asking about true positives on the page.
+
+### Cost
+
+Written CHECK on 30 × ~1,570 is slower than a single digit.
+Budget about 4–10 hours on H100/A100, about $8–20. Prefer H100
+then A100. Stop and ask if it looks like tens of dollars over
+that. Copy scores off; terminate via the API.
+
+### Do not
+
+- Touch 2023.
+- Discard a trial.
+- Start Run 3 from this commit.
+- Start the per-criterion reader.
+- Leave a paid GPU running. Terminate via the API.
+- Say a patient qualifies.
+
