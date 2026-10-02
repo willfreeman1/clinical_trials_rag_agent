@@ -1868,3 +1868,46 @@ page and the worse 200-deep list.
   single score. The cheap score is not the wrong instrument; it
   just does not beat topical at the reader budget.
 - The product bar. 37/75 is not 74/75.
+---
+
+## 2026-10-02 — Eligibility prompt v2 did not raise true positives
+
+**Decision: do not replace the v1 eligibility prompt. Keep the
+stored `elig_full_cont` arm as the eligibility score. Do not
+start Run 3 from this entry. Do not start the per-criterion
+reader from this.**
+
+Gates were committed in `4424157` before any v2 score. Same 30
+patients (seed **20261001**), same shortlist, same Qwen2.5-7B,
+full criteria. Prompt and scoring both changed: written CHECK,
+then `eligible` / `ineligible` / `unsure`, rank by P(eligible).
+Not a matched model comparison. The question was whether joinable
+trials (label 2) rose on the first page.
+
+### What ran
+
+47,475 pairs. Started on A100 (3 patients), finished on H100
+PCIe batch 8. About 7 hours of scoring time across both cards.
+H100 attach poller copied 47,475 scores and terminated via the
+API.
+
+### Against the committed gate
+
+| | v1 continuous | v2 P(eligible) |
+|---|---:|---:|
+| 2021 P@20 | **48.7%** | 34.0% |
+| 2022 P@20 | **58.0%** | 38.3% |
+| 2021 10-in-20 | **7/15** | 5/15 |
+| 2022 10-in-20 | **9/15** | 5/15 |
+| 2021 @200 | 2.16x | 1.16x |
+| 1-vs-2 AUROC | 0.745 | 0.60 |
+
+2021 P@20 is **below** 48.7% and 10-in-20 did not rise. That is
+the written **do not replace** row. Unsure was 35-39% of judged
+1+2 (not the >50% dump). The word "eligible" hit 224/958 label-2
+pairs on 2021 and 233/1085 on 2022. Most pairs were called
+ineligible.
+
+The stricter prompt made the model pickier, not more accurate
+on the page. v1 stays the eligibility score if we need one.
+Topical slice continuous remains the default ranker.

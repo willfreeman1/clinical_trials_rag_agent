@@ -1,6 +1,6 @@
 # Where this project stands
 
-**As of 30 September 2026.** This is a status document, not the final write-up. Step 8
+**As of 2 October 2026.** This is a status document, not the final write-up. Step 8
 (the reader) has now been run. Step 9's remaining list is done: 12 stage labels,
 70 crossings, the qualifier convention, a free basket count, then one re-score.
 Steps 6 and 7 stay on hold. There is still no overall accuracy figure. Acceptances
@@ -60,6 +60,20 @@ delete the topical stage. Mini at full depth ($9) loses to
 free Qwen. MedCPT-CE still fades past 100. Product bar still
 fails. Run 3 not started. Details: `docs/trec_score.md`.
 Original 9.0% / 17% figures stay in `THRESHOLDS.md` as committed.
+
+A rewritten eligibility prompt (written CHECK, then
+eligible / ineligible / unsure; rank by P(eligible)) was run
+on the **same 30 patients**. Gates in `4424157` before any v2
+score. True positives on the page went **down**, not up: 2021
+P@20 **34.0%** vs v1 **48.7%**, 10-in-20 **5/15** vs **7/15**;
+2022 P@20 **38.3%** vs **58.0%**. The word "eligible" caught
+only about a fifth of judged joinable trials. Unsure was 35–39%
+of judged 1+2, not a dump. 1-vs-2 AUROC **0.60** (v1 was 0.745).
+Do not replace v1. The commonest call on a judged joinable
+trial was “unsure”; it said no more often than yes. Details:
+`docs/trec_elig_v2.md`. A frontier-model check, if it runs,
+should use judged 1-vs-2 pairs, not another 30 × 1,570
+shortlist. Not started.
 
 The 1,570 is **91% junk**. Mean 2021 shortlist: 67 eligible,
 73 excluded, 143 judged-not-relevant, **1,287 unjudged** for

@@ -297,7 +297,9 @@ def main() -> None:
     started = time.time()
     batch_size = BATCH_START
     mem_gb = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
-    if mem_gb < 30:
+    if mem_gb >= 70:
+        batch_size = 8
+    elif mem_gb < 30:
         batch_size = 2
     progress(f"topics {len(topics)} batch {batch_size} mem {mem_gb:.1f}GiB")
 
