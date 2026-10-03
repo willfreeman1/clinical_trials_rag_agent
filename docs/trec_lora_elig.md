@@ -162,25 +162,51 @@ adapter had the higher per-patient AUROC on **43 of 50**
 patients (6 the other way, 1 tie). Mean per-patient difference
 0.076 (0.051–0.102).
 
-So: quote **0.793 (0.748–0.834)**. Say the untrained 0.749 is
-inside that interval. Also say the paired difference excludes
-zero. Do not quote 0.793 as if it were a single exact figure.
+That interval belongs to this first seed only. Two more
+seeds, below, show 0.793 was the high end of the band.
 
 GPT-5.4’s 0.83 is still a different and smaller sample (411
 capped pairs). This run does not recompute that. “Closed part
 of the gap” is supportable. “Nearly matched a frontier model”
 is not.
 
+## Three seeds of the same configuration
+
+Same learning rate, rank, mix, splits, and 2-minus-1 score.
+Only the random seed changed: which training comparisons
+were drawn, the order they arrived, and the adapter’s
+starting values. Held-out 2022 was scored once per seed, at
+the end, and was not used to pick a seed. Pair IDs for the
+new draws were committed in `778721f` before any score.
+Neither extra seed collapsed.
+
+| Seed | 2022 AUROC | Gain vs untrained 0.749 | Patients where adapter was higher |
+|---|---:|---:|---:|
+| 20261003 (first working run) | 0.793 | +0.044 | 43 / 50 |
+| 20261006 | 0.770 | +0.021 | 44 / 50 |
+| 20261007 | 0.773 | +0.024 | 43 / 50 |
+| **Mean** | **0.779** | **+0.029** | — |
+
+Range **0.770–0.793**. Spread 0.023. All three sit above
+0.749 and well above the topical slice at 0.682. None
+failed the way the 1e-4 run did.
+
+0.793 was the lucky draw. Do not quote it as the result.
+The defensible figure is **0.779 (seeds 0.770–0.793)**.
+The patient-resampled interval 0.748–0.834 is still the
+uncertainty on that first seed, not a substitute for the
+seed range.
+
+The three-step ladder is now **0.682 → 0.749 → 0.779
+(0.770–0.793)**.
+
 ## Cost
 
 First session: H100 SXM5, **about $7**. Second session: H100
 SXM5, 1.04 hours, **$4.48**. Junk-sort score: A100 SXM4,
-0.46 hours, **$0.82**. All three instances were terminated
-through the API. The second loss log is on disk
-(`data/trec/lora_train_log.json`).
-
-No first-page rescore. No 2022-train / 2021-test swap.
-No extra seeds yet.
+0.46 hours, **$0.82**. Two extra seeds: H100 SXM5, 1.91
+hours, **$8.20**. All instances were terminated through the
+API. Loss logs for every seed are on disk.
 
 ## Junk sorting did not get worse
 
@@ -230,28 +256,29 @@ Decided: the untrained v1 eligibility score is **0.749** on all
 question bought seven points.
 
 Decided: a LoRA on the human labels, at 1e-5 with the raw
-2-minus-1 score, **does** move joinable-versus-excluded on the
-held-out year, to **0.793 (0.748–0.834)**. The untrained 0.749
-sits just inside that interval; the paired difference (0.045,
-0.021–0.066) does not include zero. The first adapter’s 0.700
-was a broken setup, not a measurement of fine-tuning.
+2-minus-1 score, **does** move joinable-versus-excluded on
+the held-out year. Three seeds: **0.793, 0.770, 0.773**.
+Mean **0.779 (0.770–0.793)**. Quote the mean and the
+spread, not the best run. The first adapter’s 0.700 was a
+broken setup, not a measurement of fine-tuning.
 
-Decided: that adapter still sorts judged junk below joinable
-trials (0.921 vs 0.888 for the topical slice on the same
-sample). The 0.793 is not a research finding that dies in
-the pipeline.
+Decided: the first working adapter still sorts judged junk
+below joinable trials (0.921 vs 0.888 for the topical slice
+on the same sample). That check was not repeated on the
+extra seeds.
 
 Not decided: whether eligibility should replace the topical
 slice as the default ranker (first page vs depth 200 vs
-cost). Not decided: seed-to-seed spread. Not decided: the
-other-way fold (train 2022, test 2021).
+cost). The other-way fold (train 2022, test 2021) is not
+run. The fine-tuning question is closed.
 
 The careful quote is: fine-tuning a self-hostable 7B model
-on human relevance labels, for about $5 of compute, moved
-the hardest judgement in the task from 0.749 to 0.793
-(0.748–0.834) on a held-out year of patients, where the
-pipeline’s existing ranker sits at 0.682. GPT-5.4’s 0.83 is
-a different and smaller sample. “Closed part of the gap” is
-supportable. “Nearly matched a frontier model” is not.
+on human relevance labels, for about $5 of compute per
+seed, moved the hardest judgement in the task from 0.749
+to a mean of **0.779 (seeds 0.770–0.793)** on a held-out
+year of patients, where the pipeline’s existing ranker
+sits at 0.682. GPT-5.4’s 0.83 is a different and smaller
+sample. “Closed part of the gap” is supportable. “Nearly
+matched a frontier model” is not.
 
 The system does not say a patient qualifies.

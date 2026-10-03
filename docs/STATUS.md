@@ -85,17 +85,16 @@ on the stored signals. Changing the question bought seven
 points; combining old scores bought nothing. A first LoRA at
 1e-4 collapsed; that was a setup failure, not a measurement.
 A second run at **1e-5** on the raw 2-minus-1 score, same
-splits, did not collapse. Held-out 2022 AUROC **0.793
-(0.748–0.834)**, patient-resampled. The untrained 0.749 sits
-just inside that interval; the paired difference (0.045,
-0.021–0.066) does not include zero. Tuning set 0.834, labelled
-as such. Loss log copied off. Junk-sort on the same
-judged-0 pool as the 0.85 figure did **not** degrade:
-adapter 2-vs-0 **0.921** vs topical slice 0.888 on the
-sample (full-set slice 0.883, logistic 0.846). A100 SXM4,
-**$0.82**, terminated. Seeds not run. Details:
-`docs/trec_lora_elig.md`. No first-page rescore. Run 3 not
-started.
+splits, did not collapse. Three seeds of that setup on
+held-out 2022: **0.793, 0.770, 0.773**. Mean **0.779
+(0.770–0.793)**. Quote the mean and the spread, not the
+best run. Patient-resampled interval on the first seed
+was 0.748–0.834; 0.749 sits just inside it. Junk-sort on
+the same judged-0 pool as the 0.85 figure did **not**
+degrade (adapter 2-vs-0 **0.921** vs slice 0.888). Extra
+seeds: H100 SXM5, **$8.20**, terminated. The fine-tuning
+question is closed. Details: `docs/trec_lora_elig.md`.
+No first-page rescore. Run 3 not started.
 
 The 1,570 is **91% junk**. Mean 2021 shortlist: 67 eligible,
 73 excluded, 143 judged-not-relevant, **1,287 unjudged** for
