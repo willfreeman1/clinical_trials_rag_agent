@@ -82,13 +82,14 @@ The finding from that GPU session is the **untrained** v1
 eligibility score: **0.749** on all 50 2022 patients against
 **0.682** for the topical slice and **0.686** for a logistic
 on the stored signals. Changing the question bought seven
-points; combining old scores bought nothing. A LoRA was also
-tried (splits in `2f04bfa`). That adapter collapsed to “1”
-on 6,248/6,249 pairs. Prompt format matched; the 0.749 was
-scored by the same script with the adapter off; the second
-loss curve was never copied. That collapse is not yet a
-negative about fine-tuning. Details: `docs/trec_lora_elig.md`.
-No first-page rescore. Run 3 not started.
+points; combining old scores bought nothing. A first LoRA at
+1e-4 collapsed; that was a setup failure, not a measurement.
+A second run at **1e-5** on the raw 2-minus-1 score, same
+splits, did not collapse. Held-out 2022 AUROC **0.793**
+(tuning set 0.834, labelled as such). Loss log copied off.
+H100 SXM5, **$4.48**, terminated. Details:
+`docs/trec_lora_elig.md`. No first-page rescore. Run 3 not
+started.
 
 The 1,570 is **91% junk**. Mean 2021 shortlist: 67 eligible,
 73 excluded, 143 judged-not-relevant, **1,287 unjudged** for

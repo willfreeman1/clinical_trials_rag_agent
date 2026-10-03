@@ -113,17 +113,52 @@ in hand. The harness, with the adapter off, is what reported
 0.749. The problem is not that the scoring script cannot
 reproduce the base model.
 
-So the remaining ordinary cause is a learning rate high enough
-to push the adapter onto one answer. That is not yet tested.
+So the remaining ordinary cause was a learning rate high enough
+to push the adapter onto one answer. That is what the next run
+tested.
 
-## Cost of the first session
+## Second run: same setup, tenth the rate, raw 2-minus-1 score
 
-H100 SXM5, us-south-2, 1.63 hours, **about $7**. Scores and the
-fallback adapter were copied off. The instance was terminated
-through the API. The local launcher then failed on a leftover
-`touch` (the path was eaten by SSH quoting). That did not lose
-the files we had already copied. It did lose the second loss
-curve.
+Settings committed in `2f83393` before this adapter. Same
+splits, same prompt, same comparison mix. Scalar is the raw
+score for token **2** minus token **1**, before softmax.
+Learning rate **1e-5**. The 15 tuning patients were scored at
+the start, at 25%, and at 50%. The loss log was written as it
+went and copied off the machine.
+
+It did not collapse. Loss fell from about 1.14 to 0.22 and
+never sat on 0.693. The typical win-minus-lose gap on the
+tuning patients started at 2.27, was 1.20 at 25% (still more
+than half the start), and 1.70 at 50%. Answers stayed spread
+across 0 / 1 / 2. 2022 was scored once, at the end.
+
+| | AUROC pooled | Per-patient mean |
+|---|---:|---:|
+| Untrained v1 (same 50 patients) | 0.749 | 0.722 |
+| Tuning set at the start of this run | 0.756 | — |
+| Tuning set at 25% | 0.780 | — |
+| Tuning set at 50% | 0.778 | — |
+| Tuning set after the full pass (labelled as such) | 0.834 | 0.837 |
+| **Held-out 2022, 50 patients** | **0.793** | **0.798** |
+
+On 2022 the words were 973 zeros, 4,074 ones, 1,202 twos. That
+is a shift toward “excluded,” not a pin on a single token.
+Continuous scores ran from 0.03 to 1.98.
+
+The 0.834 on the 15 tuning patients is the set we watched
+during training. It is not the headline. The headline for this
+adapter is **0.793 on 2022**, which is above the untrained
+0.749 on the same pairs.
+
+GPT-5.4’s 0.83 is still a different sample (411 capped pairs).
+This run does not recompute that.
+
+## Cost
+
+First session: H100 SXM5, **about $7**. Second session: H100
+SXM5, 1.04 hours, **$4.48**. Both instances were terminated
+through the API. The second loss log is on disk
+(`data/trec/lora_train_log.json`).
 
 No first-page rescore. No 2022-train / 2021-test swap.
 
@@ -131,12 +166,16 @@ No first-page rescore. No 2022-train / 2021-test swap.
 
 Decided: the untrained v1 eligibility score is **0.749** on all
 50 2022 patients against **0.682** for the topical slice and
-**0.686** for a logistic on the stored signals. That stands.
+**0.686** for a logistic on the stored signals. Changing the
+question bought seven points.
 
-Not decided: whether a LoRA on the human labels can recover any
-of the remaining gap to GPT-5.4. The first adapter does not
-answer that. A second run at a tenth of the learning rate, with
-a look at the 15 tuning patients partway through, is the next
-measurement if it is run.
+Decided: a LoRA on the human labels, at 1e-5 with the raw
+2-minus-1 score, **does** move joinable-versus-excluded on the
+held-out year, to **0.793**. The first adapter’s 0.700 was a
+broken setup, not a measurement of fine-tuning.
+
+Not decided: whether eligibility should replace the topical
+slice as the default ranker (first page vs depth 200 vs cost).
+Not decided: the other-way fold (train 2022, test 2021).
 
 The system does not say a patient qualifies.

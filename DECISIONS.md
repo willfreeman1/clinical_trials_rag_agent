@@ -1935,14 +1935,14 @@ patient qualifies.
 ## 2026-10-02 — Untrained eligibility beats topical; first LoRA collapsed
 
 **Decision: the 0.749 untrained v1 number on all 50 2022
-patients is the result. Do not treat the first adapter’s 0.700
-as a measurement of fine-tuning. Prompt format matched; the
-scoring harness with the adapter off is what produced 0.749;
-the second loss curve was never copied. The first run parked
-on the coin-flip loss 0.693.**
+patients stands. The first adapter’s 0.700 is not a
+measurement of fine-tuning. A second LoRA at 1e-5 on the raw
+2-minus-1 score reached 0.793 on the same 50 patients. That
+is enough to say fine-tuning on the human labels can move
+1-vs-2 when the setup does not collapse.**
 
-Whether a lower learning rate can train without collapsing is
-still open. Whether eligibility should replace the topical
-slice as the default ranker is a separate decision (first page
-vs depth 200 vs cost). Details: `docs/trec_lora_elig.md`.
-The system does not say a patient qualifies.
+Whether eligibility should replace the topical slice as the
+default ranker is still a separate decision (first page vs
+depth 200 vs cost). The other-way fold has not been run.
+Details: `docs/trec_lora_elig.md`. The system does not say a
+patient qualifies.
