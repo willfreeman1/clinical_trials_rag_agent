@@ -26,6 +26,34 @@ JUNK_PAIRS_PATH = HERE / "trec_lora_junk_pairs.json"
 JUNK_SCORES = ROOT / "data" / "trec" / "score_qwen_elig_lora_junk.json"
 CI_RESULTS = ROOT / "data" / "trec" / "trec_lora_ci.json"
 ADAPTER_LR1E5 = ROOT / "data" / "trec" / "lora_adapter_lr1e5"
+SEED_A = 20261003
+SEED_B = 20261006
+SEED_C = 20261007
+SEED_RUNS = (SEED_A, SEED_B, SEED_C)
+
+
+def train_pairs_for(seed: int) -> Path:
+    if seed == SEED_A:
+        return TRAIN_PAIRS_PATH
+    return HERE / f"trec_lora_train_pairs_{seed}.json"
+
+
+def adapter_dir_for(seed: int) -> Path:
+    if seed == SEED_A:
+        return ADAPTER_LR1E5
+    return ROOT / "data" / "trec" / f"lora_adapter_{seed}"
+
+
+def adapter_scores_for(seed: int) -> Path:
+    if seed == SEED_A:
+        return ADAPTER_SCORES
+    return ROOT / "data" / "trec" / f"score_qwen_elig_lora_{seed}.json"
+
+
+def train_log_for(seed: int) -> Path:
+    if seed == SEED_A:
+        return ROOT / "data" / "trec" / "lora_train_log.json"
+    return ROOT / "data" / "trec" / f"lora_train_log_{seed}.json"
 
 FEATURE_NAMES = (
     "topical_title_cond_digit",

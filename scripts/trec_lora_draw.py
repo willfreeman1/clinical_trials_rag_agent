@@ -62,27 +62,42 @@ def eval_bucket(year: int, tids: list[str], short: dict, labels: dict) -> dict:
 
 
 def main() -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--pair-seed", type=int, default=None)
+    ap.add_argument("--train-out", default=None)
+    ap.add_argument("--skip-eval", action="store_true")
+    args = ap.parse_args()
     cfg = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+    pair_seed = int(args.pair_seed if args.pair_seed is not None else cfg["pair_seed"])
+    train_out = Path(args.train_out) if args.train_out else TRAIN_PAIRS_PATH
     splits = load_splits()
     short = load_shortlist()
     qrels = {2021: load_qrels(2021), 2022: load_qrels(2022)}
-    rng = random.Random(int(cfg["pair_seed"]))
+    rng = random.Random(pair_seed)
     per = int(cfg["comparisons_per_patient"])
     mix = cfg["mix"]
     n21 = int(round(per * float(mix["2v1"])))
     n20 = int(round(per * float(mix["2v0"])))
     n10 = per - n21 - n20
 
-    dev = eval_bucket(2021, splits["dev_2021"], short, qrels[2021])
-    test = eval_bucket(2022, splits["test_2022"], short, qrels[2022])
-    eval_payload = {
-        "pair_seed": cfg["pair_seed"],
-        "sample_seed": cfg["sample_seed"],
-        "note": "Judged 1 and 2 only, on the shortlist. Dev is the 15 held-out 2021 patients. Test is all 50 2022 patients.",
-        "dev_2021": dev,
-        "test_2022": test,
-    }
-    EVAL_PAIRS_PATH.write_text(json.dumps(eval_payload, indent=2), encoding="utf-8")
+    if not args.skip_eval:
+        dev = eval_bucket(2021, splits["dev_2021"], short, qrels[2021])
+        test = eval_bucket(2022, splits["test_2022"], short, qrels[2022])
+        eval_payload = {
+            "pair_seed": pair_seed,
+            "sample_seed": cfg["sample_seed"],
+            "note": "Judged 1 and 2 only, on the shortlist. Dev is the 15 held-out 2021 patients. Test is all 50 2022 patients.",
+            "dev_2021": dev,
+            "test_2022": test,
+        }
+        EVAL_PAIRS_PATH.write_text(json.dumps(eval_payload, indent=2), encoding="utf-8")
+        print(
+            f"eval dev n={dev['n']} (1={dev['n1']} 2={dev['n2']}) "
+            f"test n={test['n']} (1={test['n1']} 2={test['n2']})",
+            flush=True,
+        )
 
     labels = qrels[2021]
     ytopics = short["years"]["2021"]["topics"]
@@ -109,7 +124,7 @@ def main() -> None:
         train_topics[tid] = rows
     n_comp = sum(len(v) for v in train_topics.values())
     train_payload = {
-        "pair_seed": cfg["pair_seed"],
+        "pair_seed": pair_seed,
         "comparisons_per_patient": per,
         "mix_requested": mix,
         "mix_drawn": mix_counts,
@@ -117,14 +132,9 @@ def main() -> None:
         "n_patients": len(train_topics),
         "topics": train_topics,
     }
-    TRAIN_PAIRS_PATH.write_text(json.dumps(train_payload, indent=2), encoding="utf-8")
-    print(
-        f"eval dev n={dev['n']} (1={dev['n1']} 2={dev['n2']}) "
-        f"test n={test['n']} (1={test['n1']} 2={test['n2']})",
-        flush=True,
-    )
-    print(f"train comparisons {n_comp} mix {mix_counts}", flush=True)
-    print(f"wrote {EVAL_PAIRS_PATH} {TRAIN_PAIRS_PATH}", flush=True)
+    train_out.write_text(json.dumps(train_payload, indent=2), encoding="utf-8")
+    print(f"train comparisons {n_comp} mix {mix_counts} seed {pair_seed}", flush=True)
+    print(f"wrote {train_out}", flush=True)
 
 
 if __name__ == "__main__":

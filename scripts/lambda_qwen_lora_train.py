@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import random
 import time
 from pathlib import Path
 
@@ -238,8 +239,14 @@ def main() -> None:
     ap.add_argument("--out", default="lora_adapter")
     ap.add_argument("--log", default="lora_train_log.json")
     ap.add_argument("--score", default="")
+    ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--done", default="/tmp/lora_train.done")
     args = ap.parse_args()
+    if args.seed:
+        os.environ["PYTHONHASHSEED"] = str(args.seed)
+        random.seed(args.seed)
+        torch.manual_seed(args.seed)
+        torch.cuda.manual_seed_all(args.seed)
     done = Path(args.done)
     if done.exists():
         done.unlink()
@@ -250,7 +257,7 @@ def main() -> None:
     pairs = json.loads(PAIRS_PATH.read_text(encoding="utf-8"))
     score_kind = args.score or cfg.get("score") or "logit2_minus_logit1"
     gpu = torch.cuda.get_device_name(0)
-    progress(f"gpu {gpu} score {score_kind}")
+    progress(f"gpu {gpu} score {score_kind} seed {args.seed or 'none'}")
     progress("load Qwen")
     tok = AutoTokenizer.from_pretrained(QWEN_NAME, padding_side="left")
     if tok.pad_token_id is None:
@@ -286,6 +293,8 @@ def main() -> None:
         note = (notes.get(tid) or {}).get("raw_query") or " "
         for row in rows:
             jobs.append((note, row["win"], row["lose"]))
+    if args.seed:
+        random.Random(args.seed).shuffle(jobs)
     max_len = int(cfg["max_len"])
     accum = int(cfg["grad_accum"])
     epochs = int(cfg["epochs"])
@@ -312,6 +321,7 @@ def main() -> None:
             "steps": step_logs,
             "probes": probes,
             "adapter": args.out,
+            "seed": args.seed or None,
             "stopped": stopped,
         }
         log_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
