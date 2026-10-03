@@ -1932,17 +1932,17 @@ patient qualifies.
 
 ---
 
-## 2026-10-02 — LoRA on human labels did not close the 1-vs-2 gap
+## 2026-10-02 — Untrained eligibility beats topical; first LoRA collapsed
 
-**Decision: do not put the adapter in the pipeline. The useful
-number from the session is base v1 eligibility at 0.749 on all
-50 2022 patients, which already beats the topical slice
-(0.682). Fine-tuning made that worse.**
+**Decision: the 0.749 untrained v1 number on all 50 2022
+patients is the result. Do not treat the first adapter’s 0.700
+as a measurement of fine-tuning. Prompt format matched; the
+scoring harness with the adapter off is what produced 0.749;
+the second loss curve was never copied. The first run parked
+on the coin-flip loss 0.693.**
 
-Splits, pair IDs, and settings committed in `2f04bfa` before
-any adapter. Logistic on stored scores: 0.686. First LoRA
-(expected digit) loss rose; fallback (token 2 minus token 1)
-was the one scored. It answered 1 on almost every pair.
-H100 SXM5, about $7, terminated through the API. Details:
-`docs/trec_lora_elig.md`. The system does not say a patient
-qualifies.
+Whether a lower learning rate can train without collapsing is
+still open. Whether eligibility should replace the topical
+slice as the default ranker is a separate decision (first page
+vs depth 200 vs cost). Details: `docs/trec_lora_elig.md`.
+The system does not say a patient qualifies.

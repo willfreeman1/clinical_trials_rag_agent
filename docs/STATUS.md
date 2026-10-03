@@ -78,15 +78,16 @@ Qwen v1 **0.72** on 411 judged pairs. The TREC-worded prompt
 did not help; both models dumped “not relevant.” Details:
 `docs/trec_frontier_elig.md`.
 
-A LoRA on the human TREC labels was then tried. Splits and
-settings in `2f04bfa` before any adapter. Combining stored
-scores with a logistic was **0.686** on all 50 2022 patients,
-same as the topical slice (**0.682**). Base Qwen with the v1
-eligibility prompt, scored on this H100 before training, is
-**0.749** on those 50 (0.755 on the 15 2021 tuning patients).
-The adapter collapsed to the word “1” on 6,248/6,249 test
-pairs and landed at **0.700**. Do not keep it. H100 SXM5,
-**about $7**, terminated. Details: `docs/trec_lora_elig.md`.
+The finding from that GPU session is the **untrained** v1
+eligibility score: **0.749** on all 50 2022 patients against
+**0.682** for the topical slice and **0.686** for a logistic
+on the stored signals. Changing the question bought seven
+points; combining old scores bought nothing. A LoRA was also
+tried (splits in `2f04bfa`). That adapter collapsed to “1”
+on 6,248/6,249 pairs. Prompt format matched; the 0.749 was
+scored by the same script with the adapter off; the second
+loss curve was never copied. That collapse is not yet a
+negative about fine-tuning. Details: `docs/trec_lora_elig.md`.
 No first-page rescore. Run 3 not started.
 
 The 1,570 is **91% junk**. Mean 2021 shortlist: 67 eligible,

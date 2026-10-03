@@ -215,45 +215,26 @@ def main() -> None:
         for sh in ("start_lora_base.sh", "start_lora_train.sh", "start_lora_adapter.sh"):
             scp_to(ip, STAGE / sh, f"/tmp/{sh}")
             subprocess.check_call(ssh_base(ip) + ["chmod", "+x", f"/tmp/{sh}"])
-        print("starting base v1 score", flush=True)
-        start_remote(ip, "start_lora_base.sh")
-        wait_flag(
-            ip,
-            "/tmp/lora_base.done",
-            t0,
-            itype,
-            lambda: scp_from(ip, "score_qwen_elig_v1_base.json", BASE_SCORES),
-        )
-        scp_from(ip, "score_qwen_elig_v1_base.json", BASE_SCORES)
-        n = score_count(BASE_SCORES)
-        if n < MIN_BASE:
-            raise SystemExit(f"base scores only {n}")
-        print("==== BASE V1 ELIGIBILITY (before any adapter) ====", flush=True)
-        base = run_eval(BASE_SCORES, "base_v1", BASE_RESULTS)
-        print(
-            f"BASE TEST pooled {base.get('test', {}).get('pooled')} "
-            f"macro {base.get('test', {}).get('macro')} "
-            f"vs topical slice {base.get('topical_slice_test', {}).get('pooled')}",
-            flush=True,
-        )
-        print(f"spend so far ${spend(t0, itype):.2f}", flush=True)
+        print(f"spend so far ${spend(t0, itype):.2f}; skipping base rescore (0.749 already measured)", flush=True)
         if spend(t0, itype) + 8 > SPEND_CAP:
             raise SystemExit("training would likely push past $25; stopping to ask")
-        print("starting LoRA train (expected_digit)", flush=True)
+        print("starting LoRA train (expected_digit, lr from config)", flush=True)
         start_remote(ip, "start_lora_train.sh", ["expected_digit", "lora_adapter", "lora_train_log.json"])
-        wait_flag(ip, "/tmp/lora_train.done", t0, itype)
+        wait_flag(
+            ip,
+            "/tmp/lora_train.done",
+            t0,
+            itype,
+            lambda: scp_from(ip, "lora_train_log.json", TRAIN_LOG),
+        )
         try:
             scp_from(ip, "lora_train_log.json", TRAIN_LOG)
         except subprocess.CalledProcessError:
             print("copy train log failed", flush=True)
         adapter = "lora_adapter"
-        if stalled(TRAIN_LOG):
-            print("first run stalled; fallback logit2_minus_logit1", flush=True)
-            if spend(t0, itype) + 8 > SPEND_CAP:
-                raise SystemExit("fallback train would likely push past $25; stopping to ask")
-            start_remote(ip, "start_lora_train.sh", ["logit2_minus_logit1", "lora_adapter_b", "lora_train_log_b.json"])
-            wait_flag(ip, "/tmp/lora_train.done", t0, itype)
-            adapter = "lora_adapter_b"
+        collapsed = remote_has(ip, "/tmp/lora_collapsed")
+        if collapsed:
+            print("train stopped for collapse; not scoring 2022", flush=True)
         print(f"scoring adapter on dev ({adapter})", flush=True)
         start_remote(ip, "start_lora_adapter.sh", ["dev", adapter, "score_qwen_elig_lora_dev.json", "/tmp/lora_dev.done"])
         wait_flag(
@@ -265,18 +246,24 @@ def main() -> None:
         )
         scp_from(ip, "score_qwen_elig_lora_dev.json", DATA / "score_qwen_elig_lora_dev.json")
         run_eval(DATA / "score_qwen_elig_lora_dev.json", "lora_dev", DATA / "trec_lora_dev_results.json")
-        print("scoring adapter on 2022 test once", flush=True)
-        start_remote(ip, "start_lora_adapter.sh", ["test", adapter, "score_qwen_elig_lora.json", "/tmp/lora_test.done"])
-        wait_flag(
-            ip,
-            "/tmp/lora_test.done",
-            t0,
-            itype,
-            lambda: scp_from(ip, "score_qwen_elig_lora.json", ADAPTER_SCORES),
-        )
-        scp_from(ip, "score_qwen_elig_lora.json", ADAPTER_SCORES)
-        run_eval(ADAPTER_SCORES, "lora_test", LORA_RESULTS)
+        if not collapsed:
+            print("scoring adapter on 2022 test once", flush=True)
+            start_remote(ip, "start_lora_adapter.sh", ["test", adapter, "score_qwen_elig_lora.json", "/tmp/lora_test.done"])
+            wait_flag(
+                ip,
+                "/tmp/lora_test.done",
+                t0,
+                itype,
+                lambda: scp_from(ip, "score_qwen_elig_lora.json", ADAPTER_SCORES),
+            )
+            scp_from(ip, "score_qwen_elig_lora.json", ADAPTER_SCORES)
+            run_eval(ADAPTER_SCORES, "lora_test", LORA_RESULTS)
         try:
+            dest = Path(str(ADAPTER_DIR) + "_lr1e5")
+            if dest.exists():
+                import shutil
+
+                shutil.rmtree(dest)
             subprocess.check_call(
                 [
                     "scp",
@@ -286,12 +273,12 @@ def main() -> None:
                     "StrictHostKeyChecking=accept-new",
                     "-r",
                     f"ubuntu@{ip}:{adapter}",
-                    str(ADAPTER_DIR),
+                    str(dest),
                 ]
             )
         except subprocess.CalledProcessError:
             print("copy adapter failed", flush=True)
-        subprocess.check_call(ssh_base(ip) + ["bash", "-lc", "touch /tmp/lora_all.done"])
+        subprocess.check_call(ssh_base(ip) + ["touch", "/tmp/lora_all.done"])
         print(
             f"copy verified hours {(time.time() - t0) / 3600:.2f} "
             f"type {itype} spend ${spend(t0, itype):.2f}",

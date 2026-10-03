@@ -17,9 +17,11 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 PACK_PATH = Path("score_pack.json")
 PAIRS_PATH = Path("trec_lora_train_pairs.json")
+EVAL_PAIRS_PATH = Path("trec_lora_eval_pairs.json")
 CONFIG_PATH = Path("trec_lora_config.json")
 KEEP_ALIVE = Path("/tmp/keep_alive")
 PROGRESS = Path("/tmp/qwen_progress.txt")
+COLLAPSED = Path("/tmp/lora_collapsed")
 QWEN_NAME = "Qwen/Qwen2.5-7B-Instruct"
 
 ELIG_SYSTEM = """You judge whether a patient appears to meet a clinical trial's stated eligibility criteria.
@@ -98,6 +100,95 @@ def pair_score(logits, ids: list[int], kind: str, values: torch.Tensor):
     return (probs * values).sum(dim=1)
 
 
+def chat_text(tok, user: str) -> str:
+    return tok.apply_chat_template(
+        [{"role": "system", "content": ELIG_SYSTEM}, {"role": "user", "content": user}],
+        tokenize=False,
+        add_generation_prompt=True,
+    )
+
+
+@torch.no_grad()
+def score_users(users, tok, model, ids, max_len: int, batch_size: int = 8):
+    out = []
+    i = 0
+    while i < len(users):
+        batch = users[i : i + batch_size]
+        texts = [chat_text(tok, u) for u in batch]
+        enc = tok(texts, return_tensors="pt", padding=True, truncation=True, max_length=max_len)
+        enc = {k: v.to(model.device) for k, v in enc.items()}
+        try:
+            try:
+                logits = model(**enc, use_cache=False, logits_to_keep=1).logits[:, -1, :]
+            except TypeError:
+                logits = model(**enc, use_cache=False).logits[:, -1, :]
+        except torch.cuda.OutOfMemoryError:
+            torch.cuda.empty_cache()
+            if batch_size == 1:
+                raise
+            batch_size = max(1, batch_size // 2)
+            continue
+        stacked = torch.stack([logits[:, did] for did in ids], dim=1)
+        probs = torch.softmax(stacked.float(), dim=1)
+        out.extend(row.tolist() for row in probs.cpu())
+        i += len(batch)
+        touch()
+    return out
+
+
+def probe_dev(tok, model, ids, pack: dict, max_len: int) -> dict:
+    pairs = json.loads(EVAL_PAIRS_PATH.read_text(encoding="utf-8"))
+    docs = pack["docs"]
+    notes = pack["years"]["2021"]["topics"]
+    gold = []
+    users = []
+    for tid, rows in (pairs["dev_2021"]["topics"] or {}).items():
+        note = (notes.get(tid) or {}).get("raw_query") or " "
+        for nct, lab in rows:
+            users.append(user_text(note, full_criteria(docs.get(nct) or {})))
+            gold.append(int(lab))
+    model.eval()
+    probs = score_users(users, tok, model, ids, max_len)
+    model.train()
+    digits = [int(max(range(4), key=lambda j: p[j])) for p in probs]
+    conts = [sum(j * p[j] for j in range(4)) for p in probs]
+    from collections import Counter
+
+    counts = Counter(digits)
+    n = len(conts)
+    mean = sum(conts) / max(n, 1)
+    var = sum((x - mean) ** 2 for x in conts) / max(n, 1)
+    std = var ** 0.5
+    pos = [c for c, g in zip(conts, gold) if g == 2]
+    neg = [c for c, g in zip(conts, gold) if g == 1]
+    better = 0.0
+    if pos and neg:
+        for p in pos:
+            for q in neg:
+                if p > q:
+                    better += 1
+                elif p == q:
+                    better += 0.5
+        auroc = better / (len(pos) * len(neg))
+    else:
+        auroc = None
+    top_digit, top_n = counts.most_common(1)[0]
+    rec = {
+        "n": n,
+        "digit_counts": {str(k): int(v) for k, v in sorted(counts.items())},
+        "top_digit": int(top_digit),
+        "top_share": round(top_n / max(n, 1), 4),
+        "cont_mean": round(mean, 4),
+        "cont_std": round(std, 4),
+        "auroc": None if auroc is None else round(float(auroc), 4),
+    }
+    collapsed = (top_n / max(n, 1) >= 0.90 and int(top_digit) != 2) or std < 0.20 or (
+        counts.get(1, 0) / max(n, 1) >= 0.70
+    )
+    rec["collapsed"] = bool(collapsed)
+    return rec
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="lora_adapter")
@@ -158,24 +249,43 @@ def main() -> None:
     progress(f"jobs {len(jobs)} epochs {epochs} accum {accum}")
     started = time.time()
     step_logs = []
+    probes = []
+    probe_at = {max(1, len(jobs) // 4), max(2, len(jobs) // 2)}
     opt.zero_grad()
     step = 0
     running = 0.0
     running_n = 0
+    stopped = False
+    log_path = Path(args.log)
+
+    def write_log() -> None:
+        log_path.write_text(
+            json.dumps(
+                {
+                    "gpu": gpu,
+                    "score": score_kind,
+                    "lr": float(cfg["lr"]),
+                    "seconds": round(time.time() - started, 1),
+                    "n_pairs": len(jobs),
+                    "steps": step_logs,
+                    "probes": probes,
+                    "adapter": args.out,
+                    "stopped": stopped,
+                },
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+
     for epoch in range(epochs):
+        if stopped:
+            break
         for i, (note, win, lose) in enumerate(jobs):
             users = [
                 user_text(note, full_criteria(docs.get(win) or {})),
                 user_text(note, full_criteria(docs.get(lose) or {})),
             ]
-            texts = [
-                tok.apply_chat_template(
-                    [{"role": "system", "content": ELIG_SYSTEM}, {"role": "user", "content": u}],
-                    tokenize=False,
-                    add_generation_prompt=True,
-                )
-                for u in users
-            ]
+            texts = [chat_text(tok, u) for u in users]
             enc = tok(texts, return_tensors="pt", padding=True, truncation=True, max_length=max_len)
             enc = {k: v.to(model.device) for k, v in enc.items()}
             try:
@@ -203,25 +313,29 @@ def main() -> None:
                     progress(f"  step {step} loss {mean_loss:.4f} pair {i + 1}/{len(jobs)}")
                     running = 0.0
                     running_n = 0
+                    write_log()
                 touch()
-        if running_n:
+            if (i + 1) in probe_at:
+                rec = probe_dev(tok, model, ids, pack, max_len)
+                rec["pair"] = i + 1
+                probes.append(rec)
+                progress(f"  probe pair {i + 1} {rec}")
+                write_log()
+                if rec.get("collapsed"):
+                    stopped = True
+                    COLLAPSED.write_text(json.dumps(rec), encoding="utf-8")
+                    progress("collapsed, stopping")
+                    break
+        if running_n and not stopped:
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
             opt.step()
             opt.zero_grad()
     out = Path(args.out)
     model.save_pretrained(out)
     tok.save_pretrained(out)
-    log = {
-        "gpu": gpu,
-        "score": score_kind,
-        "seconds": round(time.time() - started, 1),
-        "n_pairs": len(jobs),
-        "steps": step_logs,
-        "adapter": str(out),
-    }
-    Path(args.log).write_text(json.dumps(log, indent=2), encoding="utf-8")
+    write_log()
     done.write_text("ok\n", encoding="utf-8")
-    progress(f"wrote {out} seconds {log['seconds']}")
+    progress(f"wrote {out} seconds {round(time.time() - started, 1)} stopped={stopped}")
 
 
 if __name__ == "__main__":

@@ -12,11 +12,11 @@
   "lora_alpha": 32,
   "lora_dropout": 0.05,
   "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-  "lr": 1e-4,
+  "lr": 1e-5,
   "epochs": 1,
   "max_len": 3072,
   "grad_accum": 8,
   "max_grad_norm": 1.0,
   "weight_decay": 0.01,
-  "note": "Pairwise logistic loss on the v1 continuous score. Half the comparisons are joinable vs excluded; the rest are those two against not-relevant, so junk stays in the training mix. One epoch is the first setting. The fallback scalar is only if that run stalls. 2023 is not used. This is not a decision that a patient qualifies."
+  "note": "Pairwise logistic loss on the v1 continuous score. Half the comparisons are joinable vs excluded; the rest are those two against not-relevant. Learning rate 1e-5 after the 1e-4 session collapsed. Probe the 15 tuning patients partway through and stop if answers bunch on one token. 2023 is not used. This is not a decision that a patient qualifies."
 }
