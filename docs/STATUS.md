@@ -89,8 +89,11 @@ splits, did not collapse. Held-out 2022 AUROC **0.793
 (0.748–0.834)**, patient-resampled. The untrained 0.749 sits
 just inside that interval; the paired difference (0.045,
 0.021–0.066) does not include zero. Tuning set 0.834, labelled
-as such. Loss log copied off.
-H100 SXM5, **$4.48**, terminated. Details:
+as such. Loss log copied off. Junk-sort on the same
+judged-0 pool as the 0.85 figure did **not** degrade:
+adapter 2-vs-0 **0.921** vs topical slice 0.888 on the
+sample (full-set slice 0.883, logistic 0.846). A100 SXM4,
+**$0.82**, terminated. Seeds not run. Details:
 `docs/trec_lora_elig.md`. No first-page rescore. Run 3 not
 started.
 

@@ -174,11 +174,53 @@ is not.
 ## Cost
 
 First session: H100 SXM5, **about $7**. Second session: H100
-SXM5, 1.04 hours, **$4.48**. Both instances were terminated
+SXM5, 1.04 hours, **$4.48**. Junk-sort score: A100 SXM4,
+0.46 hours, **$0.82**. All three instances were terminated
 through the API. The second loss log is on disk
 (`data/trec/lora_train_log.json`).
 
 No first-page rescore. No 2022-train / 2021-test swap.
+No extra seeds yet.
+
+## Junk sorting did not get worse
+
+This is the deployment check. The 0.793 number only scored
+pairs humans judged 1 or 2. In the pipeline the model sorts
+all ~1,570 shortlisted trials, and about 91% of those are
+junk. The quoted **0.85** is the logistic on stored scores,
+2-versus-0, on **every** judged-0 trial on the 2022 shortlist
+(13,062 zeros, 3,614 joinable): **0.846**. Topical slice on
+that same full set is **0.883**.
+
+The adapter had never scored those zeros. If the shift toward
+“excluded” had also blurred junk against relevant, the first
+page could get worse even while 1-versus-2 improved.
+
+It did not. The saved 1e-5 adapter was scored on a frozen
+sample from that same judged-0 pool: up to 100 judged-0
+trials per 2022 patient (4,875 scored; some patients have
+fewer than 100), seed **20261005**, pair IDs in
+`8c52660` before any score. No retraining. A100 SXM4,
+0.46 hours, **$0.82**, terminated through the API.
+
+| | Adapter | Topical slice on the same pairs |
+|---|---:|---:|
+| Joinable (2) vs judged-0 | **0.921** | 0.888 |
+| Relevant (1+2) vs judged-0 | **0.848** | 0.828 |
+| Joinable vs unjudged | **0.964** | 0.944 |
+| Relevant vs unjudged | **0.924** | 0.896 |
+
+The slice’s 0.888 on this sample sits next to its 0.883 on
+the full judged-0 set, so the draw is in line with the
+number already quoted. The adapter is **above** both the
+0.888 slice and the 0.846 logistic. Word calls on the 7,375
+junk rows were 5,425 zeros, 1,852 ones, 98 twos: it is still
+calling junk a different disease, not parking it on
+“excluded.”
+
+Unjudged is a convention, not a human verdict. That row is
+secondary. The number that matters for deployment is
+2-versus-judged-0. It got better, not worse.
 
 ## What is and is not decided
 
@@ -194,8 +236,22 @@ sits just inside that interval; the paired difference (0.045,
 0.021–0.066) does not include zero. The first adapter’s 0.700
 was a broken setup, not a measurement of fine-tuning.
 
+Decided: that adapter still sorts judged junk below joinable
+trials (0.921 vs 0.888 for the topical slice on the same
+sample). The 0.793 is not a research finding that dies in
+the pipeline.
+
 Not decided: whether eligibility should replace the topical
-slice as the default ranker (first page vs depth 200 vs cost).
-Not decided: the other-way fold (train 2022, test 2021).
+slice as the default ranker (first page vs depth 200 vs
+cost). Not decided: seed-to-seed spread. Not decided: the
+other-way fold (train 2022, test 2021).
+
+The careful quote is: fine-tuning a self-hostable 7B model
+on human relevance labels, for about $5 of compute, moved
+the hardest judgement in the task from 0.749 to 0.793
+(0.748–0.834) on a held-out year of patients, where the
+pipeline’s existing ranker sits at 0.682. GPT-5.4’s 0.83 is
+a different and smaller sample. “Closed part of the gap” is
+supportable. “Nearly matched a frontier model” is not.
 
 The system does not say a patient qualifies.

@@ -1937,12 +1937,19 @@ patient qualifies.
 **Decision: the 0.749 untrained v1 number on all 50 2022
 patients stands. The first adapter’s 0.700 is not a
 measurement of fine-tuning. A second LoRA at 1e-5 on the raw
-2-minus-1 score reached 0.793 on the same 50 patients. That
-is enough to say fine-tuning on the human labels can move
-1-vs-2 when the setup does not collapse.**
+2-minus-1 score reached 0.793 (0.748–0.834) on the same 50
+patients. The untrained 0.749 sits just inside that
+interval; the paired difference (0.045, 0.021–0.066) does
+not include zero. That is enough to say fine-tuning on the
+human labels can move 1-vs-2 when the setup does not
+collapse. The same adapter sorts judged junk *better* than
+the topical slice (2-vs-0 0.921 vs 0.888 on the sample
+behind the 0.85 figure), so the 0.793 is not a finding that
+dies against the 91% junk shortlist.**
 
 Whether eligibility should replace the topical slice as the
 default ranker is still a separate decision (first page vs
-depth 200 vs cost). The other-way fold has not been run.
-Details: `docs/trec_lora_elig.md`. The system does not say a
-patient qualifies.
+depth 200 vs cost). Seeds and the other-way fold have not
+been run. GPT-5.4’s 0.83 remains a different and smaller
+sample. Details: `docs/trec_lora_elig.md`. The system does
+not say a patient qualifies.

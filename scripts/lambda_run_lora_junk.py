@@ -12,23 +12,70 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lambda_common import api, load_lambda_key  # noqa: E402
 import lambda_run_lora as lrl  # noqa: E402
-from lambda_run_lora import (  # noqa: E402
-    launch,
-    spend,
-    start_remote,
-    terminate,
-    wait_flag,
-)
+from lambda_run_lora import start_remote, terminate, wait_flag  # noqa: E402
 from lambda_run_rerank import scp_from, scp_to, ssh_base, wait_ip, wait_ssh, write_unix  # noqa: E402
 from trec_lora_common import ADAPTER_LR1E5, JUNK_PAIRS_PATH, JUNK_SCORES  # noqa: E402
 from trec_score_common import DATA, PACK  # noqa: E402
 
 SSH_KEY = Path.home() / ".ssh" / "lambda_key"
 SSH_NAME = "paper-reviewer-project"
+TYPE_PREF = (
+    "gpu_1x_h100_sxm5",
+    "gpu_1x_h100_pcie",
+    "gpu_1x_a100_sxm4",
+    "gpu_1x_a100",
+    "gpu_1x_a6000",
+    "gpu_1x_a10",
+)
+HOURLY = {
+    "gpu_1x_h100_sxm5": 4.29,
+    "gpu_1x_h100_pcie": 3.29,
+    "gpu_1x_a100_sxm4": 1.79,
+    "gpu_1x_a100": 1.29,
+    "gpu_1x_a6000": 0.80,
+    "gpu_1x_a10": 0.75,
+}
 NAME = "trec-lora-junk"
 STAGE = DATA / "lambda_stage"
 STATE = DATA / "lora_junk_lambda_state.json"
 MIN_SCORES = 6000
+
+
+def pick_type(key: str) -> tuple[str, str]:
+    types = api("GET", "/instance-types", key)
+    data = types.get("data") or {}
+    for name in TYPE_PREF:
+        rec = data.get(name) or {}
+        regs = rec.get("regions_with_capacity_available") or []
+        rnames = [r.get("name") for r in regs if isinstance(r, dict) and r.get("name")]
+        if not rnames:
+            continue
+        prefer = ("us-west-2", "us-west-3", "us-east-1", "us-west-1")
+        region = next((r for r in prefer if r in rnames), rnames[0])
+        if region:
+            return name, str(region)
+    raise SystemExit("No GPU capacity")
+
+
+def launch(key: str) -> tuple[str, str, str]:
+    itype, region = pick_type(key)
+    print(f"launch {itype} in {region}", flush=True)
+    body = {
+        "region_name": region,
+        "instance_type_name": itype,
+        "ssh_key_names": [SSH_NAME],
+        "quantity": 1,
+        "name": NAME,
+    }
+    resp = api("POST", "/instance-operations/launch", key, body)
+    ids = resp.get("data", {}).get("instance_ids") or resp.get("instance_ids") or []
+    if not ids:
+        raise SystemExit(f"launch returned no id: {list(resp)[:8]}")
+    return ids[0], itype, region
+
+
+def spend(t0: float, itype: str) -> float:
+    return ((time.time() - t0) / 3600.0) * HOURLY.get(itype, 1.79)
 
 
 def score_count(path: Path) -> int:
@@ -50,6 +97,8 @@ def main() -> None:
     key = load_lambda_key()
     lrl.NAME = NAME
     lrl.STATE = STATE
+    lrl.HOURLY = HOURLY
+    lrl.spend = spend
     listed = api("GET", "/instances", key)
     for row in listed.get("data") or []:
         if row.get("name") == NAME and row.get("status") not in {"terminated", "terminating"}:
