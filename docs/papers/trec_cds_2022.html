@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en-us">
+<head><meta charset="utf-8">
+	<link href="./mss.css" rel="stylesheet" type="text/css" /><script type="text/javascript" src="./hyphenate.js"></script>
+	<title>2022 TREC Clinical Trials Track</title>
+</head>
+<body>
+<div id="top">
+<h1>TREC Clinical Trials Track</h1>
+</div>
+
+<div id="left">
+<ul class="none">
+	<li><a href="./">Home</a></li>
+	<li><a href="http://groups.google.com/d/forum/trec-cds">Mailing List</a></li>
+	<li><a href="http://trec.nist.gov/">TREC</a></li>
+</ul>
+</div>
+
+<div id="right">
+<h2>2022 Clinical Trials Track</h2>
+
+<div class="hyphenate">
+<p>The vast majority of clinical trials fail to meet their patient recruitment goal. NIH has estimated that 80% of clinical trials fail to meet their patient recruitment timeline and, more critically, many (or most) fail to recruit the minimum number of patients to power the study as originally anticipated. Efficient patient trial recruitment is thus one of the major barriers to medical research, both delaying trials and forcing others to terminate entirely.</p>
+
+<p>An important solution to this problem is to utilize the vast amounts of patient data that is already available in the form of the electronic health record (EHR). EHRs maintain medical records for routine medical care, but their secondary use for research such as clinical trial recruitment is well-known (<a href="https://pubmed.ncbi.nlm.nih.gov/17567224/">Hersh, 2007</a>). This was part of the inspiration for the TREC Medical Records track (2011-2012) (<a href="https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=913781">Voorhees and Hersh, 2012</a>). However, that track was ultimately discontinued due to the difficulty in obtaining an EHR dataset of sufficient size (due to privacy issues) to merit a reasonable evaluation. The TREC Clinical Trials track flips the trial-to-patients paradigm to a patient-to-trials paradigm to enable the evaluation of patient matching systems and the building of a test collection for clinical trial search. That is, the query/topic will be (synthetic) patient descriptions and the corpus will be a large set of clinical trial descriptions.</p>
+
+<p>The 2022 Clinical Trials track is a direct continuation of the <a href="2021.html">2021 Clinical Trials track</a>, with the same document collection and task structure, only different topics (plus the opportunity to tune systems on the <a href="https://trec.nist.gov/data/trials2021.html">2021 judgments</a>.</p>
+
+<p>Participants of the track will be challenged with retrieving clinical trials from <a href="https://clinicaltrials.gov/">ClinicalTrials.gov</a>, a required registry for clinical trials in the United States. Clinical trial descriptions can be quite long, but the core aspect of the trial description are the inclusion/exclusion criteria. These are not all-inclusive statements about the trial to the point that other trial information can be ignored, but they are key aspects to defining trial eligibility. The topics present a lengthy (5-10 sentence) patient case description that simulates an admission statement in an EHR. The evaluation will further be broken down into <i>eligible</i>, <i>excludes</i>, and <i>not relevant</i> to allow retrieval methods to distinguish between patients that do not have sufficient information to qualify for the trial (<i>not relevant</i>) and those that are explicitly excluded (<i>excludes</i>). The topics are limited to just the free text description of a patient record, as the structured data in EHRs, while helpful, is more routinely used for clinical trial matching and therefore better-studied.</p>
+</div>
+
+<h2>Tentative Schedule</h2>
+
+<table>
+	<thead>
+		<tr>
+			<th>Date</th>
+			<th>Note</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>April 28, 2021</td>
+			<td><a href="#documents">Document collection</a> available for download (same collection as last year)</td>
+		</tr>
+		<tr>
+			<td>June 2, 2022</td>
+			<td><a href="#topics">Topics</a> available for download</td>
+		</tr>
+		<tr>
+			<td>ASAP</td>
+			<td><a href="https://trec.nist.gov/pubs/call2022.html">Applications</a> for participation in TREC 2022 due (<i>contact organizers thereafter</i>)</td>
+		</tr>
+		<tr>
+			<td>August 28, 2022</td>
+			<td>Submission deadline</td>
+		</tr>
+		<tr>
+			<td>October 2022</td>
+			<td>Relevance judgments and individual evaluation scores released</td>
+		</tr>
+		<tr>
+			<td>November 14&ndash;18, 2022</td>
+			<td>TREC 2022 conference at NIST in Gaithersburg, MD, USA (<i>maybe</i>)</td>
+		</tr>
+	</tbody>
+</table>
+
+<h2>Task Description</h2>
+
+<h3><a name="documents">Documents</a></h3>
+
+<div class="hyphenate">
+<p><b>Clinical Trials</b>: An April 27, 2021 snapshot of <a href="https://clinicaltrials.gov/">ClinicalTrials.gov</a> will be used as the corpus.</p>
+
+<ul>
+	<li>Part 1 [365 MB]: <a href="2021_data/ClinicalTrials.2021-04-27.part1.zip">ClinicalTrials.2021-04-27.part1.zip</a></li>
+	<li>Part 2 [360 MB]: <a href="2021_data/ClinicalTrials.2021-04-27.part2.zip">ClinicalTrials.2021-04-27.part2.zip</a></li>
+	<li>Part 3 [358 MB]: <a href="2021_data/ClinicalTrials.2021-04-27.part3.zip">ClinicalTrials.2021-04-27.part3.zip</a></li>
+	<li>Part 4 [344 MB]: <a href="2021_data/ClinicalTrials.2021-04-27.part4.zip">ClinicalTrials.2021-04-27.part4.zip</a></li>
+	<li>Part 5 [282 MB]: <a href="2021_data/ClinicalTrials.2021-04-27.part5.zip">ClinicalTrials.2021-04-27.part5.zip</a></li>
+</ul>
+
+<p>The files are formatted using the ClinicalTrials.gov <a href="https://clinicaltrials.gov/ct2/html/images/info/public.xsd">XML schema</a>.</p>
+</div>
+
+<h3><a name="topics">Topics</a></h3>
+
+<div class="hyphenate">
+<p>The topics for the track consist of synthetic patient cases created by individuals with medical training. The topics consist of a synthetic case in the form of an admission note. Take, for example, these synthetic case descriptions from the TREC Clinical Decision Support track:</p>
+</div>
+<!-- TODO: point to some valid clinical trials for these -->
+
+<blockquote>A 2-year-old boy is brought to the emergency department by his parents for 5 days of high fever and irritability. The physical exam reveals conjunctivitis, strawberry tongue, inflammation of the hands and feet, desquamation of the skin of the fingers and toes, and cervical lymphadenopathy with the smallest node at 1.5 cm. The abdominal exam demonstrates tenderness and enlarged liver. Laboratory tests report elevated alanine aminotransferase, white blood cell count of 17,580/mm, albumin 2.1 g/dL, C-reactive protein 4.5 mg, erythrocyte sedimentation rate 60 mm/h, mild normochromic, normocytic anemia, and leukocytes in urine of 20/mL with no bacteria identified. The echocardiogram shows moderate dilation of the coronary arteries with possible coronary artery aneurysm.</blockquote>
+
+<blockquote>A 75F with a PMHx significant for severe PVD, CAD, DM, and CKD presented after being found down unresponsive at home. She was found to be hypoglycemic to 29 with hypotension and bradycardia. Her hypotension and confusion improved with hydration. She had a positive UA which eventually grew klebsiella. She had temp 96.3, respiratory rate 22, BP 102/26, a leukocytosis to 18 and a creatinine of 6 (baseline 2). Pt has blood cultures positive for group A streptococcus. On the day of transfer her blood pressure dropped to the 60s. She was anuric throughout the day. She received 80mg IV solumedrol this morning in the setting of low BPs and rare eos in urine. On arrival to the MICU pt was awake but drowsy. On ROS, pt denies pain, lightheadedness, headache, neck pain, sore throat, recent illness or sick contacts, cough, shortness of breath, chest discomfort, heartburn, abd pain, n/v, diarrhea, constipation, dysuria. Is a poor historian regarding how long she has had a rash on her legs.</blockquote>
+
+<p>The <a href="2021.html">2021 track</a> had 75 topics. This year there will be 50 new topics.</p>
+
+<h4>Obtaining the Topics</h4>
+
+<div class="hyphenate">
+<p>The topics will be provided below once available:</p>
+
+<ul>
+	<li><a href="topics2022.xml">topics2022.xml</a></li>
+</ul>
+
+<p>The topics are formatted in XML:</p>
+</div>
+
+<pre>
+&lt;topics task=&quot;2022 TREC Clinical Trials&quot;&gt;
+  &lt;topic number=&quot;-1&quot;&gt;
+    A 2-year-old boy is brought to the emergency department by his parents for 5 days of high fever
+    and irritability. The physical exam reveals conjunctivitis, strawberry tongue, inflammation of
+    the hands and feet, desquamation of the skin of the fingers and toes, and cervical
+    lymphadenopathy with the smallest node at 1.5 cm. The abdominal exam demonstrates tenderness
+    and enlarged liver. Laboratory tests report elevated alanine aminotransferase, white blood cell
+    count of 17,580/mm, albumin 2.1 g/dL, C-reactive protein 4.5 mg, erythrocyte sedimentation rate
+    60 mm/h, mild normochromic, normocytic anemia, and leukocytes in urine of 20/mL with no bacteria
+    identified. The echocardiogram shows moderate dilation of the coronary arteries with possible
+    coronary artery aneurysm.
+  &lt;/topic&gt;
+&lt;/topics&gt;
+</pre>
+
+<p>The 2021 topics (<a href="topics2021.xml">topics2021.xml</a>) have the exact same structure.</p>
+
+<p>A similar setup was used by <a href="https://dl.acm.org/doi/abs/10.1145/2911451.2914672">Koopman &amp; Zuccon (SIGIR 2016)</a>. Their data has a limited number of judged results and may be of use to participants.</p>
+
+<p>To see additional examples of clinical terminology in a case-like format, the TREC Clinical Decision Support 2014-2016 topics might be useful:</p>
+
+<ul>
+	<li><a href="topics2014.xml">topics2014.xml</a></li>
+	<li><a href="topics2015B.xml">topics2015B.xml</a></li>
+	<li><a href="topics2016.xml">topics2016.xml</a></li>
+</ul>
+
+<h3>Evaluation</h3>
+
+<div class="hyphenate">
+<p>The evaluation will follow standard TREC evaluation procedures for ad hoc retrieval tasks. Participants may submit a maximum of <b>five automatic or manual runs</b>, each consisting of a ranked list of up to one thousand IDs (<b>NCT IDs provided by ClinicalTrials.gov</b>). The highest ranked results for each topic will be pooled and judged by physicians trained in medical informatics. Assessors will be instructed to judge trials as either <i>eligible</i> (patient meets inclusion criteria and exclusion criteria do not apply), <i>excluded</i> (patient meets inclusion criteria, but is excluded on the grounds of the trial&#39;s exclusion criteria), or <i>not relevant</i>. Because we plan to use a graded relevance scale, the performance of the retrieval submissions will be measured using normalized discounted cumulative gain (NDCG).</p>
+<!-- TODO: release relevance guidelines -->
+
+<p>As in past evaluations of medically-oriented TREC tracks, we are fortunate to have the assessment conducted by the Department of Medical Informatics of the Oregon Health and Science University (OHSU). We are extremely grateful for their participation.</p>
+</div>
+
+<h2><a name="submission">Submission Instructions</a></h2>
+
+<div class="hyphenate">
+<p>The <font color="blue">tentative</font> submission deadline will be <b>August, 2022</b>.</p>
+</div>
+
+<h3>Submission File Format</h3>
+
+<div class="hyphenate">
+<p>The format for run submissions follows the standard <a href="http://trec.nist.gov/trec_eval/">trec_eval</a> format. Each line of the submission file should follow the form:</p>
+</div>
+
+<div class="code"><!--
+   -->TOPIC_NO Q0 ID RANK SCORE RUN_NAME<!--
+  --></div>
+
+<div class="hyphenate">
+<p>where <span class="code">TOPIC_NO</span> is the topic number (1&ndash;30), <span class="code">0</span> is a required but ignored constant, <span class="code">ID</span> is the identifier of the retrieved document (PMID or NCT ID), <span class="code">RANK</span> is the rank (1&ndash;1000) of the retrieved document, <span class="code">SCORE</span> is a floating point value representing the confidence score of the document, and <span class="code">RUN_NAME</span> is an identifier for the run. The <span class="code">RUN_NAME</span> is limited to 12 alphanumeric characters (no punctuation).</p>
+
+<p>The file is assumed to be sorted numerically by <span class="code">TOPIC_NO</span>, and <span class="code">SCORE</span> is assumed to be greater for documents that should be retrieved first. For example, the following would be a valid line of a run submission file:</p>
+</div>
+
+<div class="code"><!--
+   -->1 Q0 NCT00760162 1 0.9999 my-run<!--
+  --></div>
+
+<p>The above line indicates that the run named &quot;my-run&quot; retrieves for topic number 1 document <a href="https://clinicaltrials.gov/ct2/show/NCT00760162">NCT00760162</a> at rank 1 with a score of 0.9999.</p>
+</div>
+</body>
+</html>

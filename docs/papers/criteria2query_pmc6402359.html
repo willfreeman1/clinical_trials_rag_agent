@@ -1,0 +1,2867 @@
+
+<!DOCTYPE html>
+<html lang="en" >
+    <head >
+
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        
+        
+
+        
+        
+  <link  rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/base_style-BxRs1iOp.css" />
+<script type="module" crossorigin="" src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/base_style-D-jH62-1.js"></script>
+
+  <link  rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/article_style-B67IZFds.css" />
+<link  rel="stylesheet" href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/style-D77LS1kY.css" />
+<script type="module" crossorigin="" src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/article_style-CTAd1LmM.js"></script>
+
+  
+  
+    <style>
+  
+  
+  @media screen and (min-width: 64em) {
+    div.pmc-wm {
+      background: repeat-y;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='350' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cfilter x='-.02' y='0' width='1.05' height='1' id='c'%3E%3CfeFlood flood-color='%23FFF'/%3E%3CfeComposite in='SourceGraphic'/%3E%3C/filter%3E%3Ctext id='b' font-family='Helvetica' font-size='11pt' style='opacity:1;fill:%23005ea2;stroke:none;text-anchor:middle' x='175' y='14'%3E%3C/text%3E%3Cpath id='a' style='fill:%23005ea2' d='M0 8h350v3H0z'/%3E%3C/defs%3E%3Cuse xlink:href='%23a' transform='rotate(90 10 10)'/%3E%3Cuse xlink:href='%23b' transform='rotate(90 10 10)' filter='url(%23c)'/%3E%3C/svg%3E");
+      padding-left: 3rem;
+    }
+  }
+</style>
+
+  
+
+
+
+        
+            <link rel="apple-touch-icon"
+                  sizes="180x180"
+                  href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/favicons/apple-touch-icon.png" />
+            <link rel="icon"
+                  type="image/png"
+                  sizes="48x48"
+                  href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/favicons/favicon-48x48.png" />
+            <link rel="icon"
+                  type="image/png"
+                  sizes="32x32"
+                  href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/favicons/favicon-32x32.png" />
+            <link rel="icon"
+                  type="image/png"
+                  sizes="16x16"
+                  href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/favicons/favicon-16x16.png" />
+            <link rel="manifest" href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/favicons/site.webmanifest" />
+            <link rel="mask-icon"
+                  href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/favicons/safari-pinned-tab.svg"
+                  color="#0071bc" />
+            <meta name="msapplication-config"
+                  content="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/favicons/browserconfig.xml" />
+            <meta name="theme-color" content="#ffffff" />
+        
+
+        <title>
+            Criteria2Query: a natural language interface to clinical databases for cohort definition - PMC
+        </title>
+
+        
+        
+  
+  <!-- Logging params: Pinger defaults -->
+<meta name="ncbi_app" content="cloudpmc-viewer" />
+<meta name="ncbi_db" content="pmc" />
+<meta name="ncbi_phid" content="C1EDE14CAC1509930AE14C00452C7FDF.m_1" />
+<meta name="ncbi_pinger_stat_url" content="https://pmc.ncbi.nlm.nih.gov/stat" />
+<!-- Logging params: Pinger custom -->
+<meta name="ncbi_pdid" content="article" />
+  
+    <link rel="preconnect" href="https://www.google-analytics.com" />
+
+    
+        <link rel="preconnect" href="https://cdn.ncbi.nlm.nih.gov" />
+    
+
+    <!-- Include USWDS Init Script -->
+    <script src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/uswds-init.js"></script>
+
+
+    <meta name="ncbi_domain" content="jamia">
+<meta name="ncbi_type" content="fulltext">
+<meta name="ncbi_pcid" content="journal">
+<meta name="ncbi_feature" content="associated_data">
+<link rel="canonical" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC6402359/">
+<meta name="robots" content="INDEX,NOFOLLOW,NOARCHIVE">
+<meta name="citation_journal_title" content="Journal of the American Medical Informatics Association : JAMIA">
+<meta name="citation_title" content="Criteria2Query: a natural language interface to clinical databases for cohort definition">
+<meta name="citation_author" content="Chi Yuan">
+<meta name="citation_author_institution" content="Department of Biomedical Informatics, Columbia University, New York, New York, USA">
+<meta name="citation_author_institution" content="Department of Computer Science and Technology, Nanjing University of Science and Technology, Nanjing, Jiangsu Province, P.R. China">
+<meta name="citation_author" content="Patrick B Ryan">
+<meta name="citation_author_institution" content="Department of Biomedical Informatics, Columbia University, New York, New York, USA">
+<meta name="citation_author_institution" content="Epidemiology Analytics, Janssen Research and Development, Titusville, New Jersey, USA">
+<meta name="citation_author" content="Casey Ta">
+<meta name="citation_author_institution" content="Department of Biomedical Informatics, Columbia University, New York, New York, USA">
+<meta name="citation_author" content="Yixuan Guo">
+<meta name="citation_author_institution" content="Department of Biomedical Informatics, Columbia University, New York, New York, USA">
+<meta name="citation_author" content="Ziran Li">
+<meta name="citation_author_institution" content="Department of Biomedical Informatics, Columbia University, New York, New York, USA">
+<meta name="citation_author" content="Jill Hardin">
+<meta name="citation_author_institution" content="Epidemiology Analytics, Janssen Research and Development, Titusville, New Jersey, USA">
+<meta name="citation_author" content="Rupa Makadia">
+<meta name="citation_author_institution" content="Epidemiology Analytics, Janssen Research and Development, Titusville, New Jersey, USA">
+<meta name="citation_author" content="Peng Jin">
+<meta name="citation_author_institution" content="Department of Biomedical Informatics, Columbia University, New York, New York, USA">
+<meta name="citation_author" content="Ning Shang">
+<meta name="citation_author_institution" content="Department of Biomedical Informatics, Columbia University, New York, New York, USA">
+<meta name="citation_author" content="Tian Kang">
+<meta name="citation_author_institution" content="Department of Biomedical Informatics, Columbia University, New York, New York, USA">
+<meta name="citation_author" content="Chunhua Weng">
+<meta name="citation_author_institution" content="Department of Biomedical Informatics, Columbia University, New York, New York, USA">
+<meta name="citation_publication_date" content="2019 Feb 7">
+<meta name="citation_volume" content="26">
+<meta name="citation_issue" content="4">
+<meta name="citation_firstpage" content="294">
+<meta name="citation_doi" content="10.1093/jamia/ocy178">
+<meta name="citation_pmid" content="30753493">
+<meta name="citation_abstract_html_url" content="https://pmc.ncbi.nlm.nih.gov/articles/PMC6402359/">
+<meta name="citation_fulltext_html_url" content="https://pmc.ncbi.nlm.nih.gov/articles/PMC6402359/">
+<meta name="citation_pdf_url" content="https://pmc.ncbi.nlm.nih.gov/articles/PMC6402359/pdf/ocy178.pdf">
+<meta name="description" content="Cohort definition is a bottleneck for conducting clinical research and depends on subjective decisions by domain experts. Data-driven cohort definition is appealing but requires substantial knowledge of terminologies and clinical data models. ...">
+<meta name="og:title" content="Criteria2Query: a natural language interface to clinical databases for cohort definition">
+<meta name="og:type" content="article">
+<meta name="og:site_name" content="PubMed Central (PMC)">
+<meta name="og:description" content="Cohort definition is a bottleneck for conducting clinical research and depends on subjective decisions by domain experts. Data-driven cohort definition is appealing but requires substantial knowledge of terminologies and clinical data models. ...">
+<meta name="og:url" content="https://pmc.ncbi.nlm.nih.gov/articles/PMC6402359/">
+<meta name="og:image" content="https://cdn.ncbi.nlm.nih.gov/pmc/cms/images/pmc-card-share.jpg?_=0">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ncbi">
+    
+    
+
+    </head>
+    <body >
+        
+    <a class="usa-skipnav " href="#main-content">
+      Skip to main content
+    </a>
+
+
+        
+            
+
+<section class="usa-banner " aria-label="Official website of the United States government" >
+    <div class="usa-accordion">
+        <header class="usa-banner__header">
+            <div class="usa-banner__inner">
+                <div class="grid-col-auto">
+                    <img aria-hidden="true"
+                         class="usa-banner__header-flag"
+                         src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/us_flag.svg"
+                         alt="" />
+                </div>
+
+                <div class="grid-col-fill tablet:grid-col-auto" aria-hidden="true">
+                    <p class="usa-banner__header-text">
+                        An official website of the United States government
+                    </p>
+                    <span class="usa-banner__header-action">Here's how you know</span>
+                </div>
+
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <button
+            type="button"
+        
+    
+    class="usa-accordion__button usa-banner__button
+           
+
+           
+               
+               
+               
+               
+            
+
+           
+           
+           
+           "
+    aria-expanded="false"
+    aria-controls="gov-banner-default"
+    
+    data-testid="storybook-django-banner"
+    
+    >
+    
+        
+
+        
+                    <span class="usa-banner__button-text">Here's how you know</span>
+                
+
+        
+    
+        
+            </button>
+        
+
+
+            </div>
+        </header>
+
+        <div class="usa-banner__content usa-accordion__content"
+             id="gov-banner-default"
+             hidden>
+            <div class="grid-row grid-gap-lg">
+                <div class="usa-banner__guidance tablet:grid-col-6">
+                    <img class="usa-banner__icon usa-media-block__img"
+                         src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/icon-dot-gov.svg"
+                         alt=""
+                         aria-hidden="true" />
+                    <div class="usa-media-block__body">
+                        <p>
+                            <strong>Official websites use .gov</strong>
+                            <br />
+                            A
+                            <strong>.gov</strong> website belongs to an official
+                            government organization in the United States.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="usa-banner__guidance tablet:grid-col-6">
+                    <img class="usa-banner__icon usa-media-block__img"
+                         src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/icon-https.svg"
+                         alt=""
+                         aria-hidden="true" />
+
+                    <div class="usa-media-block__body">
+                        <p>
+                            <strong>Secure .gov websites use HTTPS</strong>
+                            <br />
+                            A <strong>lock</strong> (
+                            <span class="icon-lock">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     width="52"
+                                     height="64"
+                                     viewBox="0 0 52 64"
+                                     class="usa-banner__lock-image"
+                                     role="graphics-symbol"
+                                     aria-labelledby="banner-lock-description"
+                                     focusable="false">
+                                    <title id="banner-lock-title">Lock</title>
+                                    <desc id="banner-lock-description">
+                                    Locked padlock icon
+                                    </desc>
+                                    <path fill="#000000"
+                                          fill-rule="evenodd"
+                                          d="M26 0c10.493 0 19 8.507 19 19v9h3a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h3v-9C7 8.507 15.507 0 26 0zm0 8c-5.979 0-10.843 4.77-10.996 10.712L15 19v9h22v-9c0-6.075-4.925-11-11-11z" />
+                                </svg>
+</span>) or <strong>https://</strong> means you've safely
+                                connected to the .gov website. Share sensitive
+                                information only on official, secure websites.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        
+
+        
+    
+    
+    
+
+<div class="usa-overlay">
+</div>
+
+
+
+<header class="usa-header usa-header--extended usa-header--wide" data-header data-testid="header"    >
+    <div class="ncbi-header">
+        <div class="ncbi-header__container">
+            <a class="ncbi-header__logo-container"
+               href="https://www.ncbi.nlm.nih.gov/">
+                <img alt="NCBI home page"
+                     class="ncbi-header__logo-image"
+                     src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/ncbi-logos/nih-nlm-ncbi--white.svg"
+                     width="410"
+                     height="100" />
+            </a>
+
+            <!-- Mobile menu hamburger button -->
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <button
+            type="button"
+        
+    
+    class="usa-menu-btn ncbi-header__hamburger-button
+           
+
+           
+               
+               
+               
+               
+            
+
+           
+           
+           
+           "
+    
+    
+    aria-label="Show menu"
+    data-testid="navMenuButton"
+    
+    >
+    
+        
+
+        
+                <svg aria-hidden="true"
+                     class="ncbi-hamburger-icon"
+                     fill="none"
+                     focusable="false"
+                     height="21"
+                     viewBox="0 0 31 21"
+                     width="31"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                          d="M0.125 20.75H30.875V17.3333H0.125V20.75ZM0.125 12.2083H30.875V8.79167H0.125V12.2083ZM0.125 0.25V3.66667H30.875V0.25H0.125Z"
+                          fill="#F1F1F1"
+                          fill-rule="evenodd" />
+                </svg>
+            
+
+        
+    
+        
+            </button>
+        
+
+
+
+            
+                <!-- Desktop buttons-->
+                <div class="ncbi-header__desktop-buttons">
+                    
+                        <!-- Desktop search button -->
+                        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <button
+            type="button"
+        
+    
+    class="usa-button
+           
+
+           
+               
+               
+               
+               
+            
+
+           
+           
+           usa-button--unstyled ncbi-header__desktop-button
+           "
+    aria-expanded="false"
+    aria-controls="search-field-desktop-navigation"
+    aria-label="Show search overlay"
+    data-testid="toggleSearchPanelButton"
+    data-toggle-search-panel-button
+    >
+    
+        
+
+        
+                            
+
+
+
+    <img
+        src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/search.svg"
+        class="usa-icon "
+        aria-hidden="true"
+        
+        
+    />
+
+
+                            Search
+                        
+
+        
+    
+        
+            </button>
+        
+
+
+                    
+
+                    <!-- Desktop login dropdown -->
+                    
+                        <div class="ncbi-header__login-dropdown">
+                            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <button
+            type="button"
+        
+    
+    class="usa-button
+           
+
+           
+               
+               
+               
+               
+            
+
+           
+           
+           usa-button--unstyled ncbi-header__desktop-button ncbi-header__login-dropdown-button
+           "
+    aria-expanded="false"
+    aria-controls="login-dropdown-menu"
+    aria-label="Show login menu"
+    data-testid="toggleLoginMenuDropdown"
+    data-desktop-login-button
+    >
+    
+        
+
+        
+                                
+
+
+
+    <img
+        src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/person.svg"
+        class="usa-icon "
+        aria-hidden="true"
+        
+        
+    />
+
+
+
+                                <span data-login-dropdown-text>Log in</span>
+
+                                <!-- Dropdown icon pointing up -->
+                                
+
+
+
+    <img
+        src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/expand_less.svg"
+        class="usa-icon ncbi-header__login-dropdown-icon ncbi-header__login-dropdown-icon--expand-less ncbi-header__login-dropdown-icon--hidden"
+        aria-hidden="true"
+        data-login-dropdown-up-arrow
+        
+    />
+
+
+
+                                <!-- Dropdown icon pointing down -->
+                                
+
+
+
+    <img
+        src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/expand_more.svg"
+        class="usa-icon ncbi-header__login-dropdown-icon ncbi-header__login-dropdown-icon--expand-more ncbi-header__login-dropdown-icon--hidden"
+        aria-hidden="true"
+        data-login-dropdown-down-arrow
+        
+    />
+
+
+                            
+
+        
+    
+        
+            </button>
+        
+
+
+
+                            <!-- Login dropdown menu -->
+                            <ul class="usa-nav__submenu ncbi-header__login-dropdown-menu"
+                                id="login-dropdown-menu"
+                                data-desktop-login-menu-dropdown
+                                hidden>
+                                
+                                    <li class="usa-nav__submenu-item">
+                                        <!-- Uses custom style overrides to render external and document links. -->
+                                        
+
+
+
+
+
+
+
+
+
+    <a href="https://www.ncbi.nlm.nih.gov/myncbi/" class="usa-link  "  >
+        
+
+        
+            Dashboard
+        
+
+        
+    </a>
+
+
+                                    </li>
+                                
+                                    <li class="usa-nav__submenu-item">
+                                        <!-- Uses custom style overrides to render external and document links. -->
+                                        
+
+
+
+
+
+
+
+
+
+    <a href="https://www.ncbi.nlm.nih.gov/myncbi/collections/bibliography/" class="usa-link  "  >
+        
+
+        
+            Publications
+        
+
+        
+    </a>
+
+
+                                    </li>
+                                
+                                    <li class="usa-nav__submenu-item">
+                                        <!-- Uses custom style overrides to render external and document links. -->
+                                        
+
+
+
+
+
+
+
+
+
+    <a href="https://www.ncbi.nlm.nih.gov/account/settings/" class="usa-link  "  >
+        
+
+        
+            Account settings
+        
+
+        
+    </a>
+
+
+                                    </li>
+                                
+                                <li class="usa-nav__submenu-item">
+                                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <button
+            type="button"
+        
+    
+    class="usa-button
+           
+
+           
+               
+               
+               
+               
+            
+
+           
+           
+           usa-button--outline ncbi-header__login-dropdown-logout-button
+           "
+    
+    
+    
+    data-testid="desktopLogoutButton"
+    data-desktop-logout-button
+    >
+    
+        
+
+        Log out
+
+        
+    
+        
+            </button>
+        
+
+
+                                </li>
+                            </ul>
+                        </div>
+                    
+                </div>
+            
+        </div>
+    </div>
+
+    <!-- Search panel -->
+    
+        <div class="ncbi-search-panel ncbi--show-only-at-desktop"
+             data-header-search-panel
+             hidden>
+            <div class="ncbi-search-panel__container">
+                <form action="https://www.ncbi.nlm.nih.gov/search/all/"
+                      
+                      autocomplete="off"
+                      class="usa-search usa-search--big ncbi-search-panel__form"
+                      data-testid="desktop-navigation-search-form"
+                      method="GET"
+                      role="search">
+                    <label class="usa-sr-only" for="search-field-desktop-navigation">
+                        Search…
+                    </label>
+                    <input class="usa-input"
+                           id="search-field-desktop-navigation"
+                           name="term"
+                           
+                               placeholder="Search NCBI"
+                           
+                           type="search"
+                           value="" />
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <button
+            type="submit"
+        
+    
+    class="usa-button
+           
+
+           
+               
+               
+               
+               
+            
+
+           
+           
+           
+           "
+    
+    
+    
+    
+    
+    >
+    
+        
+
+        
+                        <span class="usa-search__submit-text">
+                            Search NCBI
+                        </span>
+                    
+
+        
+    
+        
+            </button>
+        
+
+
+                </form>
+
+                
+            </div>
+        </div>
+    
+
+    <nav aria-label="Primary navigation" class="usa-nav">
+        <p class="usa-sr-only" id="primary-navigation-sr-only-title">
+            Primary site navigation
+        </p>
+
+        <!-- Mobile menu close button -->
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <button
+            type="button"
+        
+    
+    class="usa-nav__close ncbi-nav__close-button
+           
+
+           
+               
+               
+               
+               
+            
+
+           
+           
+           
+           "
+    
+    
+    aria-label="Close navigation menu"
+    data-testid="navCloseButton"
+    
+    >
+    
+        
+
+        
+            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/close.svg" alt="Close" />
+        
+
+        
+    
+        
+            </button>
+        
+
+
+
+        
+            <!-- Mobile search component -->
+            <form class="usa-search usa-search--small ncbi--hide-at-desktop"
+                  action="https://www.ncbi.nlm.nih.gov/search/all/"
+                  
+                  autocomplete="off"
+                  data-testid="mobile-navigation-search-form"
+                  method="GET"
+                  role="search">
+                <label class="usa-sr-only" for="search-field-mobile-navigation">
+                    Search
+                </label>
+
+                <input class="usa-input"
+                       id="search-field-mobile-navigation"
+                       type="search"
+                       
+                           placeholder="Search NCBI"
+                       
+                       name="term" />
+
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <button
+            type="submit"
+        
+    
+    class="usa-button
+           
+
+           
+               
+               
+               
+               
+            
+
+           
+           
+           
+           "
+    
+    
+    
+    
+    
+    >
+    
+        
+
+        
+                    <!-- This SVG should be kept inline and not replaced with a link to the icon as otherwise it will render in the wrong color -->
+                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE1LjUgMTRoLS43OWwtLjI4LS4yN0E2LjQ3MSA2LjQ3MSAwIDAgMCAxNiA5LjUgNi41IDYuNSAwIDEgMCA5LjUgMTZjMS42MSAwIDMuMDktLjU5IDQuMjMtMS41N2wuMjcuMjh2Ljc5bDUgNC45OUwyMC40OSAxOWwtNC45OS01em0tNiAwQzcuMDEgMTQgNSAxMS45OSA1IDkuNVM3LjAxIDUgOS41IDUgMTQgNy4wMSAxNCA5LjUgMTEuOTkgMTQgOS41IDE0eiIvPjwvc3ZnPg=="
+                         class="usa-search__submit-icon"
+                         alt="Search" />
+                
+
+        
+    
+        
+            </button>
+        
+
+
+            </form>
+
+            
+        
+
+        <!-- Primary navigation menu items -->
+        <!-- This usa-nav__inner wrapper is required to correctly style the navigation items on Desktop -->
+        
+
+        
+            <div class="ncbi-nav__mobile-login-menu ncbi--hide-at-desktop"
+                 data-mobile-login-menu
+                 hidden>
+                <p class="ncbi-nav__mobile-login-menu-status">
+                    Logged in as:
+                    <strong class="ncbi-nav__mobile-login-menu-email"
+                            data-mobile-login-email-text></strong>
+                </p>
+                <ul class="usa-nav__primary usa-accordion">
+                    
+                        <li class="usa-nav__primary-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.ncbi.nlm.nih.gov/myncbi/" class="usa-link  "  >
+        
+
+        
+            Dashboard
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                        <li class="usa-nav__primary-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.ncbi.nlm.nih.gov/myncbi/collections/bibliography/" class="usa-link  "  >
+        
+
+        
+            Publications
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                        <li class="usa-nav__primary-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.ncbi.nlm.nih.gov/account/settings/" class="usa-link  "  >
+        
+
+        
+            Account settings
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                </ul>
+            </div>
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <button
+            type="button"
+        
+    
+    class="usa-button
+           
+
+           
+               
+               
+               
+               
+            
+
+           
+           
+           ncbi-nav__mobile-login-button ncbi--hide-at-desktop
+           "
+    
+    
+    
+    data-testid="mobileLoginButton"
+    data-mobile-login-button
+    >
+    
+        
+
+        Log in
+
+        
+    
+        
+            </button>
+        
+
+
+    </nav>
+</header>
+
+    
+    
+        
+
+<section class="pmc-header pmc-header--basic" aria-label="PMC Header with search box">
+    <div class="pmc-nav-container">
+        <div class="pmc-header__bar">
+           <div class="pmc-header__logo">
+               <a href="/" title="Home" aria-label="PMC Home"></a>
+           </div>
+            <button
+                    type="button"
+                    class="usa-button usa-button--unstyled pmc-header__search__button"
+                    aria-label="Open search"
+                    data-ga-category="search"
+                    data-ga-action="PMC"
+                    data-ga-label="pmc_search_panel_mobile"
+            >
+                <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/search.svg" alt="PMC search open icon" aria-hidden="true" class="usa-icon usa-icon--size-4 pmc-icon__open" />
+                <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/close.svg" alt="PMC search close ison" aria-hidden="true" class="usa-icon usa-icon--size-4 pmc-icon__close" />
+            </button>
+        </div>
+        <div class="pmc-header__search">
+            
+
+
+<form class="usa-search usa-search--extra usa-search--article-right-column  pmc-header__search__form" id="pmc-search-form" autocomplete="off" role="search">
+<label class="usa-sr-only" for="pmc-search">Search PMC Full-Text Archive</label>
+<span class="autoComplete_wrapper flex-1">
+<input class="usa-input width-full maxw-none" required="required" placeholder="Search PMC Full-Text Archive" id="pmc-search"  type="search" name="term" data-autocomplete-url="https://pmc.ncbi.nlm.nih.gov/autocomp/search/autocomp/"/>
+</span>
+<button
+class="usa-button"
+type="submit"
+formaction="https://pmc.ncbi.nlm.nih.gov/search/"
+data-ga-category="search"
+data-ga-action="PMC"
+data-ga-label="PMC_search_button"
+>
+<span class="usa-search__submit-text">Search in PMC</span>
+<img
+src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons-bg/search--white.svg"
+class="usa-search__submit-icon"
+alt="Search"
+/>
+</button>
+</form>
+            <div class="display-flex flex-column tablet:flex-row tablet:flex-justify flex-justify-center flex-align-center width-full desktop:maxw-44">
+                <ul class="pmc-header__search__menu">
+                    <li>
+                        
+                            <a class="usa-link" href="/journals/" data-ga-action="featured_link" data-ga-label="journal list">
+                                Journal List
+                            </a>
+                        
+                    </li>
+                    <li>
+                        
+                            <a class="usa-link" href="/about/userguide/" data-ga-action="featured_link"
+                            data-ga-label="user guide">
+                                User Guide
+                            </a>
+                        
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+    
+
+
+        
+        
+
+       
+  <div class="usa-section padding-top-0 desktop:padding-top-6 pmc-article-section" data-article-db="pmc" data-article-id="6402359">
+
+    
+
+   
+
+
+
+<div class="grid-container pmc-actions-bar" aria-label="Actions bar" role="complementary">
+    <div class="grid-row">
+        <div class="grid-col-fill display-flex">
+             <div class="display-flex">
+                <ul class="usa-list usa-list--unstyled usa-list--horizontal">
+                    <li class="margin-right-2 mobile-lg:margin-right-4 display-flex mob">
+                        <button
+                                type="button"
+                                class="usa-button pmc-sidenav__container__open usa-button--unstyled width-auto display-flex"
+                                aria-label="Open resources"
+                                data-extra-class="is-visible-resources"
+                                data-ga-category="resources_accordion"
+                                data-ga-action="click"
+                                data-ga-label="mobile_icon"
+                        >
+                            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/more_vert.svg" alt="Open resources icon" class="usa-icon usa-icon--size-4 usa-icon--link" />
+                        </button>
+                    </li>
+                    
+                    <li class="margin-right-2 mobile-lg:margin-right-4 display-flex mob">
+                        <a
+                                href="https://doi.org/10.1093/jamia/ocy178"
+                                class="usa-link display-flex usa-tooltip"
+                                role="button"
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                title="View on publisher site"
+                                data-position="bottom"
+                                aria-label="View on publisher site"
+                                data-ga-category="actions"
+                                data-ga-action="click"
+                                data-ga-label="publisher_link_mobile"
+                        >
+                                <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/launch.svg" alt="View on publisher site icon" class="usa-icon usa-icon--size-4 usa-icon--link" />
+                        </a>
+                    </li>
+                    
+                    
+                        <li class="margin-right-2 mobile-lg:margin-right-4 display-flex">
+                             <a
+                                     href="pdf/ocy178.pdf"
+                                     class="usa-link display-flex usa-tooltip"
+                                     role="button"
+                                     title="Download PDF"
+                                     data-position="bottom"
+                                     aria-label="Download PDF"
+                                     data-ga-category="actions"
+                                     data-ga-action="click"
+                                     data-ga-label="pdf_download_mobile"
+                             >
+
+                                 <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/file_download.svg" alt="Download PDF icon" aria-hidden="true" class="usa-icon usa-icon--size-4 usa-icon--link" />
+                            </a>
+                        </li>
+                    
+                    <li class="margin-right-2 mobile-lg:margin-right-4 display-flex">
+                        <button
+                            class="usa-button usa-button--unstyled  usa-tooltip collections-dialog-trigger collections-button display-flex collections-button-empty"
+                            title="Add to Collections"
+                            data-position="bottom"
+                            aria-label="Save article in MyNCBI collections."
+                            data-ga-category="actions"
+                            data-ga-action="click"
+                            data-ga-label="collections_button_mobile"
+                            data-collections-open-dialog-enabled="false"
+                            data-collections-open-dialog-url="https://account.ncbi.nlm.nih.gov/?back_url=https%3A%2F%2Fpmc.ncbi.nlm.nih.gov%2Farticles%2FPMC6402359%2F%23open-collections-dialog"
+                            data-in-collections="false"
+                        >
+                            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/action-bookmark-full.svg" alt="Collections icon" aria-hidden="true" class="usa-icon usa-icon--size-4 usa-icon--link usa-icon--bookmark-full" />
+                            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/action-bookmark-empty.svg" alt="Collections icon" aria-hidden="true" class="usa-icon usa-icon--size-4 usa-icon--link usa-icon--bookmark-empty" />
+                        </button>
+                    </li>
+                    
+                    <li class="margin-right-2 mobile-lg:margin-right-4 display-flex">
+                        <button role="button" class="usa-button usa-button--unstyled usa-tooltip citation-dialog-trigger display-flex"
+                            aria-label="Open dialog with citation text in different styles"
+                            title="Cite"
+                            data-position="bottom"
+                            data-ga-category="actions"
+                            data-ga-action="open"
+                            data-ga-label="cite_mobile"
+                            data-all-citations-url="/resources/citations/6402359/"
+                            data-citation-style="nlm"
+                            data-download-format-link="/resources/citations/6402359/export/"
+                        >
+                            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/format_quote.svg" alt="Cite icon" aria-hidden="true" class="usa-icon usa-icon--size-4 usa-icon--link" />
+                        </button>
+                    </li>
+                    
+                    <li class="pmc-permalink display-flex" >
+                         <button
+                                 type="button"
+                                 title="Permalink"
+                                 data-position="bottom"
+                                 class="usa-button usa-button--unstyled display-flex usa-tooltip"
+                                 aria-label="Show article permalink"
+                                 aria-expanded="false"
+                                 aria-haspopup="true"
+                                 data-ga-category="actions"
+                                 data-ga-action="open"
+                                 data-ga-label="permalink_mobile"
+                         >
+                            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/share.svg" alt="Show article permalink icon" aria-hidden="true" class="usa-icon usa-icon--size-4 usa-icon--link" />
+                        </button>
+                        
+
+<div class="pmc-permalink__dropdown" hidden>
+    <div class="pmc-permalink__dropdown__container">
+          <h2 class="usa-modal__heading margin-top-0 margin-bottom-2 text-uppercase font-sans-xs">PERMALINK</h2>
+          <div class="pmc-permalink__dropdown__content">
+              <input type="text" class="usa-input" value="https://pmc.ncbi.nlm.nih.gov/articles/PMC6402359/" aria-label="Article permalink">
+              <button class="usa-button display-inline-flex pmc-permalink__dropdown__copy__btn margin-right-0" title="Copy article permalink" data-ga-category="save_share" data-ga-action="link" data-ga-label="copy_link">
+                  <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/content_copy.svg" alt="Copy icon" aria-hidden="true" class="usa-icon usa-icon--white" />
+                  <span class="margin-left-1">Copy</span>
+              </button>
+          </div>
+    </div>
+</div>
+                    </li>
+                </ul>
+            </div>
+            <button
+                    type="button"
+                    class="usa-button pmc-sidenav__container__open usa-button--unstyled width-auto display-flex"
+                    aria-label="Open article navigation"
+                    data-extra-class="is-visible-in-page"
+                    data-ga-category="actions"
+                    data-ga-action="open"
+                    data-ga-label="article_nav_mobile"
+            >
+                <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/list.svg" alt="Open article navigation icon" aria-hidden="true" class="usa-icon usa-icon--size-4 usa-icon--link" />
+            </button>
+        </div>
+    </div>
+</div>
+    <div class="grid-container desktop:padding-left-6">
+      <div id="article-container" class="grid-row grid-gap">
+        <div class="grid-col-12 desktop:grid-col-8 order-2 pmc-layout__content">
+            <div class="grid-container padding-left-0 padding-right-0">
+                <div class="grid-row desktop:margin-left-neg-6">
+                    <div class="grid-col-12">
+                        <div class="pmc-layout__disclaimer" role="complementary" aria-label="Disclaimer note">
+    As a library, NLM provides access to scientific literature. Inclusion in an NLM database does not imply endorsement of, or agreement with,
+    the contents by NLM or the National Institutes of Health.<br/>
+    Learn more:
+    <a class="usa-link" data-ga-category="Link click" data-ga-action="Disclaimer" data-ga-label="New disclaimer box" href="/about/disclaimer/">PMC Disclaimer</a>
+    |
+    <a class="usa-link" data-ga-category="Link click" data-ga-action="PMC Copyright Notice" data-ga-label="New disclaimer box" href="/about/copyright/">
+        PMC Copyright Notice
+    </a>
+</div>
+                    </div>
+                </div>
+                <div class="grid-row pmc-wm desktop:margin-left-neg-6">
+                    <!-- Main content -->
+                    <main
+                      id="main-content"
+                      class="usa-layout-docs__main usa-layout-docs grid-col-12 pmc-layout pmc-prose padding-0"
+                    >
+
+                      
+                        <section class="pmc-journal-banner text-center line-height-none" aria-label="Journal banner"><img src="https://cdn.ncbi.nlm.nih.gov/pmc/banners/logo-jamia.gif" alt="Journal of the American Medical Informatics Association: JAMIA logo" usemap="#pmc-banner-imagemap" width="500" height="75"><map name="pmc-banner-imagemap"><area alt="Link to Journal of the American Medical Informatics Association: JAMIA" title="Link to Journal of the American Medical Informatics Association: JAMIA" shape="default" href="https://academic.oup.com/jamia" target="_blank" rel="noopener noreferrer"></map></section><article lang="en"><section aria-label="Article citation and metadata"><section class="pmc-layout__citation font-secondary font-xs"><div>
+<div class="display-inline-block"><button type="button" class="cursor-pointer text-no-underline bg-transparent border-0 padding-0 text-left margin-0 text-normal text-primary" aria-controls="journal_context_menu">J Am Med Inform Assoc</button></div>. 2019 Feb 7;26(4):294–305. doi: <a href="https://doi.org/10.1093/jamia/ocy178" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">10.1093/jamia/ocy178</a>
+</div>
+<nav id="journal_context_menu" hidden="hidden"><ul class="menu-list font-family-ui" role="menu">
+<li role="presentation"><a href='https://pmc.ncbi.nlm.nih.gov/search/?term="J%20Am%20Med%20Inform%20Assoc"[jour]' class="usa-link" role="menuitem">Search in PMC</a></li>
+<li role="presentation"><a href='https://pubmed.ncbi.nlm.nih.gov/?term="J%20Am%20Med%20Inform%20Assoc"[jour]' lang="en" class="usa-link" role="menuitem">Search in PubMed</a></li>
+<li role="presentation"><a href='https://www.ncbi.nlm.nih.gov/nlmcatalog?term="J%20Am%20Med%20Inform%20Assoc"[Title%20Abbreviation]' class="usa-link" role="menuitem">View in NLM Catalog</a></li>
+<li role="presentation"><a href='?term="J%20Am%20Med%20Inform%20Assoc"[jour]' class="usa-link" role="menuitem" data-add-to-search="true">Add to search</a></li>
+</ul></nav></section><section class="front-matter"><div class="ameta p font-secondary font-xs">
+<hgroup><h1>Criteria2Query: a natural language interface to clinical databases for cohort definition</h1></hgroup><div class="cg p">
+<a href='https://pubmed.ncbi.nlm.nih.gov/?term="Yuan%20C"[Author]' class="usa-link" aria-describedby="id1"><span class="name western">Chi Yuan</span></a><div hidden="hidden" id="id1">
+<h3><span class="name western">Chi Yuan</span></h3>
+<div class="p">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div class="p">
+<sup>2</sup>Department of Computer Science and Technology, Nanjing University of Science and Technology, Nanjing, Jiangsu Province, P.R. China</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Yuan%20C"[Author]' class="usa-link"><span class="name western">Chi Yuan</span></a>
+</div>
+</div>
+<sup>1,</sup><sup>2</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Ryan%20PB"[Author]' class="usa-link" aria-describedby="id2"><span class="name western">Patrick B Ryan</span></a><div hidden="hidden" id="id2">
+<h3><span class="name western">Patrick B Ryan</span></h3>
+<div class="p">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div class="p">
+<sup>3</sup>Epidemiology Analytics, Janssen Research and Development, Titusville, New Jersey, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Ryan%20PB"[Author]' class="usa-link"><span class="name western">Patrick B Ryan</span></a>
+</div>
+</div>
+<sup>1,</sup><sup>3</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Ta%20C"[Author]' class="usa-link" aria-describedby="id3"><span class="name western">Casey Ta</span></a><div hidden="hidden" id="id3">
+<h3><span class="name western">Casey Ta</span></h3>
+<div class="p">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Ta%20C"[Author]' class="usa-link"><span class="name western">Casey Ta</span></a>
+</div>
+</div>
+<sup>1</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Guo%20Y"[Author]' class="usa-link" aria-describedby="id4"><span class="name western">Yixuan Guo</span></a><div hidden="hidden" id="id4">
+<h3><span class="name western">Yixuan Guo</span></h3>
+<div class="p">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Guo%20Y"[Author]' class="usa-link"><span class="name western">Yixuan Guo</span></a>
+</div>
+</div>
+<sup>1</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Li%20Z"[Author]' class="usa-link" aria-describedby="id5"><span class="name western">Ziran Li</span></a><div hidden="hidden" id="id5">
+<h3><span class="name western">Ziran Li</span></h3>
+<div class="p">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Li%20Z"[Author]' class="usa-link"><span class="name western">Ziran Li</span></a>
+</div>
+</div>
+<sup>1</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Hardin%20J"[Author]' class="usa-link" aria-describedby="id6"><span class="name western">Jill Hardin</span></a><div hidden="hidden" id="id6">
+<h3><span class="name western">Jill Hardin</span></h3>
+<div class="p">
+<sup>3</sup>Epidemiology Analytics, Janssen Research and Development, Titusville, New Jersey, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Hardin%20J"[Author]' class="usa-link"><span class="name western">Jill Hardin</span></a>
+</div>
+</div>
+<sup>3</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Makadia%20R"[Author]' class="usa-link" aria-describedby="id7"><span class="name western">Rupa Makadia</span></a><div hidden="hidden" id="id7">
+<h3><span class="name western">Rupa Makadia</span></h3>
+<div class="p">
+<sup>3</sup>Epidemiology Analytics, Janssen Research and Development, Titusville, New Jersey, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Makadia%20R"[Author]' class="usa-link"><span class="name western">Rupa Makadia</span></a>
+</div>
+</div>
+<sup>3</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Jin%20P"[Author]' class="usa-link" aria-describedby="id8"><span class="name western">Peng Jin</span></a><div hidden="hidden" id="id8">
+<h3><span class="name western">Peng Jin</span></h3>
+<div class="p">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Jin%20P"[Author]' class="usa-link"><span class="name western">Peng Jin</span></a>
+</div>
+</div>
+<sup>1</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Shang%20N"[Author]' class="usa-link" aria-describedby="id9"><span class="name western">Ning Shang</span></a><div hidden="hidden" id="id9">
+<h3><span class="name western">Ning Shang</span></h3>
+<div class="p">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Shang%20N"[Author]' class="usa-link"><span class="name western">Ning Shang</span></a>
+</div>
+</div>
+<sup>1</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Kang%20T"[Author]' class="usa-link" aria-describedby="id10"><span class="name western">Tian Kang</span></a><div hidden="hidden" id="id10">
+<h3><span class="name western">Tian Kang</span></h3>
+<div class="p">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Kang%20T"[Author]' class="usa-link"><span class="name western">Tian Kang</span></a>
+</div>
+</div>
+<sup>1</sup>, <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Weng%20C"[Author]' class="usa-link" aria-describedby="id11"><span class="name western">Chunhua Weng</span></a><div hidden="hidden" id="id11">
+<h3><span class="name western">Chunhua Weng</span></h3>
+<div class="p">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div class="p">Find articles by <a href='https://pubmed.ncbi.nlm.nih.gov/?term="Weng%20C"[Author]' class="usa-link"><span class="name western">Chunhua Weng</span></a>
+</div>
+</div>
+<sup>1,</sup><sup>✉</sup>
+</div>
+<ul class="d-buttons inline-list">
+<li><button class="d-button" aria-controls="aip_a" aria-expanded="false">Author information</button></li>
+<li><button class="d-button" aria-controls="anp_a" aria-expanded="false">Article notes</button></li>
+<li><button class="d-button" aria-controls="clp_a" aria-expanded="false">Copyright and License information</button></li>
+</ul>
+<div class="d-panels font-secondary-light">
+<div id="aip_a" class="d-panel p" style="display: none">
+<div class="p" id="ocy178-aff1">
+<sup>1</sup>Department of Biomedical Informatics, Columbia University, New York, New York, USA</div>
+<div id="ocy178-aff2">
+<sup>2</sup>Department of Computer Science and Technology, Nanjing University of Science and Technology, Nanjing, Jiangsu Province, P.R. China</div>
+<div id="ocy178-aff3">
+<sup>3</sup>Epidemiology Analytics, Janssen Research and Development, Titusville, New Jersey, USA</div>
+<div class="author-notes p"><div class="fn" id="ocy178-cor1">
+<sup>✉</sup><p class="display-inline">Corresponding Author: Chunhua Weng, PhD, Department of Biomedical Informatics, Columbia University, 622 West 168th Street, PH-20, Room 407, New York, NY 10032, USA (<span>chunhua@columbia.edu</span>)</p>
+</div></div>
+</div>
+<div id="anp_a" class="d-panel p" style="display: none"><div class="notes p"><section id="historyarticle-meta1" class="history"><p>Received 2018 Sep 7; Revised 2018 Nov 16; Accepted 2018 Nov 29; Collection date 2019 Apr.</p></section></div></div>
+<div id="clp_a" class="d-panel p" style="display: none">
+<div>© The Author(s) 2019. Published by Oxford University Press on behalf of the American Medical Informatics Association.</div>
+<p>This is an Open Access article distributed under the terms of the Creative Commons Attribution Non-Commercial License (<a href="http://creativecommons.org/licenses/by-nc/4.0/" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">http://creativecommons.org/licenses/by-nc/4.0/</a>), which permits non-commercial re-use, distribution, and reproduction in any medium, provided the original work is properly cited. For commercial re-use, please contact journals.permissions@oup.com</p>
+<div class="p"><a href="/about/copyright/" class="usa-link">PMC Copyright notice</a></div>
+</div>
+</div>
+<div>PMCID: PMC6402359  PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/30753493/" class="usa-link">30753493</a>
+</div>
+</div></section></section><section aria-label="Article content"><section class="body main-article-body"><section class="abstract" id="abstract1"><h2>Abstract</h2>
+<section id="s1"><h3 class="pmc_sec_title">Objective</h3>
+<p>Cohort definition is a bottleneck for conducting clinical research and depends on subjective decisions by domain experts. Data-driven cohort definition is appealing but requires substantial knowledge of terminologies and clinical data models. Criteria2Query is a natural language interface that facilitates human-computer collaboration for cohort definition and execution using clinical databases.</p></section><section id="s2"><h3 class="pmc_sec_title">Materials and Methods</h3>
+<p>Criteria2Query uses a hybrid information extraction pipeline combining machine learning and rule-based methods to systematically parse eligibility criteria text, transforms it first into a structured criteria representation and next into sharable and executable clinical data queries represented as SQL queries conforming to the OMOP Common Data Model. Users can interactively review, refine, and execute queries in the ATLAS web application. To test effectiveness, we evaluated 125 criteria across different disease domains from ClinicalTrials.gov and 52 user-entered criteria. We evaluated F1 score and accuracy against 2 domain experts and calculated the average computation time for fully automated query formulation. We conducted an anonymous survey evaluating usability.</p></section><section id="s3"><h3 class="pmc_sec_title">Results</h3>
+<p>Criteria2Query achieved 0.795 and 0.805 F1 score for entity recognition and relation extraction, respectively. Accuracies for negation detection, logic detection, entity normalization, and attribute normalization were 0.984, 0.864, 0.514 and 0.793, respectively. Fully automatic query formulation took 1.22 seconds/criterion. More than 80% (11+ of 13) of users would use Criteria2Query in their future cohort definition tasks.</p></section><section id="s4"><h3 class="pmc_sec_title">Conclusions</h3>
+<p>We contribute a novel natural language interface to clinical databases. It is open source and supports fully automated and interactive modes for autonomous data-driven cohort definition by researchers with minimal human effort. We demonstrate its promising user friendliness and usability.</p></section><section id="kwd-group1" class="kwd-group"><p><strong>Keywords:</strong> cohort definition, natural language processing, natural language interfaces to database, common data model</p></section></section><section id="sec5"><h2 class="pmc_sec_title">INTRODUCTION</h2>
+<p>The growing volume of electronic health record (EHR) data<a href="#ocy178-B1" class="usa-link" aria-describedby="ocy178-B1"><sup>1</sup></a> promises to enable early estimate of the feasibility and effectiveness of eligibility criteria during the design process for randomized controlled trials and comparative effectiveness research studies.<a href="#ocy178-B2" class="usa-link" aria-describedby="ocy178-B2"><sup>2</sup></a><sup>,</sup><a href="#ocy178-B3" class="usa-link" aria-describedby="ocy178-B3"><sup>3</sup></a> Cohort definition is a critical and yet a rate-limiting step, often subjective with poor feasibility, resulting in expensive protocol amendments or failed recruitment. Data-driven cohort definition is appealing for enabling informed and feasible cohort definitions but requires substantial knowledge of clinical terminologies and clinical data representations, which are often complex and heterogeneous. Developing explorative data queries for cohort definitions manually is costly, unscalable, and prohibitively challenging for clinical researchers to perform autonomously without technical support.<a href="#ocy178-B4" class="usa-link" aria-describedby="ocy178-B4"><sup>4</sup></a> Furthermore, interpretations of research criteria, which can be elusive and ambiguous,<a href="#ocy178-B5" class="usa-link" aria-describedby="ocy178-B5"><sup>5</sup></a> and translating them to data queries can be subjective and variable, leading to inconsistent cohort queries across different implementers and compromising the integrity of multisite clinical studies. Inappropriately implemented cohort queries can further result in unrepresentative study populations, study delays, decreased enrollment efficiency, increased costs, underpowered analyses, failed clinical studies, and ultimately compromises the internal validity and generalizability of study results. The advances in natural language processing (NLP) methods and common data models (CDMs) widely adopted in EHR data organization brings opportunities for optimizing eligibility criteria design and implementation,<a href="#ocy178-B6" class="usa-link" aria-describedby="ocy178-B6"><sup>6</sup></a> including the development of a natural language query interface to clinical databases for sharable and executable cohort definition,<a href="#ocy178-B7" class="usa-link" aria-describedby="ocy178-B7"><sup>7</sup></a> reducing human effort by leveraging automated computer processing.<a href="#ocy178-B8" class="usa-link" aria-describedby="ocy178-B8"><sup>8</sup></a></p></section><section id="sec6"><h2 class="pmc_sec_title"></h2>
+<section id="sec7"><h3 class="pmc_sec_title">Structuring eligibility criteria</h3>
+<p>Eligibility criteria are largely documented as unstructured free-text, which is not readily amenable to computer processing for automated cohort definition or knowledge reuse and sharing. A number of eligibility criteria representations have been developed.<a href="#ocy178-B9" class="usa-link" aria-describedby="ocy178-B9"><sup>9</sup></a> The representations are either expert-driven or data-driven, with the latter being facilitated by text mining methods. Tu et al designed the Eligibility Rule Grammar and Ontology<a href="#ocy178-B10" class="usa-link" aria-describedby="ocy178-B10"><sup>10</sup></a> for clinical eligibility criteria and employed it to transform free-text eligibility criteria into computable criteria.<a href="#ocy178-B11" class="usa-link" aria-describedby="ocy178-B11"><sup>11</sup></a> Bhattacharya and Cantor<a href="#ocy178-B12" class="usa-link" aria-describedby="ocy178-B12"><sup>12</sup></a> proposed a template-based representation of eligibility criteria for standardizing criteria statements. Weng et al<a href="#ocy178-B13" class="usa-link" aria-describedby="ocy178-B13"><sup>13</sup></a> leveraged text mining to develop a Unified Medical Language System–like semantic network-based representation for clinical trial eligibility criteria called EliXR. In addition to the above ontology-based and rule-based approaches, machine learning methods were applied for information extraction of eligibility criteria, as performed in EliIE.<a href="#ocy178-B7" class="usa-link" aria-describedby="ocy178-B7"><sup>7</sup></a> Meanwhile, methods for standardizing categorical eligibility criteria were developed, such as EliXR-TIME<a href="#ocy178-B14" class="usa-link" aria-describedby="ocy178-B14"><sup>14</sup></a> for temporal knowledge representation and Valx<a href="#ocy178-B15" class="usa-link" aria-describedby="ocy178-B15"><sup>15</sup></a> for numeric expression extraction and normalization. Despite these efforts, there is barely a solution for directly transforming eligibility criteria text to executable, nonambiguous cohort queries for standards-based clinical databases. The only related work was from Parker,<a href="#ocy178-B16" class="usa-link" aria-describedby="ocy178-B16"><sup>16</sup></a> who used medical logical modules for generating executable SQL queries for eligibility criteria automatically, but the method has limited interoperability outside of the targeted institutional clinical data repository, and its adoption is undocumented.</p></section><section id="sec8"><h3 class="pmc_sec_title">Observational Medical Outcomes Partnership common data model and cohort definition</h3>
+<p>Observational databases differ in both purpose and design, reflected in different data organizations and representations, and the terminologies used to describe medications and clinical conditions vary from source to source. The Observational Medical Outcomes Partnership (OMOP) CDM<a href="#ocy178-B17" class="usa-link" aria-describedby="ocy178-B17"><sup>17</sup></a> standardizes data representations and accommodates a wide range of distributed data sources, such as administrative claims and EHR data, for robust evidence generation using Big Data.<a href="#ocy178-B18" class="usa-link" aria-describedby="ocy178-B18"><sup>18</sup></a> More than 120 participants from around the world have joined the collaborative with a vision to access a network of more than 1 billion patient records to generate evidence about all aspects of healthcare. Observational Health Data Sciences and Informatics (OHDSI) provides a wide range of tools to enable distributed and interoperable research across institutions, including ATLAS,<a href="#ocy178-B19" class="usa-link" aria-describedby="ocy178-B19"><sup>19</sup></a> which allows software professionals to create standards-based cohort definitions. However, in ATLAS, users must manually create concept sets 1 by 1, organize the logic relations, and standardized attribute values, which can be laborious and error-prone. These tasks are usually prohibitively difficult for key stakeholders, including investigators and research coordinators, and their outcomes are subject to user skill and variable interpretations of eligibility criteria.</p></section><section id="sec9"><h3 class="pmc_sec_title">Natural language interfaces to databases</h3>
+<p>Criteria2Query aims to translate free-text eligibility criteria to standards-based executable cohort definition queries. The primary technology is a natural language interface (NLI) to databases (NLIDBs),<a href="#ocy178-B20" class="usa-link" aria-describedby="ocy178-B20"><sup>20</sup></a> which allows users to access information stored in relational databases by typing requests expressed in natural language (eg, English). Research on NLIs has attracted much attention since the 1980s.<a href="#ocy178-B21" class="usa-link" aria-describedby="ocy178-B21"><sup>21</sup></a> The first NLIDB, called LUNAR,<a href="#ocy178-B22" class="usa-link" aria-describedby="ocy178-B22"><sup>22</sup></a> enabled English queries of a moon rock database. An early attempt of a clinical NLI was developed by Epstein in 1978,<a href="#ocy178-B23" class="usa-link" aria-describedby="ocy178-B23"><sup>23</sup></a> allowing physicians to access a melanoma database using English queries. In these early implementations, researchers adopted predefined templates to translate natural language free-text into structured queries. With the advances in artificial intelligence, NLIs have become increasingly robust,<a href="#ocy178-B24" class="usa-link" aria-describedby="ocy178-B24"><sup>24</sup></a><sup>,</sup><a href="#ocy178-B25" class="usa-link" aria-describedby="ocy178-B25"><sup>25</sup></a> but their utility and adoption were limited by heterogeneous database structures. In the medical domain, there are few studies on NLIs to patient-level databases. Woodyard and Hamel<a href="#ocy178-B26" class="usa-link" aria-describedby="ocy178-B26"><sup>26</sup></a> developed a template-based NLI to a clinical database management system to improve clinical decision making by providing a question-answering system supporting predefined commands. Roberts and Demner-Fushman<a href="#ocy178-B27" class="usa-link" aria-describedby="ocy178-B27"><sup>27</sup></a> presented a manual annotation process for natural language EHR questions that could benefit question-answering systems on patient data. To our best knowledge, no system exists yet to support natural language querying of complex cohort eligibility criteria, including in widely adopted CDM-based clinical databases.</p></section><section id="sec10"><h3 class="pmc_sec_title">Contributions</h3>
+<p>Criteria2Query is designed to accomplish 3 goals altogether: (1) to implement a systematic information extraction (IE) pipeline to parse free-text eligibility criteria into a structured and computable representation, (2) to improve the interoperability between eligibility criteria and clinical databases by representing eligibility criteria using the OMOP CDM, and (3) to present a novel NLI to enable clinicians and researchers to define cohorts autonomously.</p></section></section><section id="sec11"><h2 class="pmc_sec_title">MATERIALS AND METHODS</h2>
+<section id="sec12"><h3 class="pmc_sec_title">System architecture and data flow</h3>
+<p>Criteria2Query uses a modular architecture in which all modules are loosely coupled<a href="#ocy178-B28" class="usa-link" aria-describedby="ocy178-B28"><sup>28</sup></a> so that each submodule is independent and substitutable by emerging or more advanced methods, allowing maximal extensibility. It has 3 functional modules (<a href="#ocy178-F1" class="usa-link">Figure 1</a>): (1) a systematic information extraction pipeline for parsing free-text eligibility criteria, (2) a query formulation pipeline for automatic generation of standardized cohort definitions and (3) output to ATLAS for interactive query review, refinement, and execution. The information extraction pipeline outputs concept-based data representations for all entities accompanied by their negation status, attributes, and logic relations. The query formulation module further processes these representations and outputs OMOP CDM-based cohort queries that can be executed within ATLAS to retrieve patient cohorts satisfying the criteria.
+</p>
+<figure class="fig xbox font-sm" id="ocy178-F1"><h4 class="obj_head">Figure 1.</h4>
+<p class="img-box line-height-none margin-x-neg-2 tablet:margin-x-0 text-center"><a class="tileshop" target="_blank" href="https://www.ncbi.nlm.nih.gov/core/lw/2.0/html/tileshop_pmc/tileshop_pmc_inline.html?title=Click%20on%20image%20to%20zoom&amp;p=PMC3&amp;id=6402359_ocy178f1.jpg"><img class="graphic zoom-in" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5d44/6402359/54f59e0ab263/ocy178f1.jpg" loading="lazy" height="372" width="720" alt="Figure 1."></a></p>
+<div class="p text-right font-secondary"><a href="figure/ocy178-F1/" class="usa-link" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
+<figcaption><p>System architecture and data flow of Criteria2Query.</p></figcaption></figure></section><section id="sec13"><h3 class="pmc_sec_title">Systematic information extraction for eligibility criteria</h3>
+<p>To translate free-text criteria to structured data representations, we developed a systematic IE pipeline with the following steps ordered as paragraph segmentation, sentence segmentation, NER, negation detection, relation extraction and logic extraction. <a href="#sup1" class="usa-link">Supplementary Appendix</a> 1.1 shows the information extraction model used in Criteria2Query.</p>
+<section id="sec14"><h4 class="pmc_sec_title">Paragraph and sentence segmentation</h4>
+<p>Generally, eligibility criteria are separated into inclusion and exclusion criteria, each consisting of multiple paragraphs. Paragraphs are separated by line breaks, which are easily recognized. We utilized a sentence splitting method from Stanford CoreNLP<a href="#ocy178-B29" class="usa-link" aria-describedby="ocy178-B29"><sup>29</sup></a> to segment sentences, using the default settings. In most cases, sentences and paragraphs are connected by implied “and” logic connections. However, sentences and paragraphs may be connected by different logic, and thus we conducted both paragraph-level and sentence-level segmentation. We implemented a heuristic method to extract patterns from sentences to translate complex logic among sentences (described in Logic detection). For example, the following criterion has complex logic connecting multiple subcriteria: “At least three of the following signs or symptoms of an acute attack of sigmoid diverticulitis must be present: *Fever (body temperature &gt; 38°C, sublingual), *Abdominal tenderness, *Leukocytosis (leukocytes &gt; 10 000/µl) and left shift of the differential blood count (&gt;1% band forms), *Elevated CRP (&gt; 20 mg/l)” (<a href="https://clinicaltrials.gov/ct2/show/NCT00097734" class="usa-link" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">NCT00097734</a>). Crtieria2Query treats the example like a paragraph with the 4 bullet points treated like sentences logically connected by an “AND” operation. We store the pattern information in the paragraph-level pattern element to indicate that at least 3 of the 4 subcriteria must be satisfied to satisfy the whole paragraph-level criterion.</p></section><section id="sec15"><h4 class="pmc_sec_title">Sentence-level information extraction</h4>
+<section id="sec16"><h5 class="pmc_sec_title">Named entity recognition</h5>
+<p>We adapted all annotated criteria from a corpus of 230 Alzheimer’s disease clinical trials provided by a prior publication<a href="#ocy178-B7" class="usa-link" aria-describedby="ocy178-B7"><sup>7</sup></a> to fit the latest data representation in OMOP CDM v5.2 by modifying and predefining the categories and attributes of entities (<a href="#ocy178-T1" class="usa-link">Table 1</a>). We implemented our named entity recognition (NER) methods based on a sequence labeling method, conditional random fields, in CoreNLP<a href="#ocy178-B29" class="usa-link" aria-describedby="ocy178-B29"><sup>29</sup></a> with an empirical feature set. After NER, all entities were extracted from free-text criteria with predicted categories assigned automatically (<a href="#sup1" class="usa-link">Supplementary Appendix</a> 1.2).
+</p>
+<section class="tw xbox font-sm" id="ocy178-T1"><h6 class="obj_head">Table 1.</h6>
+<div class="caption p"><p>Named entities and attributes recognized by Criteria2Query</p></div>
+<div class="tbl-box p" tabindex="0"><table class="content" frame="hsides" rules="groups">
+<colgroup span="1">
+<col valign="top" align="left" span="1">
+<col valign="top" align="left" span="1">
+<col valign="top" align="left" span="1">
+<col valign="top" align="left" span="1">
+</colgroup>
+<thead align="center"><tr>
+<th rowspan="1" colspan="1"></th>
+<th rowspan="1" colspan="1">Category</th>
+<th rowspan="1" colspan="1">Definition</th>
+<th rowspan="1" colspan="1">Examples</th>
+</tr></thead>
+<tbody>
+<tr>
+<td rowspan="5" colspan="1"><strong>Entity</strong></td>
+<td rowspan="1" colspan="1">Condition</td>
+<td rowspan="1" colspan="1">Conditions are records of a Person suggesting the presence of a disease or medical condition stated as a diagnosis, a sign or a symptom.</td>
+<td rowspan="1" colspan="1"><em>Type 2 diabetes mellitus, Alzheimer’s disease.</em></td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Drug</td>
+<td rowspan="1" colspan="1">Drugs are biochemical substances formulated in such ways that when administered to a person it will exert a certain physiological effect. </td>
+<td rowspan="1" colspan="1"><em>Acetaminophen, Furosemide</em></td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Measurement</td>
+<td rowspan="1" colspan="1">The standardized examination or testing of a person or person’s sample.</td>
+<td rowspan="1" colspan="1"><em>Serum creatinine, Serum bilirubin</em></td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Procedure</td>
+<td rowspan="1" colspan="1">Procedures are activities or processes on the patient to have a diagnostic or therapeutic purpose.</td>
+<td rowspan="1" colspan="1"><em>Chemotherapy, Radiotherapy</em></td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Observation</td>
+<td rowspan="1" colspan="1">Observations are clinical facts about a person obtained in the context of examination, questioning or a procedure.</td>
+<td rowspan="1" colspan="1"><em>Smoking, drug allergy</em></td>
+</tr>
+<tr>
+<td rowspan="2" colspan="1"><strong>Attribute</strong></td>
+<td rowspan="1" colspan="1">Value</td>
+<td rowspan="1" colspan="1">Numeric attributes include but not limited to age range, lab test result, etc.</td>
+<td rowspan="1" colspan="1"><em>30 to 75 years old</em></td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Temporal</td>
+<td rowspan="1" colspan="1">Temporal constraints imposed on clinical diagnoses, drugs, etc.</td>
+<td rowspan="1" colspan="1"><em>within 12 months</em></td>
+</tr>
+</tbody>
+</table></div>
+<div class="p text-right font-secondary"><a href="table/ocy178-T1/" class="usa-link" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div></section></section><section id="sec17"><h5 class="pmc_sec_title">Negation detection</h5>
+<p>Negation detection is important for determining the negation status for each criterion. We used NegEx<a href="#ocy178-B30" class="usa-link" aria-describedby="ocy178-B30"><sup>30</sup></a> with negation trigger files generated previously<a href="#ocy178-B13" class="usa-link" aria-describedby="ocy178-B13"><sup>13</sup></a> to assess the negation status of each recognized clinical entity. At the completion of negation detection, every clinical entity is labeled as negated or affirmed. For example, in “No previous myocardial infarction, stroke or diagnosed coronary artery disease” (<a href="https://clinicaltrials.gov/ct2/show/NCT02834689" class="usa-link" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">NCT02834689</a>), the entities “myocardial infarction,” “stroke,” and “diagnosed coronary artery disease” are labeled as negated.</p></section><section id="sec18"><h5 class="pmc_sec_title">Relation extraction</h5>
+<p>Our pipeline implements binary relation extraction with 2 relationships: has_temp (temporal) and has_value (<a href="#ocy178-T2" class="usa-link">Table 2</a>). Relations between entities are determined by reachability according to enhanced++ English universal dependency parsing results.<a href="#ocy178-B31" class="usa-link" aria-describedby="ocy178-B31"><sup>31</sup></a> We implemented a heuristic method by employing Dijkstra’s algorithm<a href="#ocy178-B32" class="usa-link" aria-describedby="ocy178-B32"><sup>32</sup></a> to calculate the reachability of each pair of entities. If an entity-attribute pair are connected by a series of modifier relations, then the entity and attribute are recognized as related.
+</p>
+<section class="tw xbox font-sm" id="ocy178-T2"><h6 class="obj_head">Table 2.</h6>
+<div class="caption p"><p>Relationships in Criteria2Query</p></div>
+<div class="tbl-box p" tabindex="0"><table class="content" frame="hsides" rules="groups">
+<colgroup span="1">
+<col valign="top" align="left" span="1">
+<col valign="top" align="left" span="1">
+<col valign="top" align="left" span="1">
+<col valign="top" align="left" span="1">
+</colgroup>
+<thead align="center"><tr>
+<th rowspan="1" colspan="1">Relationship</th>
+<th rowspan="1" colspan="1">Entity</th>
+<th rowspan="1" colspan="1">Attribute</th>
+<th rowspan="1" colspan="1">Example</th>
+</tr></thead>
+<tbody>
+<tr>
+<td rowspan="3" colspan="1">has_temp</td>
+<td rowspan="1" colspan="1">Condition|Measurement</td>
+<td rowspan="3" colspan="1">Temporal</td>
+<td rowspan="3" colspan="1"><em>“thromboembolic disease” has_temp “within the last 3 months”</em></td>
+</tr>
+<tr><td rowspan="1" colspan="1">|Drug|Observation</td></tr>
+<tr><td rowspan="1" colspan="1">|Procedure</td></tr>
+<tr>
+<td rowspan="1" colspan="1">has_value</td>
+<td rowspan="1" colspan="1">Demographic| Measurement</td>
+<td rowspan="1" colspan="1">Value</td>
+<td rowspan="1" colspan="1">
+<em>“Age” has_value “13-15 years old”, “platelet count” has_value “&lt; 100</em> <em>000”</em>
+</td>
+</tr>
+</tbody>
+</table></div>
+<div class="p text-right font-secondary"><a href="table/ocy178-T2/" class="usa-link" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div></section></section><section id="sec19"><h5 class="pmc_sec_title">Logic detection</h5>
+<p>The logic operators between entities is crucial for correct semantic representation of eligibility criteria. Hence, we added a logic detection step following the information extraction pipeline to resolve the logic operators connecting clinical entities. Our heuristic method uses the conjunct tags in enhanced English universal dependency parsing results<a href="#ocy178-B31" class="usa-link" aria-describedby="ocy178-B31"><sup>31</sup></a> to group the entities and decompose the logic relations between entities and groups. A conjunct is the relation between 2 elements connected by a coordinating conjunction, such as <em>and</em>, <em>or</em>, etc. For example, in the inclusion criteria, “Known to be sero-positive for human immunodeficiency virus (HIV), hepatitis C virus (HCV), or hepatitis B virus (HBV),” all criteria are connected by an “OR” relationship by transitivity of conjunct entities. In a more complicated example, “at risk for GDM (such as having metabolic syndrome, prediabetes, or BMI &gt; 85%; and an A1C &lt; 6.5%),” “metabolic syndrome,” “prediabetes,” and “BMI &gt; 85%” are all connected by “OR” relationships, and this entire group is connected with “A1C &lt; 6.5%” by an “AND” relationship.</p></section></section></section><section id="sec20"><h3 class="pmc_sec_title">Query formulation</h3>
+<section id="sec21"><h4 class="pmc_sec_title">OMOP cohort definition</h4>
+<p>OHDSI’s ATLAS tool allows users to manually define cohorts and query OMOP databases. In the cohort definition of OMOP CDM, each criterion has 4 required attributes (<a href="#ocy178-F2" class="usa-link">Figure 2</a>): inclusion or exclusion, domain (category from <a href="#ocy178-T1" class="usa-link">Table 1</a>), represented concept set, and temporal requirements. Additionally, relevant attributes (eg, lab results) can be associated with its value. Effective use of the OMOP CDM and ATLAS tools requires substantial experience. Users must review free-text eligibility criteria, create or find suitable concept sets, define criteria 1-by-1, and organize the relations among criteria. Query formulation in Criteria2Query aims to translate structured criteria (the output from the information extraction pipeline) into OMOP format automatically. Criteria2Query exports criteria definitions as JSON output that can be loaded, visualized, and manipulated in ATLAS.
+</p>
+<figure class="fig xbox font-sm" id="ocy178-F2"><h5 class="obj_head">Figure 2.</h5>
+<p class="img-box line-height-none margin-x-neg-2 tablet:margin-x-0 text-center"><a class="tileshop" target="_blank" href="https://www.ncbi.nlm.nih.gov/core/lw/2.0/html/tileshop_pmc/tileshop_pmc_inline.html?title=Click%20on%20image%20to%20zoom&amp;p=PMC3&amp;id=6402359_ocy178f2.jpg"><img class="graphic zoom-in" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5d44/6402359/20d6da2f2051/ocy178f2.jpg" loading="lazy" height="149" width="750" alt="Figure 2."></a></p>
+<div class="p text-right font-secondary"><a href="figure/ocy178-F2/" class="usa-link" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
+<figcaption><p>An example of one criterion on ATLAS.</p></figcaption></figure></section><section id="sec22"><h4 class="pmc_sec_title">Entity normalization</h4>
+<p>Generating standard concept sets that accurately represent biomedical concepts in free-text is a fundamental but challenging component in query formulation. In free-text criteria expression, entities can semantically represent multiple standard concepts (eg, nonmelanoma skin cancer), but the precise scope of each criterion entity is rarely specified explicitly and requires domain knowledge to define correctly. Reusing pre-existing concept sets defined by experts can increase accuracy and reproducibility. Within the OHDSI community, experts have already created more than 2000 publicly shared concept sets for diseases, drugs and lab tests. Criteria2Query is able to fetch and reuse these concept sets through the OHDSI WebAPI.</p>
+<p>We also implemented an automatic concept set generation component to assist users to create new concept sets (<a href="#ocy178-F3" class="usa-link">Figure 3</a>). As abbreviations are abundantly used in clinical research eligibility criteria, we employed the Unified Medical Language System<a href="#ocy178-B33" class="usa-link" aria-describedby="ocy178-B33"><sup>33</sup></a> synonym dictionary to get the full expression of abbreviation terms and map them to vocabularies, for example, extending “AD” to “Alzheimer’s Disease.” We wrapped a Lucene-based OMOP mapping tool called Usagi<a href="#ocy178-B34" class="usa-link" aria-describedby="ocy178-B34"><sup>34</sup></a> as a web service that queries entity terms and their domains to map terms to OMOP standard concepts (<a href="#sup1" class="usa-link">Supplementary Appendix</a> 1.3). Using OHDSI application programming interfaces (APIs),<a href="#ocy178-B35" class="usa-link" aria-describedby="ocy178-B35"><sup>35</sup></a> we leveraged the rich hierarchical relations among concepts in the OMOP CDM to include all descendants for condition concepts and all drugs sharing the same ingredient for drug concepts.
+</p>
+<figure class="fig xbox font-sm" id="ocy178-F3"><h5 class="obj_head">Figure 3.</h5>
+<p class="img-box line-height-none margin-x-neg-2 tablet:margin-x-0 text-center"><a class="tileshop" target="_blank" href="https://www.ncbi.nlm.nih.gov/core/lw/2.0/html/tileshop_pmc/tileshop_pmc_inline.html?title=Click%20on%20image%20to%20zoom&amp;p=PMC3&amp;id=6402359_ocy178f3.jpg"><img class="graphic zoom-in" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5d44/6402359/1843cd1f9be5/ocy178f3.jpg" loading="lazy" height="495" width="680" alt="Figure 3."></a></p>
+<div class="p text-right font-secondary"><a href="figure/ocy178-F3/" class="usa-link" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
+<figcaption><p>Concept set autogeneration process. AD: Alzheimer’s disease; ICD10 : International Classification of Diseases–Tenth Revision; ICD9CM: International Classification of Diseases–Ninth Revision–Clinical Modification; N: no; Y: yes.</p></figcaption></figure></section><section id="sec23"><h4 class="pmc_sec_title">Logic translation</h4>
+<p>The query formulation module takes the concepts and relations produced by the information extraction pipeline, represents them using the concept sets generated in Entity normalization, and formulates query logic using the template introduced in OMOP cohort definition. Given that different CDMs organize and represent logic differently, we developed a logic translation component in Criteria2Query to translate logic within structured criteria to the target data model. In cohort definitions in the OMOP CDM, the logic relations of “AND” and “OR” are represented by the templates “have <span class="text-underline">all</span> of the following criteria” and “have <span class="text-underline">any</span> of the following criteria,” respectively. Exclusion criteria are represented by “with exactly 0 using all occurrences.” Our logic translation component helps users to translate structured logic relations (as produced by the IE pipeline in Section 3.2.2) to logic expressions in the target CDM’s cohort definition format. For instance, consider the exclusion criteria, “neurologic disease other than AD” (<a href="https://clinicaltrials.gov/ct2/show/NCT02167256" class="usa-link" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">NCT02167256</a>). This exclusion criterion translates to the definition: “exactly 0 using occurrence” of “neurologic disease” with a subgroup “have all the following criteria” of “Alzheimer’s disease.” The logic translation component currently supports the OMOP CDM but is flexible and extensible to support other CDMs.</p></section><section id="sec24"><h4 class="pmc_sec_title">Attribute normalization (temporal and numeric)</h4>
+<p>Temporal normalization unifies all temporal expressions to the same unit (days). We adapted a library for recognizing and normalizing time expressions, SUTime,<a href="#ocy178-B36" class="usa-link" aria-describedby="ocy178-B36"><sup>36</sup></a> to standardized temporal expressions into TIMEX3 format first. We then use regular expressions to transform temporal information in TIMEX3 format into the target CDM format. We also developed a heuristic method for the numeric normalization using regular expressions to fill the results in the target format. Both temporal and numeric attributes are linked to their related criteria based on relation extraction results (Relation extraction).</p></section></section><section id="sec25"><h3 class="pmc_sec_title">Evaluation methods</h3>
+<section id="sec26"><h4 class="pmc_sec_title">Evaluation on a random sample of criteria from ClinicalTrials.gov</h4>
+<p>To test the effectiveness of Criteria2Query on formally written criteria statements, we randomly selected 125 criteria sentences from 10 clinical trials across different disease domains from ClinicalTrials.gov. These 10 evaluation trials were selected outside of the 230 trials previously used to train the system and hence have none overlap with the training data. Evaluation was based on end-to-end results of Criteria2Query. The free-text section of the criteria text block was copied verbatim into the respective inclusion and exclusion criteria text fields in Criteria2Query and automatic processing was performed. Two domain experts provided the gold standards for the indicators. One domain expert reviewed all cohort definitions as visualized in ATLAS, which included the end-to-end evaluation of entity recognition and relation extraction. The other expert reviewed all the concept sets automatically generated by Criteria2Query.</p>
+<p>We employed precision, recall, and F1 score to evaluate the performances of the NER and relation extraction components to appraise whether the criteria related entities and relations between entities and attributes were extracted and represented correctly. We also measured accuracies for negation detection, logic detection, entity normalization, and attribute normalization among correctly extracted entities. Entity normalization and attribute normalization were adapted to illustrate the performance of translating free-text expression to OMOP CDM-based structured format. We calculated the 95% confidence intervals for all performance metrics using the adjusted bootstrap percentile interval with 10 000 iterations (R v3.4.4). The computation efficiency was measured by the average time taken for automated query formulation without human intervention.</p></section><section id="sec27"><h4 class="pmc_sec_title">User-centered evaluation method</h4>
+<p>We conducted an evaluation of Criteria2Query at the 2018 OHDSI annual fall symposium and collected anonymous user feedback and criteria entries from attendees willing to try the demo of Criteria2Query. The study was approved by our IRB as an exempt study. We collected criteria sentences manually entered by OHDSI symposium attendees who tried our software during 2 software demonstration sections (2.5 hours total). A usage log captured the arbitrary criteria entered by the volunteering testers and their parsing results. Following a brief introduction and demonstration by the CY, the participants had full freedom to test our system without any constraint while entering criteria. We collected all entered criteria from the participants and evaluated accuracy consistently with Evaluation on a Random Sample of Criteria from ClinicalTrials.gov using distinct criteria. Duplicate criteria entries were removed before computation using the aforementioned performance metrics.</p>
+<p>We also measured the usability of Criteria2Query. We asked users to take a survey containing 8 questions (<a href="#sup1" class="usa-link">Supplementary Appendix</a> 2) after testing our demo and collected the results anonymously on paper. The first 7 questions evaluated each user’s prior familiarity with cohort definition and user experience about Criteria2Query. The last question collected free-text comments and suggestions for improvement for Criteria2Query. After we received all paper version surveys, we manually entered these data into SurveyMonkey and reported quantitative analysis of the results automatically generated by SurveyMonkey.</p></section></section></section><section id="sec28"><h2 class="pmc_sec_title">RESULTS</h2>
+<section id="sec29"><h3 class="pmc_sec_title">User interface and availability of Criteria2Query</h3>
+<p>Criteria2Query is deployed as a web-based natural language cohort definition system based on the Spring MVC framework. Its online version is available at <a href="http://www.ohdsi.org/web/criteria2query/" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">http://www.ohdsi.org/web/criteria2query/</a>. Its source code, test data and evaluation results are available at <a href="https://github.com/OHDSI/Criteria2Query" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">https://github.com/OHDSI/Criteria2Query</a>. The instructions for using Criteria2Query are also on GitHub. <a href="#ocy178-F4" class="usa-link">Figure 4</a> shows the user workflow. Users may either enter a ClinicalTrials.gov study ID or free text in the input fields (<a href="#ocy178-F5" class="usa-link">Figure 5</a>). The “One-Button Start” function (<a href="#ocy178-F5" class="usa-link">Figure 5</a>) takes users directly to executable queries viewable in ATLAS, employing auto-generated concept sets and bypassing the intermediate steps. Otherwise, detected entities are highlighted and labeled with their predicted categories. Structured eligibility criteria are downloadable in JSON format. Criteria2Query lists all candidate concept sets for each entity, including the automatically generated concept set and matching concept sets created by domain experts. Interactive entity normalization allows users to select from these concept sets to fine tune the concept mapping results. Finally, the cohort query is ready for review, refinement, and execution for cohort retrieval in ATLAS (<a href="#ocy178-F6" class="usa-link">Figure 6</a>).
+</p>
+<figure class="fig xbox font-sm" id="ocy178-F4"><h4 class="obj_head">Figure 4.</h4>
+<p class="img-box line-height-none margin-x-neg-2 tablet:margin-x-0 text-center"><a class="tileshop" target="_blank" href="https://www.ncbi.nlm.nih.gov/core/lw/2.0/html/tileshop_pmc/tileshop_pmc_inline.html?title=Click%20on%20image%20to%20zoom&amp;p=PMC3&amp;id=6402359_ocy178f4.jpg"><img class="graphic zoom-in" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5d44/6402359/984cef61bc34/ocy178f4.jpg" loading="lazy" height="222" width="680" alt="Figure 4."></a></p>
+<div class="p text-right font-secondary"><a href="figure/ocy178-F4/" class="usa-link" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
+<figcaption><p>User workflow of Criteria2Query.</p></figcaption></figure><figure class="fig xbox font-sm" id="ocy178-F5"><h4 class="obj_head">Figure 5.</h4>
+<p class="img-box line-height-none margin-x-neg-2 tablet:margin-x-0 text-center"><a class="tileshop" target="_blank" href="https://www.ncbi.nlm.nih.gov/core/lw/2.0/html/tileshop_pmc/tileshop_pmc_inline.html?title=Click%20on%20image%20to%20zoom&amp;p=PMC3&amp;id=6402359_ocy178f5.jpg"><img class="graphic zoom-in" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5d44/6402359/758ec2a7bba7/ocy178f5.jpg" loading="lazy" height="830" width="800" alt="Figure 5."></a></p>
+<div class="p text-right font-secondary"><a href="figure/ocy178-F5/" class="usa-link" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
+<figcaption><p>The user interface of the Criteria2Query system.</p></figcaption></figure><figure class="fig xbox font-sm" id="ocy178-F6"><h4 class="obj_head">Figure 6.</h4>
+<p class="img-box line-height-none margin-x-neg-2 tablet:margin-x-0 text-center"><a class="tileshop" target="_blank" href="https://www.ncbi.nlm.nih.gov/core/lw/2.0/html/tileshop_pmc/tileshop_pmc_inline.html?title=Click%20on%20image%20to%20zoom&amp;p=PMC3&amp;id=6402359_ocy178f6.jpg"><img class="graphic zoom-in" src="https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5d44/6402359/7bde796fbfef/ocy178f6.jpg" loading="lazy" height="696" width="800" alt="Figure 6."></a></p>
+<div class="p text-right font-secondary"><a href="figure/ocy178-F6/" class="usa-link" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
+<figcaption><p>Automatically generated cohort query presented by ATLAS to allow query review, refinement, and execution for patient cohort generation using clinical databases.</p></figcaption></figure></section><section id="sec30"><h3 class="pmc_sec_title">Evaluation results</h3>
+<section id="sec31"><h4 class="pmc_sec_title">Evaluation results for a random sample of criteria from ClinicalTrials.gov</h4>
+<p>Criteria2Query was first evaluated on 125 sentences of free-text eligibility criteria, which included 215 entities, 34 relations, 137 negations, and 20 attributes, extracted from 10 randomly selected clinical trials for varying diseases such as Alzheimer’s disease, diverticulitis, and lower back pain, from the ClinicalTrials.gov. The full list of NCTID numbers and example cohort queries for the testing criteria can be downloaded from our GitHub repository (<a href="https://github.com/OHDSI/Criteria2Query" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">https://github.com/OHDSI/Criteria2Query</a>) and can be reviewed on the public version of ATLAS (<a href="http://www.ohdsi.org/web/atlas/" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">www.ohdsi.org/web/atlas/</a>). The testing criteria cover Demographic, Condition, Drug, Measurement, and Procedure domains of clinical events.</p>
+<p>We reported the effectiveness and efficiency of Criteria2Query. In effectiveness evaluation, we designed an evaluation matrix to assess representation performance, and we reported the accuracy of negation detection, logic detection, entity normalization, and attribute normalization (<a href="#ocy178-T3" class="usa-link">Table 3</a>). The gold standard for all indicators were provided by 2 experts with rich knowledge of medical terminologies and the OMOP CDM. As shown in <a href="#ocy178-T3" class="usa-link">Table 3</a>, the F1 score for entity recognition and relation extraction is 0.804 and 0.793, respectively. Negation detection, logic detection, entity normalization, and attribute normalization achieved 98.5%, 94.4%, 44.7%, and 80.0%, respectively.
+</p>
+<section class="tw xbox font-sm" id="ocy178-T3"><h5 class="obj_head">Table 3.</h5>
+<div class="caption p"><p>The evaluation matrix of criteria representation with 95% confidence intervals</p></div>
+<div class="tbl-box p" tabindex="0"><table class="content" frame="hsides" rules="groups">
+<colgroup span="1">
+<col valign="top" align="left" span="1">
+<col valign="top" align="center" span="1">
+<col valign="top" align="center" span="1">
+<col valign="top" align="center" span="1">
+<col valign="top" align="center" span="1">
+<col valign="top" align="center" span="1">
+<col valign="top" align="center" span="1">
+<col valign="top" align="center" span="1">
+<col valign="top" align="center" span="1">
+<col valign="top" align="center" span="1">
+</colgroup>
+<thead>
+<tr>
+<th rowspan="2" colspan="1">Evaluation Matrix</th>
+<th colspan="3" rowspan="1">Criteria crawled from Clinical Trials.gov (n = 125)<hr>
+</th>
+<th colspan="3" rowspan="1">Criteria Entered by Testers (n = 52)<hr>
+</th>
+<th colspan="3" rowspan="1">Combined (n = 177)<hr>
+</th>
+</tr>
+<tr>
+<th rowspan="1" colspan="1">Precision</th>
+<th rowspan="1" colspan="1">Recall</th>
+<th rowspan="1" colspan="1">F1</th>
+<th rowspan="1" colspan="1">Precision</th>
+<th rowspan="1" colspan="1">Recall</th>
+<th rowspan="1" colspan="1">F1</th>
+<th rowspan="1" colspan="1">Precision</th>
+<th rowspan="1" colspan="1">Recall</th>
+<th rowspan="1" colspan="1">F1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan="1" colspan="1">Entity recognition</td>
+<td rowspan="1" colspan="1">0.902 (156/173) [0.844–0.936]</td>
+<td rowspan="1" colspan="1">0.726 (156/215) [0.661–0.777]</td>
+<td rowspan="1" colspan="1">0.804 [0.760–0.841]</td>
+<td rowspan="1" colspan="1">0.899 (62/69) [0.783–0.942]</td>
+<td rowspan="1" colspan="1">0.681 (62/91) [0.571–0.758]</td>
+<td rowspan="1" colspan="1">0.775 [0.694–0.833]</td>
+<td rowspan="1" colspan="1">0.901 (218/242) [0.851–0.930]</td>
+<td rowspan="1" colspan="1">0.712 (218/306) [0.657–0.758]</td>
+<td rowspan="1" colspan="1">0.795 [0.758–0.828]</td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Relation extraction</td>
+<td rowspan="1" colspan="1">0.958 (23/24) [0.792–1.000]</td>
+<td rowspan="1" colspan="1">0.676 (23/34) [0.471–0.794]</td>
+<td rowspan="1" colspan="1">0.793 [0.576–0.867]</td>
+<td rowspan="1" colspan="1">1.00 (10/10)</td>
+<td rowspan="1" colspan="1">0.714 (10/14) [0.357–0.857]</td>
+<td rowspan="1" colspan="1">0.833 [0.526–0.923]</td>
+<td rowspan="1" colspan="1">0.971 (33/34) [0.824–1.000]</td>
+<td rowspan="1" colspan="1">0.688 (33/48) [0.521–0.792]</td>
+<td rowspan="1" colspan="1">0.805 [0.647–0.871]</td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Accuracy</td>
+<td colspan="3" rowspan="1"></td>
+<td colspan="3" rowspan="1"></td>
+<td colspan="3" rowspan="1"></td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Negation detection</td>
+<td colspan="3" rowspan="1">0.985 (135/137) [0.942–0.993]</td>
+<td colspan="3" rowspan="1">0.979 (47/48) [0.896-1.000]</td>
+<td colspan="3" rowspan="1">0.984 (182/185) [0.946–0.995]</td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Logic detection</td>
+<td colspan="3" rowspan="1">0.944 (17/18) [0.722-1.00]</td>
+<td colspan="3" rowspan="1">0.500 (2/4) [0.000–0.750]</td>
+<td colspan="3" rowspan="1">0.864 (19/22) [0.591–0.955]</td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Entity normalization</td>
+<td colspan="3" rowspan="1">0.447 (51/114) [0.351–0.535]</td>
+<td colspan="3" rowspan="1">0.808 (21/26) [0.577–0.885]</td>
+<td colspan="3" rowspan="1">0.514(72/140) [0.429–0.586]</td>
+</tr>
+<tr>
+<td rowspan="1" colspan="1">Attribute normalization</td>
+<td colspan="3" rowspan="1">0.800 (16/20) [0.500–0.900]</td>
+<td colspan="3" rowspan="1">0.778(7/9) [0.222–0.889]</td>
+<td colspan="3" rowspan="1">0.793(23/29) [0.586–0.897]</td>
+</tr>
+</tbody>
+</table></div>
+<div class="p text-right font-secondary"><a href="table/ocy178-T3/" class="usa-link" target="_blank" rel="noopener noreferrer">Open in a new tab</a></div>
+<div class="tw-foot p"><div class="fn" id="tblfn1"><p>Values are Precision, Recall, F1 score (n/n) [95% confidence interval] or Accuracy [95% confidence interval), unless otherwise indicated.</p></div></div></section><p>To evaluate the efficiency of Criteria2Query, we assessed the time consumption of the information extraction and query formulation modules. Our experiment environment was a MacBook Pro with Intel Core i7 (3.1 GHz) CPU, 16-GB 2133-MHz LPDDR3 memory, and 512-GB SSD hard disk. On average, each trial only required 15.15 seconds to be translated to an OMOP CDM-compliant structured cohort definition query. Each criterion sentence only needed 1.22 seconds on average. The most time-consuming part of the system is the API call for entity normalization and saving concept sets using the public OHDSI website. A total of 92% of the entire time for generating cohort definition queries was spent on query formulation. Only 8% of the total time was spent on information extraction. A critical NLP task that involves mapping mentions to some standard database or ontology identifiers,<a href="#ocy178-B37" class="usa-link" aria-describedby="ocy178-B37"><sup>37</sup></a><sup>,</sup><a href="#ocy178-B38" class="usa-link" aria-describedby="ocy178-B38"><sup>38</sup></a> entity normalization of query formulation turns out to be the most rate-limiting factor in our pipeline because it requires efficient search through vast terminologies for appropriate concept mappings.</p></section><section id="sec32"><h4 class="pmc_sec_title">User-centered evaluation results</h4>
+<p>A pilot user-centered evaluation of the usability of Criteria2Query was conducted during the 2018 OHDSI Symposium. We set up a booth to demo the software and invited conference attendees to try it out. Each user spent 5–10 minutes testing our software. We collected a set of 94 criterion sentences manually entered by 13 OHDSI symposium attendees who tried out our software demo. After removing 42 criteria as duplicates, we retained 52 unique criteria for evaluation. The full list of user-entered criteria and evaluation results can be downloaded from our git repository. As shown in <a href="#ocy178-T3" class="usa-link">Table 3</a>, the F1 score for entity recognition and relation extraction were 0.775 and 0.833, respectively. Negation detection, logic detection, entity normalization, and attribute normalization achieved 97.9%, 50.0%, 80.8%, and 77.8%, respectively.</p>
+<p>All the 13 testers finished our anonymous surveys. The first 3 questions ask about participants’ prior familiarity with cohort definition. When asked about their level of experience with self-service tools for cohort definition (eg, ATLAS or i2b2), 15.4% (2 of 13), 61.5% (8 of 13), and 23.1% (3 of 13) of participants responded “no experience,” “a little experience,” and “very experienced,” respectively. Almost half of the participants consider it difficult to perform the task of cohort definition (eg, identifying queryable eligibility concepts, mapping concepts to terminology codes, and translating eligibility logic to database query expressions).</p>
+<p>The last 5 questions ask for participants’ opinions about Criteria2Query; 100% (13 of 13) of participants either completely or somewhat agreed that the NLI of Criteria2Query was user friendly. When asked if Criteria2Query is difficult to use, 23% (3 of 13) agreed somehow or completely, 15.4% (2 of 13) of participants were neutral, and 61.6% (8 of 13) disagreed somehow or completely. A total of 84.6% (11+ of 13) of participants indicated a willingness to use Criteria2Query in their future cohort definition tasks. Only 4 participants provided free-text feedback, which is generally positive with constructive feedback, for question 8 (“do you have further comments about Criteria2Query?”) and the other 9 participants provided no response, as shown in <a href="#sup1" class="usa-link">Supplementary Appendix</a> 2.</p></section></section></section><section id="sec33"><h2 class="pmc_sec_title">DISCUSSION</h2>
+<p>We present Criteria2Query, a novel NLI for transforming free-text clinical research criteria to OMOP CDM-based cohort queries. It facilitates EHR-based cohort definition using a series of NLP methods and OMOP CDM terminologies. From the usability perspective, compared with manual and form-based methods for SQL query crafting, Criteria2Query has 3 distinctive features.</p>
+<p>First, Criteria2Query proposes a systematic information extraction method for structuring eligibility criteria text, promoting knowledge reuse. In previous studies,<a href="#ocy178-B7" class="usa-link" aria-describedby="ocy178-B7"><sup>7</sup></a><sup>,</sup><a href="#ocy178-B11" class="usa-link" aria-describedby="ocy178-B11"><sup>11</sup></a> more preprocessing was required since all input could only take the form of sentences. Criteria2Query splits the task at different levels from document to sentences to make the whole parsing process systematic (Systematic Information Extraction for Eligibility Criteria). For informatics researchers, they are able to customize their own logic on different levels. A library of frequently used criteria further enables the development of the next-generation eligibility criteria authoring systems that can be data-driven and knowledge based, optimizing study feasibility and population representativeness, as previously envisioned by Weng.<a href="#ocy178-B6" class="usa-link" aria-describedby="ocy178-B6"><sup>6</sup></a></p>
+<p>Second, Criteria2Query extends the open-source OMOP CDM and OHDSI APIs. The OMOP CDM has rich concept representations, which map to many source vocabularies and hence is able to support semantic queries. For example, in our entity normalization module, we can easily map drug ingredients mentioned in free-text criteria to all brand-name drugs and dosages containing that ingredient. For example, “insulin, isophane” could be mapped to a concept set containing “insulin human, isophane 100 UNT/ML Pen Injector,” “insulin, isophane Pen Injector [Humulin N],” and more than 2000 other drug formulations.</p>
+<p>Third, Criteria2Query is the first of its kind that takes user input of natural language criteria to generate OMOP CDM-based executable clinical database queries. Researchers can use Criteria2Query in either automated fashion to receive query results using default recommendations, or semi-automated fashion to refine the results at each step. It enables researchers to query EHR data autonomously for cohort definition without requiring them to master medical terminologies or database query languages (eg, SQL). In addition to unstructured eligibility criteria, users may add other standardized fields from ClinicalTrials.gov or other clinical protocols into the Initial Events section for customized results.</p>
+<p>Compared with manual cohort definition, Criteria2Query has 4 advantages for minimizing user effort and for standardizing outputs. First, Criteria2Quey highlights clinical entities and attributes and labels their EHR presence status automatically, making it easy for users to refine the criteria as needed. Second, pregenerated concept sets could be shared and reused, maximizing knowledge reuse and collaboration. In related systems, such as i2b2, users must specify the clinical concept codes to query their database. Third, Criteria2Query is able to formulate the logic relations according to the target data model, OMOP CDM. Users only need to perform drag-and-drop based on pregenerated cohort definitions in ATLAS instead of starting from scratch. Finally, the units of attributes, including numeric and temporal attributes, are converted to the CDM’s standard formats.</p>
+<section id="sec34"><h3 class="pmc_sec_title">Open source, flexibility, and extensibility</h3>
+<p>Criteria2Query is open source, modular, and follows loose coupling design. Compared with other systems, Criteria2Query has the advantages of being flexible and extensible. This design allows users to reuse, interchange, or enhance individual modules as needed without affecting other system components. For example, users who only need the structured criteria representation may employ the information extraction module independently to transform their data. Users can also extend capabilities by incorporating new modules that conform to a standard interface. For example, phenotyping algorithms using semi-structured data (eg, International Classification of Diseases–Ninth Revision codes) simply need a translation component to leverage the query formulation module to generate phenotype queries automatically. We provide RESTful APIs to facilitate its integration with other systems. Other informaticians can generate SQL queries by Criteria2Query and implement more data visualization of cohorts for executing those queries, which could help them optimize their criteria input.</p></section><section id="sec35"><h3 class="pmc_sec_title">Error analysis</h3>
+<p>The information extraction errors can be attributed to suboptimal entity recognition and relation extraction. The low recall in entity recognition could be due to training our sequence labeling model solely on a corpus of 230 Alzheimer’s disease trials. For example, in the criterion, “Patients to be included in the study must have AMD with choroidal neovascularization,” “AMD with choroidal neovascularization” was not recognized. This situation was exacerbated when the users attempted to search for recognizable concepts repeatedly. For example, during our user evaluation, 31% (4 of 13) of the test users repeatedly tried different variations of the same class of concepts that could not be recognized, each time adding to the count of errors. For example, 1 user tested 4 forms of “patient with a diagnosis of mitral stenosis and is on pitting edema and is on &lt;DRUG&gt;,” with tykosin, tikosyn, and dofetilide being different stenosis drugs.</p>
+<p>Relation extraction errors were mainly due to the incomplete sentence structures common in free-text eligibility criteria. As the Enhanced++ English universal dependency parsing<a href="#ocy178-B31" class="usa-link" aria-describedby="ocy178-B31"><sup>31</sup></a> was designed for general language dependency parsing, it had difficulty identifying the dependencies in the abbreviated sentence structures common in medical corpora. More training data and rules need to be added to our heuristic methods for future improvements.</p>
+<p>Criteria2Query achieved a significantly better accuracy in entity normalization with user entry data than criteria extracted from ClinicalTtrials.gov. Most user-entered entities were simple enough to be satisfied by the concept sets automatically generated by Criteria2Query using the hierarchy of vocabularies. The poor performance in entity normalization for ClinicalTrials.gov data was partially due to the complexity and ambiguity of biomedical terms and to the over-simplified automatic mapping of biomedical terms. A medical domain expert reviewed the automatically generated concept sets to identify error causes for the worse results from ClinicaltTrials.gov data (<a href="#sup1" class="usa-link">Supplementary Appendix</a> 1.4). According to our analysis, the majority of errors in entity normalization were caused by a lack of domain knowledge to understand which concepts should be included in ambiguous hypernyms, such as “nonmelanoma skin cancer” and “anticoagulant.” More than 40% of all entity normalization errors could be remedied by reusing existing concept sets created by domain experts.</p>
+<p>Logic detection performed worse in user-entered criteria compared with criteria from ClinicalTrials.gov (50.0% vs 94.4%, respectively), but the difference was not significant. The criteria entered by testers were generally less complex, containing only 4 logic relations among the 52 evaluated criteria. The errors occurred in 2 criteria entered by 1 user with the same nested logic pattern: “patient can not have &lt;Condition A&gt; or &lt;Condition B&gt;, but &lt;Condition A&gt; is ok if no &lt;Condition C&gt;.” The nested logic in “but &lt;Condition A&gt; is ok if no &lt;Condition C&gt;” was not detected by Criteria2Query.</p></section><section id="sec36"><h3 class="pmc_sec_title">Limitations and future work</h3>
+<p>As the initial NLI to clinical databases for cohort definition, Criteria2Query has several limitations. According to these limitations, we outlined its corresponding future improvements.</p>
+<p>First, the training set for the conditional random fields–based machine learning model used in our NER module only included Alzheimer’s disease trials, while our testing data included trials from any disease domain and contained more diverse criteria expressions. Due to its limited scope, our training data did not contain similar feature patterns as the testing data, causing NER failures. Although our model exhibited some generalizability of capturing common expressions in criteria, performance could further improve with larger and more diverse training data. We are annotating a larger corpus of eligibility criteria with samples from a broad range of clinical trials to train a more robust NER model. In addition, the current version of Criteria2Query supports only offline learning and does not accommodate online learning for unrecognized or misclassified named entities. To address this limitation, we will add an interactive function in our system to allow users to edit the NER results shown in <a href="#ocy178-F5" class="usa-link">Figure 5</a>. This will enable continuous online learning so that the online corrections to NER results can be incorporated to enhance future NER performance.</p>
+<p>Second, more comprehensive entity normalization is required. Eligibility criteria are often vague and ambiguous, using hypernyms or fuzzy terms to represent a set of diseases, for example, “significant medical or psychiatric disorder” (<a href="https://clinicaltrials.gov/ct2/show/NCT01825512" class="usa-link" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">NCT01825512</a>) and “severe or uncontrolled systemic disease” (<a href="https://clinicaltrials.gov/ct2/show/NCT00807170" class="usa-link" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">NCT00807170</a>). These terms refer to broad sets of diseases that may vary with subjective opinion. Given the ambiguity, it is hard to create a concept set accurately representing these terms. In our system, we calculated the string distance to find the most relevant concepts to create its concept set, but this approach may not work well in these scenarios. We will involve domain experts to semimanually create reusable concept sets and promote knowledge reuse by reviewing the concept sets of frequently used criteria in clinical trials. We will also collaborate with the OHDSI community to leverage the Gold standard phenotype library under development (<a href="http://forums.ohdsi.org/t/requirements-development-for-the-ohdsi-gold-standard-phenotype-library/4876" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">http://forums.ohdsi.org/t/requirements-development-for-the-ohdsi-gold-standard-phenotype-library/4876</a>).</p>
+<p>Third, Criteria2Query currently does not have an ideal solution to configure initial event cohorts (eg, “patients with Alzheimer’s disease”), which is defined by an initial event (eg, “first diagnosis of Alzheimer’s disease”) and an observational time window (eg, “3 years after the first diagnosis”). However, this information is required in ATLAS for executing the query against a clinical database to generate a cohort. This information determines the anchor event and within what time windows around the anchor event a patient’s medical history is considered for eligibility determination, whose configuration challenges vary by different use case scenarios. If eligibility criteria are for prospective clinical trials recruiting patients, there is no information about anchor event and observational windows for Criteria2Query to use. If eligibility criteria are for replicating trials from ClinicalTrials.gov as retrospective studies, an anchor event and an observational window must be manually specified for the study. By default, Criteria2Query uses the observational windows of any visit(s) in the target database as the observational windows and makes any visit as the initial event. One of the potential future improvements is to make Criteria2Query smarter and to enable automatic extraction of the anchor event from structured clinical trial summaries (eg, from the condition or medication information) or automatic inference of the anchor event from user-entered eligibility criteria based on their relatedness to certain diseases.</p>
+<p>Finally, in this study, we only conducted evaluation on a small criterion set from ClinicalTrials.gov and a small-scale user evaluation study. Further, conducting the user evaluation during conference demo sessions may not reflect how users would realistically interact with the system for cohort definition. For example, several users entered overly simplistic queries (eg, “dead,” “on clopidogrel”) possibly due to a combination of unfamiliarity with the system and the transient nature of demo sessions. A large-scale and rigorous evaluation is warranted and underway.</p>
+<p>We will evaluate Criteria2Query on a diverse criteria corpus, including complex criteria from proprietary clinical research protocols and large number of user-entered criteria to report the generalizability of the results to a broader set of clinical research criteria. We also realize that jargon such as initial events, index criterion, and attributes may be foreign to some users. Adequate training can help familiarize the users with the functionality and workflow of Criteria2Query. Therefore, understanding the users and designing tailored training materials to reduce learning curves is also necessary before large-scale user engagement. To quantify the time saving of our tool, we will record all operations during the evaluation to analyze the real-world performance of Criteria2Query.</p></section></section><section id="sec37"><h2 class="pmc_sec_title">CONCLUSIONS</h2>
+<p>Criteria2Query systematically translates free-text eligibility criteria to CDM-based cohort queries. It demonstrates early promise for empowering researchers and clinicians to create patient cohorts without mastering clinical CDMs or query languages by providing a NLI. Future longitudinal user evaluation studies at larger scales are warranted to assess its impact on facilitating clinical research.</p></section><section id="sec38"><h2 class="pmc_sec_title">FUNDING</h2>
+<p>This research was supported by National Library of Medicine grant R01LM009886 (to CW), Janssen grant JANSRD CU15-2317 (to CW), and National Center for Advancing Translational Science grants 3OT3TR002027-01S1 (to CW) and UL1TR001873 (PI: Muredach Reilly) for disseminating the research results to Columbia CTSA.</p></section><section id="sec39"><h2 class="pmc_sec_title">AUTHOR CONTRIBUTORS</h2>
+<p>CY, PR, and CW conceived the system design together. CY designed and implemented the system. CW supervised CY in his design and implementation. CW and CT edited the manuscript critically. CT, NS, ZL, JH, RM, and JP contributed to the design and evaluation of the system. YG and TK contributed to individual modules or prior versions of the system. All authors edited and approved the manuscript.</p></section><section id="sec40"><h2 class="pmc_sec_title">LICENSE</h2>
+<p>The Corresponding Author has the right to grant on behalf of all authors and does grant on behalf of all authors, an exclusive license (or nonexclusive for government employees) on a worldwide basis to the BMJ Group and co-owners or contracting owning societies (where published by the BMJ Group on their behalf), and its Licensees to permit this article (if accepted) to be published in the Journal of the American Medical Informatics Association and any other BMJ Group products and to exploit all subsidiary rights, as set out in our license.</p></section><section id="sec41"><h2 class="pmc_sec_title">Supplementary Material</h2>
+<section class="sm xbox font-sm" id="sup1"><div class="caption p"><span>Supplementary Data</span></div>
+<div class="media p"><div class="caption">
+<a href="/articles/instance/6402359/bin/ocy178_supp.zip" data-ga-action="click_feat_suppl" class="usa-link">Click here for additional data file.</a><sup> (290.2KB, zip) </sup>
+</div></div></section></section><section id="ack1" class="ack"><h2 class="pmc_sec_title">ACKNOWLEDGEMENTS</h2>
+<p>The authors would like to acknowledge the Observational Health Data Sciences and Informatics technical teams for their kind help, particularly Lee Evans. They also thank James Rogers for his help with the user-centered evaluation.</p>
+<p>
+<em>Conflict of interest statement</em>. None.</p></section><section id="ref1" class="ref-list"><h2 class="pmc_sec_title">REFERENCES</h2>
+<section id="ref1_sec2"><ul class="ref-list font-sm" style="list-style-type:none">
+<li id="ocy178-B1">
+<span class="label">1.</span><cite>
+Häyrinen K, Saranto K, Nykänen P.. 
+Definition, structure, content, use and impacts of electronic health records: a review of the research literature. Int J Med Inf 2008; 77: 291–304.</cite> [<a href="https://doi.org/10.1016/j.ijmedinf.2007.09.001" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/17951106/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=Int%20J%20Med%20Inf&amp;title=Definition,%20structure,%20content,%20use%20and%20impacts%20of%20electronic%20health%20records:%20a%20review%20of%20the%20research%20literature&amp;author=K%20H%C3%A4yrinen&amp;author=K%20Saranto&amp;author=P.%20Nyk%C3%A4nen&amp;volume=77&amp;publication_year=2008&amp;pages=291-304&amp;pmid=17951106&amp;doi=10.1016/j.ijmedinf.2007.09.001&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B2">
+<span class="label">2.</span><cite>
+Penberthy L, Brown R, Puma F,
+et al. 
+Automated matching software for clinical trials eligibility: measuring efficiency and flexibility. Contemp Clin Trials 2010; 31 (3): 207–17.</cite> [<a href="https://doi.org/10.1016/j.cct.2010.03.005" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC4387843/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/20230913/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=Contemp%20Clin%20Trials&amp;title=Automated%20matching%20software%20for%20clinical%20trials%20eligibility:%20measuring%20efficiency%20and%20flexibility&amp;author=L%20Penberthy&amp;author=R%20Brown&amp;author=F%20Puma&amp;volume=31&amp;issue=3&amp;publication_year=2010&amp;pages=207-17&amp;pmid=20230913&amp;doi=10.1016/j.cct.2010.03.005&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B3">
+<span class="label">3.</span><cite>
+Thadani SR, Weng C, Bigger JT,
+et al. 
+Electronic screening improves efficiency in clinical trial recruitment. J Am Med Inform Assoc 2009; 16 (6): 869–73.</cite> [<a href="https://doi.org/10.1197/jamia.M3119" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC3002129/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/19717797/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Am%20Med%20Inform%20Assoc&amp;title=Electronic%20screening%20improves%20efficiency%20in%20clinical%20trial%20recruitment&amp;author=SR%20Thadani&amp;author=C%20Weng&amp;author=JT%20Bigger&amp;volume=16&amp;issue=6&amp;publication_year=2009&amp;pages=869-73&amp;pmid=19717797&amp;doi=10.1197/jamia.M3119&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B4">
+<span class="label">4.</span><cite>
+Penberthy LT, Dahman BA, Petkov VI,
+et al. 
+Effort required in eligibility screening for clinical trials. J Oncol Pract 2012; 8 (6): 365–70.</cite> [<a href="https://doi.org/10.1200/JOP.2012.000646" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC3500483/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/23598846/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Oncol%20Pract&amp;title=Effort%20required%20in%20eligibility%20screening%20for%20clinical%20trials&amp;author=LT%20Penberthy&amp;author=BA%20Dahman&amp;author=VI%20Petkov&amp;volume=8&amp;issue=6&amp;publication_year=2012&amp;pages=365-70&amp;pmid=23598846&amp;doi=10.1200/JOP.2012.000646&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B5">
+<span class="label">5.</span><cite>
+Musen MA, Rohn JA, Fagan LM,
+et al. 
+Knowledge engineering for a clinical trial advice system: uncovering errors in protocol specification. Bull Cancer 1987; 74: 291–6.</cite> [<a href="https://pubmed.ncbi.nlm.nih.gov/3620734/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=Bull%20Cancer&amp;title=Knowledge%20engineering%20for%20a%20clinical%20trial%20advice%20system:%20uncovering%20errors%20in%20protocol%20specification&amp;author=MA%20Musen&amp;author=JA%20Rohn&amp;author=LM%20Fagan&amp;volume=74&amp;publication_year=1987&amp;pages=291-6&amp;pmid=3620734&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B6">
+<span class="label">6.</span><cite>
+Weng C.
+Optimizing clinical research participant selection with informatics. Trends Pharmacol Sci 2015; 36 (11): 706–9.</cite> [<a href="https://doi.org/10.1016/j.tips.2015.08.007" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC4686428/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/26549161/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=Trends%20Pharmacol%20Sci&amp;title=Optimizing%20clinical%20research%20participant%20selection%20with%20informatics&amp;author=C.%20Weng&amp;volume=36&amp;issue=11&amp;publication_year=2015&amp;pages=706-9&amp;pmid=26549161&amp;doi=10.1016/j.tips.2015.08.007&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B7">
+<span class="label">7.</span><cite>
+Kang T, Zhang S, Tang Y,
+et al. 
+EliIE: an open-source information extraction system for clinical trial eligibility criteria. J Am Med Inform Assoc 2017; 24 (6): 1062–71.</cite> [<a href="https://doi.org/10.1093/jamia/ocx019" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC6259668/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/28379377/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Am%20Med%20Inform%20Assoc&amp;title=EliIE:%20an%20open-source%20information%20extraction%20system%20for%20clinical%20trial%20eligibility%20criteria&amp;author=T%20Kang&amp;author=S%20Zhang&amp;author=Y%20Tang&amp;volume=24&amp;issue=6&amp;publication_year=2017&amp;pages=1062-71&amp;pmid=28379377&amp;doi=10.1093/jamia/ocx019&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B8">
+<span class="label">8.</span><cite>
+Friedman CP.
+A “fundamental theorem” of biomedical informatics. J Am Med Inform Assoc JAMIA 2009; 16 (2): 169–70.</cite> [<a href="https://doi.org/10.1197/jamia.M3092" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC2649317/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/19074294/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Am%20Med%20Inform%20Assoc%20JAMIA&amp;title=A%20%E2%80%9Cfundamental%20theorem%E2%80%9D%20of%20biomedical%20informatics&amp;author=CP.%20Friedman&amp;volume=16&amp;issue=2&amp;publication_year=2009&amp;pages=169-70&amp;pmid=19074294&amp;doi=10.1197/jamia.M3092&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B9">
+<span class="label">9.</span><cite>
+Weng C, Tu SW, Sim I,
+et al. 
+Formal representation of eligibility criteria: a literature review. J Biomed Inform 2010; 43 (3): 451–67.</cite> [<a href="https://doi.org/10.1016/j.jbi.2009.12.004" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC2878905/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/20034594/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Biomed%20Inform&amp;title=Formal%20representation%20of%20eligibility%20criteria:%20a%20literature%20review&amp;author=C%20Weng&amp;author=SW%20Tu&amp;author=I%20Sim&amp;volume=43&amp;issue=3&amp;publication_year=2010&amp;pages=451-67&amp;pmid=20034594&amp;doi=10.1016/j.jbi.2009.12.004&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B10">
+<span class="label">10.</span><cite>ERGO: a template-based expression language for encoding eligibility criteria. <a href="http://rctbank.ucsf.edu/home/ergo" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">http://rctbank.ucsf.edu/home/ergo</a>. Accessed April 7, 2018.</cite>
+</li>
+<li id="ocy178-B11">
+<span class="label">11.</span><cite>
+Tu SW, Peleg M, Carini S,
+et al. 
+A practical method for transforming free-text eligibility criteria into computable criteria. J Biomed Inform 2011; 44 (2): 239–50.</cite> [<a href="https://doi.org/10.1016/j.jbi.2010.09.007" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC3129371/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/20851207/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Biomed%20Inform&amp;title=A%20practical%20method%20for%20transforming%20free-text%20eligibility%20criteria%20into%20computable%20criteria&amp;author=SW%20Tu&amp;author=M%20Peleg&amp;author=S%20Carini&amp;volume=44&amp;issue=2&amp;publication_year=2011&amp;pages=239-50&amp;pmid=20851207&amp;doi=10.1016/j.jbi.2010.09.007&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B12">
+<span class="label">12.</span><cite>
+Bhattacharya S, Cantor MN.. 
+Analysis of eligibility criteria representation in industry-standard clinical trial protocols. J Biomed Inform 2013; 46 (5): 805–13.</cite> [<a href="https://doi.org/10.1016/j.jbi.2013.06.001" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/23770150/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Biomed%20Inform&amp;title=Analysis%20of%20eligibility%20criteria%20representation%20in%20industry-standard%20clinical%20trial%20protocols&amp;author=S%20Bhattacharya&amp;author=MN.%20Cantor&amp;volume=46&amp;issue=5&amp;publication_year=2013&amp;pages=805-13&amp;pmid=23770150&amp;doi=10.1016/j.jbi.2013.06.001&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B13">
+<span class="label">13.</span><cite>
+Weng C, Wu X, Luo Z,
+et al. 
+EliXR: an approach to eligibility criteria extraction and representation. J Am Med Inform Assoc 2011; 18 (Suppl 1): i116–24.</cite> [<a href="https://doi.org/10.1136/amiajnl-2011-000321" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC3241167/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/21807647/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Am%20Med%20Inform%20Assoc&amp;title=EliXR:%20an%20approach%20to%20eligibility%20criteria%20extraction%20and%20representation&amp;author=C%20Weng&amp;author=X%20Wu&amp;author=Z%20Luo&amp;volume=18%20(Suppl%201)&amp;publication_year=2011&amp;pages=i116-24&amp;pmid=21807647&amp;doi=10.1136/amiajnl-2011-000321&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B14">
+<span class="label">14.</span><cite>
+Boland MR, Tu SW, Carini S,
+et al. 
+EliXR-TIME: a temporal knowledge representation for clinical research eligibility criteria. AMIA Summits Transl Sci Proc 2012; 2012: 71–80.</cite> [<a href="/articles/PMC3392056/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/22779055/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=AMIA%20Summits%20Transl%20Sci%20Proc&amp;title=EliXR-TIME:%20a%20temporal%20knowledge%20representation%20for%20clinical%20research%20eligibility%20criteria&amp;author=MR%20Boland&amp;author=SW%20Tu&amp;author=S%20Carini&amp;volume=2012&amp;publication_year=2012&amp;pages=71-80&amp;pmid=22779055&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B15">
+<span class="label">15.</span><cite>
+Hao T, Liu H, Weng C.. 
+Valx: a system for extracting and structuring numeric lab test comparison statements from text. Methods Inf Med 2016; 55 (3): 266–75.</cite> [<a href="https://doi.org/10.3414/ME15-01-0112" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC5573874/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/26940748/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=Methods%20Inf%20Med&amp;title=Valx:%20a%20system%20for%20extracting%20and%20structuring%20numeric%20lab%20test%20comparison%20statements%20from%20text&amp;author=T%20Hao&amp;author=H%20Liu&amp;author=C.%20Weng&amp;volume=55&amp;issue=3&amp;publication_year=2016&amp;pages=266-75&amp;pmid=26940748&amp;doi=10.3414/ME15-01-0112&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B16">
+<span class="label">16.</span><cite>
+Parker CG. Generating medical logic modules for clinical trial eligibility. PhD thesis, Brigham Young University; 2005.</cite> [<a href="/articles/PMC1479939/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/14728468/" class="usa-link">PubMed</a>]</li>
+<li id="ocy178-B17">
+<span class="label">17.</span><cite>OMOP Common Data Model – OHDSI. <a href="https://www.ohdsi.org/data-standardization/the-common-data-model/" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">https://www.ohdsi.org/data-standardization/the-common-data-model/</a>. Accessed March 25, 2018.</cite>
+</li>
+<li id="ocy178-B18">
+<span class="label">18.</span><cite>
+Hripcsak G, Duke JD, Shah NH,
+et al. 
+Observational Health Data Sciences and Informatics (OHDSI): opportunities for observational researchers. Stud Health Technol Inform 2015; 216: 574–8.</cite> [<a href="/articles/PMC4815923/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/26262116/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=Stud%20Health%20Technol%20Inform&amp;title=Observational%20Health%20Data%20Sciences%20and%20Informatics%20(OHDSI):%20opportunities%20for%20observational%20researchers&amp;author=G%20Hripcsak&amp;author=JD%20Duke&amp;author=NH%20Shah&amp;volume=216&amp;publication_year=2015&amp;pages=574-8&amp;pmid=26262116&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B19">
+<span class="label">19.</span><cite>ATLAS. <a href="http://www.ohdsi.org/web/atlas/#/home" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">http://www.ohdsi.org/web/atlas/#/home</a>. Accessed March 25, 2018.</cite>
+</li>
+<li id="ocy178-B20">
+<span class="label">20.</span><cite>
+Androutsopoulos I, Ritchie GD, Thanisch P.. 
+Natural language interfaces to databases—an introduction. Nat Lang Eng 1995; 1 (1): 29–81. <a href="http://doi:10.1017/S135132490000005X" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">doi:10.1017/S135132490000005X</a>.</cite> [<a href="https://scholar.google.com/scholar_lookup?journal=Nat%20Lang%20Eng&amp;title=Natural%20language%20interfaces%20to%20databases%E2%80%94an%20introduction&amp;author=I%20Androutsopoulos&amp;author=GD%20Ritchie&amp;author=P.%20Thanisch&amp;volume=1&amp;issue=1&amp;publication_year=1995&amp;pages=29-81&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B21">
+<span class="label">21.</span><cite>
+Copestake A, Jones KS.. 
+Natural language interfaces to databases. Knowl Eng Rev 1990; 5 (4): 225–49.</cite> [<a href="https://scholar.google.com/scholar_lookup?journal=Knowl%20Eng%20Rev&amp;title=Natural%20language%20interfaces%20to%20databases&amp;author=A%20Copestake&amp;author=KS.%20Jones&amp;volume=5&amp;issue=4&amp;publication_year=1990&amp;pages=225%E2%80%9349.&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B22">
+<span class="label">22.</span><cite>
+Woods WA. Progress in natural language understanding: an application to lunar geology. In: Proceedings of the June 4-8, 1973, National Computer Conference and Exposition. New York, NY: ACM; 1973:441–50.</cite>
+</li>
+<li id="ocy178-B23">
+<span class="label">23.</span><cite>
+Epstein MN, Walker DE.. 
+Natural language access to a melanoma data base. Proc Annu Symp Comput Appl Med Care 1978; 1978: 320–5. <a href="http://doi:10.1109/SCAMC.1978.679936" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">doi:10.1109/SCAMC.1978.679936</a>.</cite> [<a href="https://scholar.google.com/scholar_lookup?journal=Proc%20Annu%20Symp%20Comput%20Appl%20Med%20Care&amp;title=Natural%20language%20access%20to%20a%20melanoma%20data%20base&amp;author=MN%20Epstein&amp;author=DE.%20Walker&amp;volume=1978&amp;publication_year=1978&amp;pages=320-5&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B24">
+<span class="label">24.</span><cite>
+Chandra Y, Mihalcea R.. 
+Natural language interfaces to databases. Master of Science thesis, University of North Texas, 2006.</cite> [<a href="https://scholar.google.com/scholar_lookup?Chandra%20Y,%20Mihalcea%20R..%20Natural%20language%20interfaces%20to%20databases.%20Master%20of%20Science%20thesis,%20University%20of%20North%20Texas,%202006." class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B25">
+<span class="label">25.</span><cite>
+Pazos RRA, González BJJ, Aguirre LMA,
+et al. 
+Natural language interfaces to databases: an analysis of the state of the art In: Castillo O, Melin P, Kacprzyk J, eds. Recent Advances in Hybrid Intelligence Systems.
+New York:
+Springer; 2013; 463–80.</cite> [<a href="https://scholar.google.com/scholar_lookup?title=Recent%20Advances%20in%20Hybrid%20Intelligence%20Systems&amp;author=RRA%20Pazos&amp;author=BJJ%20Gonz%C3%A1lez&amp;author=LMA%20Aguirre&amp;publication_year=2013&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B26">
+<span class="label">26.</span><cite>
+Woodyard M, Hamel B.. 
+A natural language interface to a clinical data base management system. Comput Biomed Res 1981; 14 (1): 41–62.</cite> [<a href="https://doi.org/10.1016/0010-4809(81)90040-9" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/7237996/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=Comput%20Biomed%20Res&amp;title=A%20natural%20language%20interface%20to%20a%20clinical%20data%20base%20management%20system&amp;author=M%20Woodyard&amp;author=B.%20Hamel&amp;volume=14&amp;issue=1&amp;publication_year=1981&amp;pages=41-62&amp;pmid=7237996&amp;doi=10.1016/0010-4809(81)90040-9&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B27">
+<span class="label">27.</span><cite>
+Roberts K, Demner-Fushman D.. 
+Toward a natural language interface for EHR questions. AMIA Summits Transl Sci Proc 2015; 2015: 157–61.</cite> [<a href="/articles/PMC4525248/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/26306260/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=AMIA%20Summits%20Transl%20Sci%20Proc&amp;title=Toward%20a%20natural%20language%20interface%20for%20EHR%20questions&amp;author=K%20Roberts&amp;author=D.%20Demner-Fushman&amp;volume=2015&amp;publication_year=2015&amp;pages=157-61&amp;pmid=26306260&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B28">
+<span class="label">28.</span><cite>Loose coupling. Wikipedia. 2018. 
+<a href="https://en.wikipedia.org/w/index.php?title=Loose_coupling&amp;oldid=840712645" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">https://en.wikipedia.org/w/index.php?title=Loose_coupling&amp;oldid=840712645</a>. Accessed May 14, 2018.</cite>
+</li>
+<li id="ocy178-B29">
+<span class="label">29.</span><cite>
+Manning C, Surdeanu M, Bauer J,
+et al.  The Stanford CoreNLP natural language processing toolkit. In: Proceedings of 52nd Annual Meeting of the Association for Computational Linguistics: System Demonstrations. Baltimore, MD: Association for Computational Linguistics; 2014:55–60. <a href="http://www.aclweb.org/anthology/P14-5010" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">http://www.aclweb.org/anthology/P14-5010</a>. Accessed July 18, 2018.</cite>
+</li>
+<li id="ocy178-B30">
+<span class="label">30.</span><cite>
+Chapman WW, Bridewell W, Hanbury P,
+et al. 
+A simple algorithm for identifying negated findings and diseases in discharge summaries. J Biomed Inform 2001; 34 (5): 301–10.</cite> [<a href="https://doi.org/10.1006/jbin.2001.1029" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/12123149/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Biomed%20Inform&amp;title=A%20simple%20algorithm%20for%20identifying%20negated%20findings%20and%20diseases%20in%20discharge%20summaries&amp;author=WW%20Chapman&amp;author=W%20Bridewell&amp;author=P%20Hanbury&amp;volume=34&amp;issue=5&amp;publication_year=2001&amp;pages=301-10&amp;pmid=12123149&amp;doi=10.1006/jbin.2001.1029&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B31">
+<span class="label">31.</span><cite>
+Schuster S, Manning CD. Enhanced English universal dependencies: an improved representation for natural language understanding tasks. <a href="https://nlp.stanford.edu/pubs/schuster2016enhanced.pdf" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer"> https://nlp.stanford.edu/pubs/schuster2016enhanced.pdf</a>. Accessed March 26, 2018.</cite>
+</li>
+<li id="ocy178-B32">
+<span class="label">32.</span><cite>Dijkstra’s algorithm. Wikipedia. 2018. 
+<a href="https://en.wikipedia.org/w/index.php?title=Dijkstra%27s_algorithm&amp;oldid=832284506" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">https://en.wikipedia.org/w/index.php?title=Dijkstra%27s_algorithm&amp;oldid=832284506</a>. Accessed March 26, 2018.</cite>
+</li>
+<li id="ocy178-B33">
+<span class="label">33.</span><cite>
+Bodenreider O.
+The Unified Medical Language System (UMLS): integrating biomedical terminology. Nucleic Acids Res 2004; 32 (90001): 267D–70.</cite> [<a href="https://doi.org/10.1093/nar/gkh061" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC308795/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/14681409/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=Nucleic%20Acids%20Res&amp;title=The%20Unified%20Medical%20Language%20System%20(UMLS):%20integrating%20biomedical%20terminology&amp;author=O.%20Bodenreider&amp;volume=32&amp;issue=90001&amp;publication_year=2004&amp;pages=267D-70&amp;pmid=14681409&amp;doi=10.1093/nar/gkh061&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B34">
+<span class="label">34.</span><cite>Usagi. <a href="https://github.com/OHDSI/Usagi" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">https://github.com/OHDSI/Usagi</a>. Accessed April 7, 2018.</cite>
+</li>
+<li id="ocy178-B35">
+<span class="label">35.</span><cite>OHDSI WebAPI. <a href="http://webapidoc.ohdsi.org/job/WebAPI/WebAPI_Miredot_Documentation/index.html" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">http://webapidoc.ohdsi.org/job/WebAPI/WebAPI_Miredot_Documentation/index.html</a>. Accessed April 7, 2018.</cite>
+</li>
+<li id="ocy178-B36">
+<span class="label">36.</span><cite>
+Chang AX, Manning CD.. 
+Sutime: a library for recognizing and normalizing time expressions In: Proceedings of the Eighth International Conference on Language Resources and Evaluation (LREC-2012). Istanbul, Turkey:
+ELRA; 2012:3735–740. <a href="https://pdfs.semanticscholar.org/fe80/746646f6ee819205ca9a8476292ea6b83e66.pdf" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">https://pdfs.semanticscholar.org/fe80/746646f6ee819205ca9a8476292ea6b83e66.pdf</a>. Accessed July 5, 2017.</cite> [<a href="https://scholar.google.com/scholar_lookup?title=Proceedings%20of%20the%20Eighth%20International%20Conference%20on%20Language%20Resources%20and%20Evaluation%20(LREC-2012).&amp;author=AX%20Chang&amp;author=CD.%20Manning&amp;publication_year=2012&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+<li id="ocy178-B37">
+<span class="label">37.</span><cite>
+Dogan RI, Lu Z. An inference method for disease name normalization. Paper presented at: AAAI Fall Symposium: Information Retrieval and Knowledge Discovery in Biomedical Text; November 2–4, 2012; Arlington, VA.</cite>
+</li>
+<li id="ocy178-B38">
+<span class="label">38.</span><cite>
+Zhou L, Plasek JM, Mahoney LM,
+et al. 
+Mapping partners master drug dictionary to RxNorm using an NLP-based approach. J Biomed Inform 2012; 45 (4): 626–33.</cite> [<a href="https://doi.org/10.1016/j.jbi.2011.11.006" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">DOI</a>] [<a href="/articles/PMC12834468/" class="usa-link">PMC free article</a>] [<a href="https://pubmed.ncbi.nlm.nih.gov/22142948/" class="usa-link">PubMed</a>] [<a href="https://scholar.google.com/scholar_lookup?journal=J%20Biomed%20Inform&amp;title=Mapping%20partners%20master%20drug%20dictionary%20to%20RxNorm%20using%20an%20NLP-based%20approach&amp;author=L%20Zhou&amp;author=JM%20Plasek&amp;author=LM%20Mahoney&amp;volume=45&amp;issue=4&amp;publication_year=2012&amp;pages=626-33&amp;pmid=22142948&amp;doi=10.1016/j.jbi.2011.11.006&amp;" class="usa-link usa-link--external" data-ga-action="click_feat_suppl" target="_blank" rel="noopener noreferrer">Google Scholar</a>]</li>
+</ul></section></section><section id="_ad93_" lang="en" class="associated-data"><h2 class="pmc_sec_title">Associated Data</h2>
+<p class="font-secondary"><em>This section collects any data citations, data availability statements, or supplementary materials included in this article.</em></p>
+<section id="_adsm93_" lang="en" class="supplementary-materials"><h3 class="pmc_sec_title">Supplementary Materials</h3>
+<section class="sm xbox font-sm" id="db_ds_supplementary-material1_reqid_"><div class="caption p"><span>Supplementary Data</span></div>
+<div class="media p"><div class="caption">
+<a href="/articles/instance/6402359/bin/ocy178_supp.zip" data-ga-action="click_feat_suppl" class="usa-link">Click here for additional data file.</a><sup> (290.2KB, zip) </sup>
+</div></div></section></section></section></section><footer class="p courtesy-note font-secondary font-sm text-center"><hr class="headless">
+<p>Articles from Journal of the American Medical Informatics Association : JAMIA are provided here courtesy of <strong>Oxford University Press</strong></p></footer></section></article>
+
+                      
+
+                    </main>
+                </div>
+            </div>
+        </div>
+
+        
+
+
+
+<!-- Secondary navigation placeholder -->
+<div class="pmc-sidenav desktop:grid-col-4 display-flex">
+    <section class="pmc-sidenav__container" aria-label="Article resources and navigation">
+        <button type="button" class="pmc-sidenav__container__close">
+            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/close.svg" role="img" alt="Close" />
+        </button>
+    <div class="display-none desktop:display-block">
+       <section class="margin-top-4 desktop:margin-top-0">
+              <h2 class="margin-top-0">ACTIONS</h2>
+           <ul class="usa-list usa-list--unstyled usa-list--actions">
+               
+               <li>
+                     <a
+                             href="https://doi.org/10.1093/jamia/ocy178"
+                             class="usa-button usa-button--outline width-24 font-xs display-inline-flex flex-align-center flex-justify-start padding-left-1"
+                             target="_blank"
+                             rel="noreferrer noopener"
+                             data-ga-category="actions"
+                             data-ga-action="click"
+                             data-ga-label="publisher_link_desktop"
+                     >
+                         <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/launch.svg" alt="View on publisher site icon" class="usa-icon usa-icon--size-3 usa-icon--link"/>
+                         <span class="display-inline-flex flex-justify-center flex-1 padding-right-2">View on publisher site</span>
+                     </a>
+               </li>
+               
+               
+               <li>
+                    <a
+                            href="pdf/ocy178.pdf"
+                            class="usa-button usa-button--outline width-24 display-inline-flex flex-align-center flex-justify-start padding-left-1"
+                            data-ga-category="actions"
+                            data-ga-action="click"
+                            data-ga-label="pdf_download_desktop"
+                    >
+                         <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/file_download.svg" alt="Download PDF icon" class="usa-icon usa-icon--size-3 usa-icon--link"/>
+                        <span class="display-inline-flex flex-justify-center flex-1">PDF (1.1 MB)</span>
+                    </a>
+               </li>
+               
+                
+               <li>
+                   <button role="button" class="usa-button width-24 citation-dialog-trigger display-inline-flex flex-align-center flex-justify-start padding-left-1"
+                        aria-label="Open dialog with citation text in different styles"
+                        data-ga-category="actions"
+                        data-ga-action="open"
+                        data-ga-label="cite_desktop"
+                        data-all-citations-url="/resources/citations/6402359/"
+                        data-citation-style="nlm"
+                        data-download-format-link="/resources/citations/6402359/export/"
+                    >
+                       <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/format_quote.svg" alt="Cite icon" class="usa-icon usa-icon--size-3 usa-icon--white"/>
+                       <span class="display-inline-flex flex-justify-center flex-1 button-label">Cite</span>
+                    </button>
+               </li>
+                
+               <li>
+
+                        <button class="usa-button width-24 collections-dialog-trigger collections-button display-inline-flex flex-align-center flex-justify-start padding-left-1 collections-button-empty"
+                              aria-label="Save article in MyNCBI collections."
+                              data-ga-category="actions"
+                              data-ga-action="click"
+                              data-ga-label="collections_button_desktop"
+                              data-collections-open-dialog-enabled="false"
+                              data-collections-open-dialog-url="https://account.ncbi.nlm.nih.gov/?back_url=https%3A%2F%2Fpmc.ncbi.nlm.nih.gov%2Farticles%2FPMC6402359%2F%23open-collections-dialog"
+                              data-in-collections="false">
+                            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/action-bookmark-full.svg" alt="Collections icon" class="usa-icon usa-icon--size-3 usa-icon--white usa-icon--bookmark-full" hidden />
+                            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/action-bookmark-empty.svg" alt="Collections icon" class="usa-icon usa-icon--size-3 usa-icon--white usa-icon--bookmark-empty" hidden />
+                            <span class="display-inline-flex flex-justify-center flex-1">Collections</span>
+                       </button>
+               </li>
+               <li class="pmc-permalink">
+                    <button
+                            type="button"
+                            class="usa-button width-24 display-inline-flex flex-align-center flex-justify padding-left-1 shadow-none"
+                            aria-label="Show article permalink"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            data-ga-category="actions"
+                            data-ga-action="open"
+                            data-ga-label="permalink_desktop"
+                    >
+                        <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/share.svg" alt="Permalink icon" class="usa-icon usa-icon--size-3 usa-icon--white"/>
+                        <span class="display-inline-flex flex-justify-center flex-1 button-label">Permalink</span>
+                    </button>
+                   
+
+<div class="pmc-permalink__dropdown" hidden>
+    <div class="pmc-permalink__dropdown__container">
+          <h2 class="usa-modal__heading margin-top-0 margin-bottom-2 text-uppercase font-sans-xs">PERMALINK</h2>
+          <div class="pmc-permalink__dropdown__content">
+              <input type="text" class="usa-input" value="https://pmc.ncbi.nlm.nih.gov/articles/PMC6402359/" aria-label="Article permalink">
+              <button class="usa-button display-inline-flex pmc-permalink__dropdown__copy__btn margin-right-0" title="Copy article permalink" data-ga-category="save_share" data-ga-action="link" data-ga-label="copy_link">
+                  <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/content_copy.svg" alt="Copy icon" aria-hidden="true" class="usa-icon usa-icon--white" />
+                  <span class="margin-left-1">Copy</span>
+              </button>
+          </div>
+    </div>
+</div>
+               </li>
+           </ul>
+       </section>
+     </div>
+
+        <section class="pmc-resources margin-top-6 desktop:margin-top-4" data-page-path="/articles/PMC6402359/">
+            <h2 class="margin-top-0">RESOURCES</h2>
+            
+                <div class="usa-accordion usa-accordion--multiselectable" data-allow-multiple>
+                    <h3 class="usa-accordion__heading">
+                        <button
+                        type="button"
+                        class="usa-accordion__button"
+                        aria-expanded="false"
+                        aria-controls="resources-similar-articles"
+                        data-ga-category="resources_accordion"
+                        data-ga-action="open_similar_articles"
+                        data-ga-label="/articles/PMC6402359/"
+                        data-action-open="open_similar_articles"
+                        data-action-close="close_similar_articles"
+                        >
+                            Similar articles
+                        </button>
+                    </h3>
+                    <div
+                            id="resources-similar-articles"
+                            class="usa-accordion__content usa-prose"
+                            
+                                data-source-url="/resources/similar-article-links/30753493/"
+                            
+                    >
+                        
+                    </div>
+                    <h3 class="usa-accordion__heading">
+                        <button
+                        type="button"
+                        class="usa-accordion__button"
+                        aria-expanded="false"
+                        aria-controls="resources-cited-by-other-articles"
+                        data-ga-category="resources_accordion"
+                        data-ga-action="open_cited_by"
+                        data-ga-label="/articles/PMC6402359/"
+                        data-action-open="open_cited_by"
+                        data-action-close="close_cited_by"
+                        >
+                             Cited by other articles
+                        </button>
+                    </h3>
+                    <div
+                            id="resources-cited-by-other-articles"
+                            class="usa-accordion__content usa-prose"
+                            
+                                data-source-url="/resources/cited-by-links/30753493/"
+                            
+                    >
+                          
+                    </div>
+                    
+                        <h3 class="usa-accordion__heading">
+                            <button
+                            type="button"
+                            class="usa-accordion__button"
+                            aria-expanded="false"
+                            aria-controls="resources-links-to-ncbi-databases"
+                            data-ga-category="resources_accordion"
+                            data-ga-action="open_NCBI_links"
+                            data-ga-label="/articles/PMC6402359/"
+                            data-action-open="open_NCBI_links"
+                            data-action-close="close_NCBI_link"
+                            >
+                                 Links to NCBI Databases
+                            </button>
+                        </h3>
+                        <div
+                                id="resources-links-to-ncbi-databases"
+                                class="usa-accordion__content usa-prose"
+                                data-source-url="/resources/db-links/6402359/"
+                        >
+                        </div>
+                    
+                    
+                </div>
+            
+        </section>
+
+
+        <section
+        class="usa-in-page-nav usa-in-page-nav--wide margin-top-6 desktop:margin-top-4"
+        data-title-text="On this page"
+        data-title-heading-level="h2"
+        data-scroll-offset="0"
+        data-root-margin="-10% 0px -80% 0px"
+        data-main-content-selector="main"
+        data-threshold="1"
+        hidden
+        ></section>
+    </section>
+</div>
+
+        
+
+<div class="overlay" role="dialog" aria-label="Citation Dialog" hidden>
+    <div class="dialog citation-dialog" aria-hidden="true">
+        <div class="display-inline-flex flex-align-center flex-justify width-full margin-bottom-2">
+            <h2 class="usa-modal__heading margin-0">Cite</h2>
+             <button type="button" class="usa-button usa-button--unstyled close-overlay text-black width-auto"  tabindex="1">
+                 <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/close.svg" alt="Close icon" class="usa-icon usa-icon--size-3 usa-icon--button" />
+             </button>
+        </div>
+
+        
+
+<div class="citation-text-block">
+  <div class="citation-text margin-bottom-2"></div>
+  <ul class="usa-list usa-list--unstyled display-inline-flex flex-justify width-full flex-align-center">
+      <li>
+        <button
+          class="usa-button usa-button--unstyled text-no-underline display-flex flex-align-center copy-button dialog-focus"
+          data-ga-category="save_share"
+          data-ga-action="cite"
+          data-ga-label="copy"
+          tabindex="2">
+            <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/content_copy.svg" alt="Copy icon" class="usa-icon usa-icon--size-3 usa-icon--link" />
+            <span>Copy</span>
+        </button>
+      </li>
+      <li>
+          <a
+              href="#"
+              role="button"
+              class="usa-button usa-button--unstyled text-no-underline display-flex flex-align-center export-button"
+              data-ga-category="save_share"
+              data-ga-action="cite"
+              data-ga-label="download"
+              title="Download a file for external citation management software"
+              tabindex="3">
+                <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/file_download.svg" alt="Download icon" aria-hidden="true" class="usa-icon usa-icon--size-3 usa-icon--link" />
+                <span class="display-none mobile-lg:display-inline">Download .nbib</span>
+                <span class="display-inline mobile-lg:display-none">.nbib</span>
+            </a>
+      </li>
+      <li>
+          
+
+<div class="display-inline-flex flex-align-center">
+  <label class="usa-label margin-top-0">Format:</label>
+  <select aria-label="Format" class="usa-select citation-style-selector padding-1 margin-top-0 border-0 padding-right-4" tabindex="4" >
+    
+      <option data-style-url-name="ama"
+              value="AMA"
+              >
+        AMA
+      </option>
+    
+      <option data-style-url-name="apa"
+              value="APA"
+              >
+        APA
+      </option>
+    
+      <option data-style-url-name="mla"
+              value="MLA"
+              >
+        MLA
+      </option>
+    
+      <option data-style-url-name="nlm"
+              value="NLM"
+              selected="selected">
+        NLM
+      </option>
+    
+  </select>
+</div>
+      </li>
+  </ul>
+</div>
+    </div>
+</div>
+
+        <div class="overlay" role="dialog" hidden>
+  <div id="collections-action-dialog" class="dialog collections-dialog" aria-hidden="true">
+   <div class="display-inline-flex flex-align-center flex-justify width-full margin-bottom-2">
+        <h2 class="usa-modal__heading margin-0">Add to Collections</h2>
+    </div>
+    <div class="collections-action-panel action-panel">
+      
+
+
+<form id="collections-action-dialog-form"
+      class="usa-form maxw-full collections-action-panel-form action-panel-content action-form action-panel-smaller-selectors"
+      data-existing-collections-url="/list-existing-collections/"
+      data-add-to-existing-collection-url="/add-to-existing-collection/"
+      data-create-and-add-to-new-collection-url="/create-and-add-to-new-collection/"
+      data-myncbi-max-collection-name-length="100"
+      data-collections-root-url="https://www.ncbi.nlm.nih.gov/myncbi/collections/">
+
+    <input type="hidden" name="csrfmiddlewaretoken" value="wvonU5bCrCcabmGnDIGxqG7kfQcnhrTCbm28S7JrRZOIBsYR5QImxKt2b0Ec3Nya">
+
+    <fieldset class="usa-fieldset margin-bottom-2">
+        <div class="usa-radio">
+            <input type="radio"
+            id="collections-action-dialog-new"
+            class="usa-radio__input usa-radio__input--tile collections-new  margin-top-0"
+            name="collections"
+            value="new"
+            data-ga-category="collections_button"
+            data-ga-action="click"
+            data-ga-label="collections_radio_new" />
+            <label class="usa-radio__label" for="collections-action-dialog-new">Create a new collection</label>
+        </div>
+        <div class="usa-radio">
+            <input type="radio"
+            id="collections-action-dialog-existing"
+            class="usa-radio__input usa-radio__input--tile collections-existing"
+            name="collections"
+            value="existing"
+            checked="true"
+            data-ga-category="collections_button"
+            data-ga-action="click"
+            data-ga-label="collections_radio_existing" />
+            <label class="usa-radio__label" for="collections-action-dialog-existing">Add to an existing collection</label>
+        </div>
+    </fieldset>
+
+    <fieldset class="usa-fieldset margin-bottom-2">
+        <div class="action-panel-control-wrap new-collections-controls">
+           <label for="collections-action-dialog-add-to-new" class="usa-label margin-top-0">
+                Name your collection
+               <abbr title="required" class="usa-hint usa-hint--required text-no-underline">*</abbr>
+          </label>
+          <input
+            type="text"
+            name="add-to-new-collection"
+            id="collections-action-dialog-add-to-new"
+            class="usa-input collections-action-add-to-new"
+            pattern="[^&quot;&amp;=&lt;&gt;/]*" title="The following characters are not allowed in the Name field: &quot;&amp;=&lt;&gt;/"
+            maxlength=""
+            data-ga-category="collections_button"
+            data-ga-action="create_collection"
+            data-ga-label="non_favorties_collection"
+            required
+          />
+        </div>
+        <div class="action-panel-control-wrap existing-collections-controls">
+             <label for="collections-action-dialog-add-to-existing" class="usa-label margin-top-0">
+                Choose a collection
+              </label>
+              <select id="collections-action-dialog-add-to-existing"
+                      class="usa-select collections-action-add-to-existing"
+                      data-ga-category="collections_button"
+                      data-ga-action="select_collection"
+                      data-ga-label="($('.collections-action-add-to-existing').val() === 'Favorites') ? 'Favorites' : 'non_favorites_collection'">
+              </select>
+              <div class="collections-retry-load-on-error usa-input-error-message selection-validation-message">
+                Unable to load your collection due to an error<br>
+                <a href="#">Please try again</a>
+              </div>
+        </div>
+    </fieldset>
+
+    <div class="display-inline-flex">
+        <button class="usa-button margin-top-0 action-panel-submit"
+            type="submit"
+            data-loading-label="Adding..."
+            data-pinger-ignore
+            data-ga-category="collections_button"
+            data-ga-action="click"
+            data-ga-label="add">
+          Add
+        </button>
+        <button class="usa-button usa-button--outline margin-top-0 action-panel-cancel"
+                aria-label="Close 'Add to Collections' panel"
+                ref="linksrc=close_collections_panel"
+                data-ga-category="collections_button"
+                data-ga-action="click"
+                data-ga-label="cancel">
+          Cancel
+        </button>
+    </div>
+</form>
+    </div>
+  </div>
+</div>
+
+        
+
+      </div>
+    </div>
+  </div>
+
+
+
+        
+    
+    
+
+<footer class="ncbi-footer ncbi-dark-background " >
+    
+        <div class="ncbi-footer__icon-section">
+            <div class="ncbi-footer__social-header">
+                Follow NCBI
+            </div>
+
+            <div class="grid-container ncbi-footer__ncbi-social-icons-container">
+                
+                    <a href="https://twitter.com/ncbi"
+                       class="ncbi-footer__social-icon ncbi-footer__social-icon--gray"
+                       target="_blank"
+                       rel="noreferrer noopener">
+                        <svg width="40"
+                             height="40"
+                             viewBox="0 0 40 40"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg"
+                             focusable="false"
+                             aria-hidden="true">
+                            <path d="m6.067 8 10.81 13.9L6 33.2h4.2l8.4-9.1 7.068 9.1H34L22.8 18.5 31.9 8h-3.5l-7.7 8.4L14.401 8H6.067Zm3.6 1.734h3.266l16.8 21.732H26.57L9.668 9.734Z">
+                            </path>
+                        </svg>
+                        <span class="usa-sr-only">NCBI on X (formerly known as Twitter)</span>
+                    </a>
+                
+
+                
+                    <a href="https://www.facebook.com/ncbi.nlm"
+                       class="ncbi-footer__social-icon ncbi-footer__social-icon--gray"
+                       target="_blank"
+                       rel="noreferrer noopener">
+                        <svg width="16"
+                             height="29"
+                             focusable="false"
+                             aria-hidden="true"
+                             viewBox="0 0 16 29"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3.8809 21.4002C3.8809 19.0932 3.8809 16.7876 3.8809 14.478C3.8809 14.2117 3.80103 14.1452 3.54278 14.1492C2.53372 14.1638 1.52334 14.1492 0.514288 14.1598C0.302626 14.1598 0.248047 14.0972 0.248047 13.8936C0.256034 12.4585 0.256034 11.0239 0.248047 9.58978C0.248047 9.37013 0.302626 9.30224 0.528931 9.3049C1.53798 9.31688 2.54837 9.3049 3.55742 9.31555C3.80103 9.31555 3.8809 9.26097 3.87957 9.00272C3.87158 8.00565 3.85428 7.00592 3.90753 6.00884C3.97142 4.83339 4.31487 3.73115 5.04437 2.78467C5.93095 1.63318 7.15699 1.09005 8.56141 0.967577C10.5582 0.79319 12.555 0.982221 14.5518 0.927641C14.7102 0.927641 14.7462 0.99287 14.7449 1.13664C14.7449 2.581 14.7449 4.02668 14.7449 5.47104C14.7449 5.67604 14.6517 5.68669 14.4946 5.68669C13.4523 5.68669 12.4113 5.68669 11.3703 5.68669C10.3506 5.68669 9.92057 6.10868 9.90593 7.13904C9.89661 7.7647 9.91525 8.39303 9.89794 9.01869C9.88995 9.26364 9.96583 9.31822 10.2015 9.31688C11.7204 9.30623 13.2393 9.31688 14.7595 9.3049C15.0257 9.3049 15.0723 9.3728 15.0444 9.62439C14.89 10.9849 14.7515 12.3467 14.6144 13.7085C14.5691 14.1571 14.5785 14.1585 14.1458 14.1585C12.8386 14.1585 11.5313 14.1665 10.2254 14.1518C9.95119 14.1518 9.89794 14.2317 9.89794 14.4899C9.90593 19.0799 9.89794 23.6752 9.91125 28.2612C9.91125 28.5674 9.8407 28.646 9.53186 28.6433C7.77866 28.6273 6.02414 28.6366 4.27094 28.634C3.82499 28.634 3.87158 28.6992 3.87158 28.22C3.87602 25.9472 3.87913 23.6739 3.8809 21.4002Z">
+                            </path>
+                        </svg>
+                        <span class="usa-sr-only">NCBI on Facebook</span>
+                    </a>
+                
+
+                
+                    <a href="https://www.linkedin.com/company/ncbinlm"
+                       class="ncbi-footer__social-icon ncbi-footer__social-icon--gray"
+                       target="_blank"
+                       rel="noreferrer noopener">
+                        <svg width="25"
+                             height="23"
+                             viewBox="0 0 26 24"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg"
+                             focusable="false"
+                             aria-hidden="true">
+                            <path d="M14.6983 9.98423C15.6302 9.24808 16.5926 8.74754 17.6762 8.51991C19.673 8.09126 21.554 8.30824 23.1262 9.7526C24.2351 10.7723 24.7529 12.1115 25.0165 13.5612C25.1486 14.3363 25.2105 15.1218 25.2015 15.9081C25.2015 18.3043 25.2015 20.6898 25.2082 23.0806C25.2082 23.3468 25.1549 23.444 24.8621 23.4414C23.1297 23.4272 21.3992 23.4272 19.6704 23.4414C19.4041 23.4414 19.3429 23.3588 19.3442 23.1019C19.3535 20.5194 19.3442 17.9368 19.3442 15.3543C19.3442 14.0005 18.3258 12.9448 17.0266 12.9488C15.7273 12.9528 14.6983 14.0071 14.6983 15.361C14.6983 17.9328 14.6917 20.5047 14.6983 23.0753C14.6983 23.3708 14.6198 23.444 14.3296 23.4427C12.6185 23.4294 10.9079 23.4294 9.19779 23.4427C8.93155 23.4427 8.86099 23.3735 8.86232 23.1086C8.8783 19.7619 8.88628 16.4144 8.88628 13.066C8.88628 11.5688 8.87874 10.0708 8.86365 8.57182C8.86365 8.3575 8.90758 8.27896 9.14054 8.28029C10.9048 8.29094 12.6687 8.29094 14.4321 8.28029C14.6464 8.28029 14.6983 8.34818 14.6983 8.54653C14.6903 9.00047 14.6983 9.45441 14.6983 9.98423Z">
+                            </path>
+                            <path d="M6.55316 15.8443C6.55316 18.2564 6.55316 20.6699 6.55316 23.082C6.55316 23.3629 6.48127 23.4388 6.19906 23.4374C4.47737 23.4241 2.75568 23.4241 1.03399 23.4374C0.767751 23.4374 0.69986 23.3629 0.701191 23.1006C0.709178 18.2648 0.709178 13.4281 0.701191 8.59053C0.701191 8.34026 0.765089 8.27237 1.01669 8.2737C2.74991 8.28435 4.48048 8.28435 6.20838 8.2737C6.47462 8.2737 6.5465 8.33627 6.54517 8.6065C6.54783 11.0186 6.55316 13.4308 6.55316 15.8443Z">
+                            </path>
+                            <path d="M3.65878 0.243898C5.36804 0.243898 6.58743 1.45529 6.58743 3.1406C6.58743 4.75801 5.32145 5.95742 3.60819 5.96807C3.22177 5.97614 2.83768 5.90639 2.47877 5.76299C2.11985 5.61959 1.79344 5.40546 1.51897 5.13334C1.24449 4.86123 1.02755 4.53668 0.881058 4.17902C0.734563 3.82136 0.661505 3.43788 0.666231 3.05141C0.67555 1.42601 1.9362 0.242566 3.65878 0.243898Z">
+                            </path>
+                        </svg>
+                        <span class="usa-sr-only">NCBI on LinkedIn</span>
+                    </a>
+                
+
+                
+                    <a href="https://github.com/ncbi"
+                       class="ncbi-footer__social-icon ncbi-footer__social-icon--gray"
+                       target="_blank"
+                       rel="noreferrer noopener">
+                        <svg width="28"
+                             height="27"
+                             viewBox="0 0 28 28"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg"
+                             focusable="false"
+                             aria-hidden="true">
+                            <path d="M16.7228 20.6334C17.5057 20.5527 18.2786 20.3944 19.0301 20.1608C21.3108 19.4193 22.5822 17.8259 22.963 15.4909C23.1228 14.5112 23.1814 13.5287 22.9883 12.5437C22.8106 11.6423 22.4013 10.8028 21.8007 10.1076C21.7526 10.0605 21.7197 10 21.7064 9.934C21.6931 9.86799 21.7 9.79952 21.7262 9.73748C22.0856 8.6206 21.9711 7.51969 21.601 6.42677C21.582 6.3497 21.5345 6.2827 21.468 6.23923C21.4016 6.19577 21.3211 6.17906 21.2429 6.19248C20.7329 6.21649 20.2313 6.33051 19.7611 6.52928C19.1103 6.7908 18.4899 7.12198 17.9104 7.51703C17.84 7.56996 17.7581 7.60551 17.6713 7.62078C17.5846 7.63605 17.4954 7.6306 17.4112 7.60489C15.2596 7.05882 13.0054 7.06203 10.8554 7.61421C10.7806 7.63586 10.7018 7.63967 10.6253 7.62534C10.5487 7.611 10.4766 7.57892 10.4148 7.53167C9.64788 7.03247 8.85171 6.58918 7.96368 6.33359C7.65781 6.24338 7.34123 6.19458 7.02239 6.18849C6.94879 6.17986 6.87462 6.19893 6.81432 6.242C6.75402 6.28507 6.71191 6.34904 6.69621 6.42145C6.32342 7.51437 6.2209 8.61527 6.56307 9.73348C6.59635 9.84264 6.64694 9.93316 6.54177 10.0516C5.47666 11.2604 5.09988 12.6834 5.19574 14.2676C5.2663 15.4244 5.46201 16.5466 6.01454 17.5769C6.84399 19.1171 8.21664 19.9119 9.85158 20.3352C10.3938 20.4706 10.9444 20.5698 11.4998 20.632C11.5384 20.7492 11.4506 20.7798 11.408 20.8291C11.1734 21.1179 10.9894 21.4441 10.8634 21.7942C10.7622 22.0458 10.8315 22.4039 10.6065 22.5516C10.263 22.7766 9.83827 22.8485 9.42421 22.8871C8.17936 23.0056 7.26471 22.4877 6.6283 21.4348C6.25552 20.8184 5.76956 20.3325 5.08523 20.0663C4.76981 19.9325 4.42139 19.8967 4.08537 19.9638C3.7898 20.029 3.73788 20.1901 3.93891 20.4111C4.03639 20.5234 4.14989 20.6207 4.27575 20.6999C4.9796 21.1318 5.51717 21.7884 5.80152 22.5636C6.37002 23.9973 7.48039 24.5697 8.93825 24.6323C9.43741 24.6575 9.93768 24.615 10.4254 24.5058C10.5892 24.4672 10.6531 24.4872 10.6517 24.6762C10.6451 25.4936 10.6637 26.3123 10.6517 27.131C10.6517 27.6635 10.1684 27.9297 9.58663 27.7393C8.17396 27.2671 6.84977 26.5631 5.66838 25.656C2.59555 23.2891 0.720966 20.1861 0.217704 16.3376C-0.357453 11.9127 0.911353 8.00824 3.98551 4.73881C6.11909 2.42656 8.99932 0.939975 12.1203 0.540191C16.5351 -0.0601815 20.4347 1.14323 23.7232 4.16373C26.2449 6.47869 27.724 9.37672 28.1048 12.7726C28.5828 17.0325 27.3686 20.7945 24.4768 23.9827C22.9762 25.6323 21.0956 26.8908 18.9982 27.6488C18.8783 27.6927 18.7585 27.738 18.636 27.7726C18.0356 27.9404 17.6189 27.6395 17.6189 27.0098C17.6189 25.7452 17.6308 24.4806 17.6295 23.2159C17.6329 22.9506 17.6128 22.6856 17.5696 22.4238C17.4325 21.6664 17.3419 21.484 16.7228 20.6334Z">
+                            </path>
+                        </svg>
+                        <span class="usa-sr-only">NCBI on GitHub</span>
+                    </a>
+                
+
+                
+                    <a href="https://ncbiinsights.ncbi.nlm.nih.gov/"
+                       class="ncbi-footer__social-icon ncbi-footer__social-icon--gray"
+                       target="_blank"
+                       rel="noreferrer noopener">
+                        <svg width="26"
+                             height="26"
+                             viewBox="0 0 27 27"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg"
+                             focusable="false"
+                             aria-hidden="true">
+                            <path d="M23.7778 26.4574C23.1354 26.3913 22.0856 26.8024 21.636 26.3087C21.212 25.8444 21.4359 24.8111 21.324 24.0347C19.9933 14.8323 14.8727 8.80132 6.09057 5.85008C4.37689 5.28406 2.58381 4.99533 0.779072 4.99481C0.202773 4.99481 -0.0229751 4.83146 0.00455514 4.21479C0.0660406 3.08627 0.0660406 1.95525 0.00455514 0.826734C-0.0413285 0.0815827 0.259669 -0.0193618 0.896534 0.00266238C6.96236 0.222904 12.3693 2.24179 16.9889 6.16209C22.9794 11.2478 26.1271 17.7688 26.4372 25.648C26.4629 26.294 26.3179 26.5271 25.6609 26.4684C25.0827 26.417 24.4991 26.4574 23.7778 26.4574Z">
+                            </path>
+                            <path d="M14.8265 26.441C14.0924 26.441 13.2371 26.6795 12.6626 26.3786C12.0092 26.0372 12.3781 25.0644 12.246 24.378C11.1154 18.5324 6.6849 14.5497 0.74755 14.1001C0.217135 14.0615 -0.0104482 13.9422 0.0134113 13.3659C0.0519536 12.1454 0.0482829 10.9213 0.0134113 9.69524C-0.00127145 9.14464 0.196946 9.03268 0.703502 9.04736C9.21217 9.27128 16.5994 16.2511 17.2804 24.7231C17.418 26.4446 17.418 26.4446 15.6579 26.4446H14.832L14.8265 26.441Z">
+                            </path>
+                            <path d="M3.58928 26.4555C2.64447 26.4618 1.73584 26.0925 1.06329 25.4289C0.39073 24.7653 0.00933763 23.8617 0.0030097 22.9169C-0.00331824 21.9721 0.365937 21.0635 1.02954 20.3909C1.69315 19.7184 2.59675 19.337 3.54156 19.3306C4.48637 19.3243 5.39499 19.6936 6.06755 20.3572C6.7401 21.0208 7.1215 21.9244 7.12782 22.8692C7.13415 23.814 6.7649 24.7226 6.10129 25.3952C5.43768 26.0677 4.53409 26.4491 3.58928 26.4555Z">
+                            </path>
+                        </svg>
+                        <span class="usa-sr-only">NCBI RSS feed</span>
+                    </a>
+                
+            </div>
+        </div>
+    
+
+    <div data-testid="gridContainer"
+         class="grid-container ncbi-footer__container">
+        <div class="grid-row ncbi-footer__main-content-container"
+             data-testid="grid">
+            
+                <div class="ncbi-footer__column">
+                    
+                        <p class="ncbi-footer__circled-icons-heading">
+                            Connect with NLM
+                        </p>
+                    
+
+                    <div class="ncbi-footer__circled-icons-list">
+                        
+                            <a href=https://twitter.com/nlm_nih class="ncbi-footer__social-icon ncbi-footer__social-icon--circled" target="_blank" rel="noreferrer noopener">
+                                <svg width="32"
+                                     height="32"
+                                     viewBox="0 0 40 40"
+                                     fill="none"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     focusable="false"
+                                     aria-hidden="true">
+                                    <path d="m6.067 8 10.81 13.9L6 33.2h4.2l8.4-9.1 7.068 9.1H34L22.8 18.5 31.9 8h-3.5l-7.7 8.4L14.401 8H6.067Zm3.6 1.734h3.266l16.8 21.732H26.57L9.668 9.734Z">
+                                    </path>
+                                </svg>
+                                <span class="usa-sr-only">NLM on X (formerly known as Twitter)</span>
+                            </a>
+                        
+
+                        
+                            <a href=https://www.facebook.com/nationallibraryofmedicine class="ncbi-footer__social-icon ncbi-footer__social-icon--circled" target="_blank" rel="noreferrer noopener">
+                                <svg width="13"
+                                     height="24"
+                                     viewBox="0 0 13 24"
+                                     fill="none"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     focusable="false"
+                                     aria-hidden="true">
+                                    <path d="M4.11371 23.1369C4.11371 23.082 4.11371 23.0294 4.11371 22.9745V12.9411H0.817305C0.6709 12.9411 0.670898 12.9411 0.670898 12.8016C0.670898 11.564 0.670898 10.3287 0.670898 9.09341C0.670898 8.97903 0.705213 8.95158 0.815017 8.95158C1.8673 8.95158 2.91959 8.95158 3.97417 8.95158H4.12057V8.83263C4.12057 7.8055 4.12057 6.7738 4.12057 5.74897C4.1264 4.92595 4.31387 4.11437 4.66959 3.37217C5.12916 2.38246 5.94651 1.60353 6.95717 1.1921C7.64827 0.905008 8.3913 0.764035 9.13953 0.778051C10.0019 0.791777 10.8644 0.830666 11.7268 0.860404C11.8869 0.860404 12.047 0.894717 12.2072 0.90158C12.2964 0.90158 12.3261 0.940469 12.3261 1.02968C12.3261 1.5421 12.3261 2.05452 12.3261 2.56465C12.3261 3.16857 12.3261 3.7725 12.3261 4.37642C12.3261 4.48165 12.2964 4.51367 12.1912 4.51138C11.5369 4.51138 10.8804 4.51138 10.2261 4.51138C9.92772 4.51814 9.63058 4.5526 9.33855 4.61433C9.08125 4.6617 8.84537 4.78881 8.66431 4.97766C8.48326 5.16652 8.3662 5.40755 8.32972 5.66661C8.28476 5.89271 8.26027 6.1224 8.25652 6.35289C8.25652 7.19014 8.25652 8.02969 8.25652 8.86923C8.25652 8.89439 8.25652 8.91955 8.25652 8.95615H12.0219C12.1797 8.95615 12.182 8.95616 12.1614 9.10714C12.0768 9.76596 11.9876 10.4248 11.9029 11.0813C11.8312 11.6319 11.7626 12.1824 11.697 12.733C11.6719 12.9434 11.6787 12.9434 11.4683 12.9434H8.26338V22.899C8.26338 22.979 8.26338 23.0591 8.26338 23.1392L4.11371 23.1369Z">
+                                    </path>
+                                </svg>
+                                <span class="usa-sr-only">NLM on Facebook</span>
+                            </a>
+                        
+
+                        
+                            <a href=https://www.youtube.com/user/NLMNIH class="ncbi-footer__social-icon ncbi-footer__social-icon--circled" target="_blank" rel="noreferrer noopener">
+                                <svg width="21"
+                                     height="15"
+                                     viewBox="0 0 21 15"
+                                     fill="none"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     focusable="false"
+                                     aria-hidden="true">
+                                    <path d="M19.2561 1.47914C18.9016 1.15888 18.5699 0.957569 17.2271 0.834039C15.5503 0.678484 13.2787 0.655608 11.563 0.65332H9.43556C7.71987 0.65332 5.4483 0.678484 3.77151 0.834039C2.43098 0.957569 2.097 1.15888 1.74242 1.47914C0.813665 2.32097 0.619221 4.62685 0.598633 6.89384C0.598633 7.31781 0.598633 7.74101 0.598633 8.16345C0.626084 10.4121 0.827391 12.686 1.74242 13.521C2.097 13.8412 2.4287 14.0425 3.77151 14.1661C5.4483 14.3216 7.71987 14.3445 9.43556 14.3468H11.563C13.2787 14.3468 15.5503 14.3216 17.2271 14.1661C18.5676 14.0425 18.9016 13.8412 19.2561 13.521C20.1712 12.6929 20.3725 10.451 20.3999 8.22064C20.3999 7.74025 20.3999 7.25986 20.3999 6.77946C20.3725 4.54907 20.1689 2.30724 19.2561 1.47914ZM8.55942 10.5311V4.65201L13.5601 7.50005L8.55942 10.5311Z"
+                                          fill="white" />
+                                </svg>
+                                <span class="usa-sr-only">NLM on YouTube</span>
+                            </a>
+                        
+                    </div>
+                </div>
+            
+
+            
+                <address class="ncbi-footer__address ncbi-footer__column">
+                    
+        <p>
+            <a class="usa-link usa-link--external"
+            href="https://www.google.com/maps/place/8600+Rockville+Pike,+Bethesda,+MD+20894/%4038.9959508,
+            -77.101021,17z/data%3D!3m1!4b1!4m5!3m4!1s0x89b7c95e25765ddb%3A0x19156f88b27635b8!8m2!3d38.9959508!
+            4d-77.0988323"
+            rel="noopener noreferrer" target="_blank">National Library of Medicine
+            <br/> 8600 Rockville Pike<br/> Bethesda, MD 20894</a>
+        </p>
+    
+                </address>
+            
+
+            
+                <ul class="usa-list usa-list--unstyled ncbi-footer__vertical-list ncbi-footer__column">
+                    
+                        <li class="ncbi-footer__vertical-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.nlm.nih.gov/web_policies.html" class="usa-link  usa-link--alt ncbi-footer__link"  >
+        
+
+        
+            Web Policies
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                        <li class="ncbi-footer__vertical-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.nih.gov/institutes-nih/nih-office-director/office-communications-public-liaison/freedom-information-act-office" class="usa-link  usa-link--alt ncbi-footer__link"  >
+        
+
+        
+            FOIA
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                        <li class="ncbi-footer__vertical-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html" class="usa-link usa-link--external usa-link--alt ncbi-footer__link" rel="noreferrer noopener" target='_blank' >
+        
+
+        
+            HHS Vulnerability Disclosure
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                </ul>
+            
+
+            
+                <ul class="usa-list usa-list--unstyled ncbi-footer__vertical-list ncbi-footer__column">
+                    
+                        <li class="ncbi-footer__vertical-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://support.nlm.nih.gov/" class="usa-link  usa-link--alt ncbi-footer__link"  >
+        
+
+        
+            Help
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                        <li class="ncbi-footer__vertical-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.nlm.nih.gov/accessibility.html" class="usa-link  usa-link--alt ncbi-footer__link"  >
+        
+
+        
+            Accessibility
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                        <li class="ncbi-footer__vertical-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.nlm.nih.gov/careers/careers.html" class="usa-link  usa-link--alt ncbi-footer__link"  >
+        
+
+        
+            Careers
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                </ul>
+            
+        </div>
+
+        
+            <div class="grid-row grid-col-12" data-testid="grid">
+                <ul class="ncbi-footer__bottom-links-list">
+                    
+                        <li class="ncbi-footer__bottom-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.nlm.nih.gov/" class="usa-link  usa-link--alt ncbi-footer__link"  >
+        
+
+        
+            NLM
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                        <li class="ncbi-footer__bottom-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.nih.gov/" class="usa-link  usa-link--alt ncbi-footer__link"  >
+        
+
+        
+            NIH
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                        <li class="ncbi-footer__bottom-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.hhs.gov/" class="usa-link usa-link--external usa-link--alt ncbi-footer__link" rel="noreferrer noopener" target='_blank' >
+        
+
+        
+            HHS
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                        <li class="ncbi-footer__bottom-list-item">
+                            
+
+
+
+
+
+
+
+
+
+    <a href="https://www.usa.gov/" class="usa-link usa-link--external usa-link--alt ncbi-footer__link" rel="noreferrer noopener" target='_blank' >
+        
+
+        
+            USA.gov
+        
+
+        
+    </a>
+
+
+                        </li>
+                    
+                </ul>
+            </div>
+        
+    </div>
+</footer>
+
+    
+
+
+        
+        
+    
+  <script  type="text/javascript" src="https://cdn.ncbi.nlm.nih.gov/core/pinger/pinger.js"> </script>
+
+
+    
+        
+
+<button class="back-to-top" data-ga-category="pagination" data-ga-action="back_to_top">
+    <label>Back to Top</label>
+    <img src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/img/usa-icons/arrow_upward.svg" alt="back to top icon" class="usa-icon usa-icon--size-3 order-0 usa-icon--white" />
+</button>
+    
+
+
+        
+    
+    <div id="icon-container" style="display: none;"></div>
+    
+    
+        
+    <script type="application/javascript">
+    window.ncbi = window.ncbi || {};
+    window.ncbi.pmc = window.ncbi.pmc || {};
+    window.ncbi.pmc.options = {
+        logLevel: 'INFO',
+        
+        staticEndpoint: 'https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/',
+        
+        citeCookieName: 'pmc-cf',
+    };
+</script>
+    <script type="module" crossorigin="" src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/base-Cp_Il6gk.js"></script>
+<link href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/vendor-Co8Vdmw2.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+    
+    <script type="text/javascript" src="https://cdn.ncbi.nlm.nih.gov/core/jquery/jquery-3.6.0.min.js">&#xA0;</script>
+    <script type="text/javascript">
+        jQuery.getScript("https://cdn.ncbi.nlm.nih.gov/core/alerts/alerts.js", function () {
+            galert(['div.nav_and_browser', 'div.header', '#universal_header', '.usa-banner', 'body > *:nth-child(1)'])
+        });
+    </script>
+
+
+    <script type="text/javascript">var exports = {};</script>
+     <script src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/CACHE/js/output.4e25b6297b38.js"></script>
+
+    <script type="module" crossorigin="" src="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/article-D47MIn9n.js"></script>
+<link href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/vendor-Co8Vdmw2.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+<link href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/index-DXSA0fsx.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+<link href="https://cdn.ncbi.nlm.nih.gov/pmc/pd-medc-pmc-cloudpmc-viewer/production/9b1d9d87/var/data/static/assets/secure-cookie-Br6x5jtB.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+    
+    
+
+    </body>
+</html>
