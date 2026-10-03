@@ -55,6 +55,13 @@ def train_log_for(seed: int) -> Path:
         return ROOT / "data" / "trec" / "lora_train_log.json"
     return ROOT / "data" / "trec" / f"lora_train_log_{seed}.json"
 
+
+RANK_CONFIG = HERE / "trec_lora_rank_config.json"
+RANK_PAIRS = HERE / "trec_lora_rank_pairs.json"
+RANK_PROBE_PAIRS = HERE / "trec_lora_rank_probe_pairs.json"
+RANK_SCORES = ROOT / "data" / "trec" / "score_qwen_elig_lora_rank.json"
+RANK_RESULTS = ROOT / "data" / "trec" / "trec_lora_rank_results.json"
+
 FEATURE_NAMES = (
     "topical_title_cond_digit",
     "topical_title_cond_cont",

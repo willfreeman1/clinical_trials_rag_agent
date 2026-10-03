@@ -2372,3 +2372,45 @@ that. Copy scores off; terminate via the API.
 - Leave a paid GPU running. Terminate via the API.
 - Say a patient qualifies.
 
+---
+
+## Adapter vs topical slice as the default ranker — 2022, 50 patients
+
+**Committed before any full-shortlist adapter score.** No pass/fail
+thresholds. The write-up answers replace / layer / stay out from the
+numbers and the cost, not from a pre-set gate.
+
+### Adapter
+
+Seed **20261007**. Median of the three 1e-5 seeds (0.770, 0.773,
+0.793) and closest to the mean 0.779. Not the 0.793 seed. Config:
+\scripts/trec_lora_rank_config.json\.
+
+### Patients
+
+All 50 from 2022. Not the 30-patient sample (15 of those are 2021
+tuning patients). 2023 is not used. Shortlist stays 1,595. Nothing
+discarded.
+
+### Arms
+
+- Fused shortlist order (baseline, calibration)
+- Topical slice continuous (current default; already on disk)
+- Adapter eligibility, continuous expected digit
+- Adapter eligibility, digit (reported, not the headline score)
+- Topical first, then adapter on the top N, for N in 50, 100, 200,
+  300, 500
+
+### What is reported
+
+P@10 and P@20; equivalent depth at 20, 200, 500 as a multiple of
+the baseline's own equivalent depth at the same N; patients with
+at least 10 joinable trials in the top 20; full-shortlist recall;
+patient-resampled intervals on P@10 and P@20; machine time and
+dollars.
+
+A rate probe on patients 1 and 2 is scored first. The full 50
+starts only if the projection stays near or under about \.
+
+The system does not say a patient qualifies.
+
