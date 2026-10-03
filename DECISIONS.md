@@ -1929,3 +1929,20 @@ Qwen TREC 0.647. Both models said “not relevant” on ~170–190
 of the 411 pairs under the TREC prompt. Details:
 `docs/trec_frontier_elig.md`. The system does not say a
 patient qualifies.
+
+---
+
+## 2026-10-02 — LoRA on human labels did not close the 1-vs-2 gap
+
+**Decision: do not put the adapter in the pipeline. The useful
+number from the session is base v1 eligibility at 0.749 on all
+50 2022 patients, which already beats the topical slice
+(0.682). Fine-tuning made that worse.**
+
+Splits, pair IDs, and settings committed in `2f04bfa` before
+any adapter. Logistic on stored scores: 0.686. First LoRA
+(expected digit) loss rose; fallback (token 2 minus token 1)
+was the one scored. It answered 1 on almost every pair.
+H100 SXM5, about $7, terminated through the API. Details:
+`docs/trec_lora_elig.md`. The system does not say a patient
+qualifies.
