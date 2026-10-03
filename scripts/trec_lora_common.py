@@ -22,6 +22,10 @@ BASE_SCORES = ROOT / "data" / "trec" / "score_qwen_elig_v1_base.json"
 ADAPTER_SCORES = ROOT / "data" / "trec" / "score_qwen_elig_lora.json"
 ADAPTER_DIR = ROOT / "data" / "trec" / "lora_adapter"
 BASE_RESULTS = ROOT / "data" / "trec" / "trec_lora_base_results.json"
+JUNK_PAIRS_PATH = HERE / "trec_lora_junk_pairs.json"
+JUNK_SCORES = ROOT / "data" / "trec" / "score_qwen_elig_lora_junk.json"
+CI_RESULTS = ROOT / "data" / "trec" / "trec_lora_ci.json"
+ADAPTER_LR1E5 = ROOT / "data" / "trec" / "lora_adapter_lr1e5"
 
 FEATURE_NAMES = (
     "topical_title_cond_digit",

@@ -160,6 +160,7 @@ def main() -> None:
     ap.add_argument("--out", required=True)
     ap.add_argument("--split", choices=("all", "dev", "test"), default="all")
     ap.add_argument("--adapter", default="")
+    ap.add_argument("--pairs", default="trec_lora_eval_pairs.json")
     ap.add_argument("--done", default="/tmp/lora_score.done")
     args = ap.parse_args()
     out_path = Path(args.out)
@@ -171,7 +172,8 @@ def main() -> None:
     gpu = torch.cuda.get_device_name(0)
     progress(f"gpu {gpu} split {args.split} adapter {args.adapter or 'none'}")
     pack = json.loads(PACK_PATH.read_text(encoding="utf-8"))
-    pairs = json.loads(PAIRS_PATH.read_text(encoding="utf-8"))
+    pairs_path = Path(args.pairs)
+    pairs = json.loads(pairs_path.read_text(encoding="utf-8"))
     payload = {}
     if out_path.exists():
         payload = json.loads(out_path.read_text(encoding="utf-8"))

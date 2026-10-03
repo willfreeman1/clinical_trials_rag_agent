@@ -85,8 +85,11 @@ on the stored signals. Changing the question bought seven
 points; combining old scores bought nothing. A first LoRA at
 1e-4 collapsed; that was a setup failure, not a measurement.
 A second run at **1e-5** on the raw 2-minus-1 score, same
-splits, did not collapse. Held-out 2022 AUROC **0.793**
-(tuning set 0.834, labelled as such). Loss log copied off.
+splits, did not collapse. Held-out 2022 AUROC **0.793
+(0.748–0.834)**, patient-resampled. The untrained 0.749 sits
+just inside that interval; the paired difference (0.045,
+0.021–0.066) does not include zero. Tuning set 0.834, labelled
+as such. Loss log copied off.
 H100 SXM5, **$4.48**, terminated. Details:
 `docs/trec_lora_elig.md`. No first-page rescore. Run 3 not
 started.

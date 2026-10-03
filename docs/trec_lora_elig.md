@@ -139,7 +139,7 @@ across 0 / 1 / 2. 2022 was scored once, at the end.
 | Tuning set at 25% | 0.780 | — |
 | Tuning set at 50% | 0.778 | — |
 | Tuning set after the full pass (labelled as such) | 0.834 | 0.837 |
-| **Held-out 2022, 50 patients** | **0.793** | **0.798** |
+| **Held-out 2022, 50 patients** | **0.793** (0.748–0.834) | **0.798** |
 
 On 2022 the words were 973 zeros, 4,074 ones, 1,202 twos. That
 is a shift toward “excluded,” not a pin on a single token.
@@ -147,11 +147,29 @@ Continuous scores ran from 0.03 to 1.98.
 
 The 0.834 on the 15 tuning patients is the set we watched
 during training. It is not the headline. The headline for this
-adapter is **0.793 on 2022**, which is above the untrained
-0.749 on the same pairs.
+adapter is **0.793 on 2022**.
 
-GPT-5.4’s 0.83 is still a different sample (411 capped pairs).
-This run does not recompute that.
+That 0.793 is a patient-resampled number. Fifty patients were
+drawn with replacement, 5,000 times (seed **20261004**). Pairs
+from the same note stay together; resampling pairs would have
+overstated confidence. The 95% interval is **0.748–0.834**.
+The untrained 0.749 sits just inside the lower edge.
+
+That does not make the gain a coin flip. The same 50 patients
+were compared to themselves. The adapter-minus-base difference
+is **0.045** (0.021–0.066). Zero is not in that interval. The
+adapter had the higher per-patient AUROC on **43 of 50**
+patients (6 the other way, 1 tie). Mean per-patient difference
+0.076 (0.051–0.102).
+
+So: quote **0.793 (0.748–0.834)**. Say the untrained 0.749 is
+inside that interval. Also say the paired difference excludes
+zero. Do not quote 0.793 as if it were a single exact figure.
+
+GPT-5.4’s 0.83 is still a different and smaller sample (411
+capped pairs). This run does not recompute that. “Closed part
+of the gap” is supportable. “Nearly matched a frontier model”
+is not.
 
 ## Cost
 
@@ -171,8 +189,10 @@ question bought seven points.
 
 Decided: a LoRA on the human labels, at 1e-5 with the raw
 2-minus-1 score, **does** move joinable-versus-excluded on the
-held-out year, to **0.793**. The first adapter’s 0.700 was a
-broken setup, not a measurement of fine-tuning.
+held-out year, to **0.793 (0.748–0.834)**. The untrained 0.749
+sits just inside that interval; the paired difference (0.045,
+0.021–0.066) does not include zero. The first adapter’s 0.700
+was a broken setup, not a measurement of fine-tuning.
 
 Not decided: whether eligibility should replace the topical
 slice as the default ranker (first page vs depth 200 vs cost).
