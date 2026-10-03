@@ -218,8 +218,8 @@ def main() -> None:
         print(f"spend so far ${spend(t0, itype):.2f}; skipping base rescore (0.749 already measured)", flush=True)
         if spend(t0, itype) + 8 > SPEND_CAP:
             raise SystemExit("training would likely push past $25; stopping to ask")
-        print("starting LoRA train (expected_digit, lr from config)", flush=True)
-        start_remote(ip, "start_lora_train.sh", ["expected_digit", "lora_adapter", "lora_train_log.json"])
+        print("starting LoRA train (logit2_minus_logit1, lr from config)", flush=True)
+        start_remote(ip, "start_lora_train.sh", ["logit2_minus_logit1", "lora_adapter", "lora_train_log.json"])
         wait_flag(
             ip,
             "/tmp/lora_train.done",

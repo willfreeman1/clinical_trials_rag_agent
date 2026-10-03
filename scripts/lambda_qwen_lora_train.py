@@ -109,8 +109,9 @@ def chat_text(tok, user: str) -> str:
 
 
 @torch.no_grad()
-def score_users(users, tok, model, ids, max_len: int, batch_size: int = 8):
-    out = []
+def score_users(users, tok, model, ids, kind: str, values, max_len: int, batch_size: int = 8):
+    probs_out = []
+    scalars = []
     i = 0
     while i < len(users):
         batch = users[i : i + batch_size]
@@ -130,25 +131,39 @@ def score_users(users, tok, model, ids, max_len: int, batch_size: int = 8):
             continue
         stacked = torch.stack([logits[:, did] for did in ids], dim=1)
         probs = torch.softmax(stacked.float(), dim=1)
-        out.extend(row.tolist() for row in probs.cpu())
+        probs_out.extend(row.tolist() for row in probs.cpu())
+        scalars.extend(pair_score(logits, ids, kind, values).detach().float().cpu().tolist())
         i += len(batch)
         touch()
-    return out
+    return probs_out, scalars
 
 
-def probe_dev(tok, model, ids, pack: dict, max_len: int) -> dict:
+def _median(xs: list[float]) -> float | None:
+    if not xs:
+        return None
+    ys = sorted(xs)
+    mid = len(ys) // 2
+    if len(ys) % 2:
+        return float(ys[mid])
+    return 0.5 * (ys[mid - 1] + ys[mid])
+
+
+def probe_dev(tok, model, ids, pack: dict, kind: str, values, max_len: int, baseline: dict | None) -> dict:
     pairs = json.loads(EVAL_PAIRS_PATH.read_text(encoding="utf-8"))
     docs = pack["docs"]
     notes = pack["years"]["2021"]["topics"]
     gold = []
     users = []
+    by_tid: dict[str, dict[int, list[int]]] = {}
     for tid, rows in (pairs["dev_2021"]["topics"] or {}).items():
         note = (notes.get(tid) or {}).get("raw_query") or " "
+        dest = by_tid.setdefault(tid, {1: [], 2: []})
         for nct, lab in rows:
             users.append(user_text(note, full_criteria(docs.get(nct) or {})))
             gold.append(int(lab))
+            dest[int(lab)].append(len(users) - 1)
     model.eval()
-    probs = score_users(users, tok, model, ids, max_len)
+    probs, scalars = score_users(users, tok, model, ids, kind, values, max_len)
     model.train()
     digits = [int(max(range(4), key=lambda j: p[j])) for p in probs]
     conts = [sum(j * p[j] for j in range(4)) for p in probs]
@@ -172,20 +187,49 @@ def probe_dev(tok, model, ids, pack: dict, max_len: int) -> dict:
         auroc = better / (len(pos) * len(neg))
     else:
         auroc = None
+    gaps = []
+    for dest in by_tid.values():
+        wins = dest.get(2) or []
+        loses = dest.get(1) or []
+        if not wins or not loses:
+            continue
+        for wi in wins[:20]:
+            for lj in loses[:20]:
+                gaps.append(float(scalars[wi]) - float(scalars[lj]))
+    med_gap = _median(gaps)
+    mean_gap = (sum(gaps) / len(gaps)) if gaps else None
+    abs_med = _median([abs(g) for g in gaps])
     top_digit, top_n = counts.most_common(1)[0]
     rec = {
         "n": n,
+        "n_gaps": len(gaps),
         "digit_counts": {str(k): int(v) for k, v in sorted(counts.items())},
         "top_digit": int(top_digit),
         "top_share": round(top_n / max(n, 1), 4),
         "cont_mean": round(mean, 4),
         "cont_std": round(std, 4),
+        "median_gap": None if med_gap is None else round(med_gap, 4),
+        "mean_gap": None if mean_gap is None else round(mean_gap, 4),
+        "median_abs_gap": None if abs_med is None else round(abs_med, 4),
         "auroc": None if auroc is None else round(float(auroc), 4),
+        "score": kind,
     }
-    collapsed = (top_n / max(n, 1) >= 0.90 and int(top_digit) != 2) or std < 0.20 or (
+    bunch = (top_n / max(n, 1) >= 0.90 and int(top_digit) != 2) or (
         counts.get(1, 0) / max(n, 1) >= 0.70
     )
-    rec["collapsed"] = bool(collapsed)
+    gap_dead = med_gap is not None and med_gap <= 0.10
+    gap_shrunk = False
+    if baseline and baseline.get("median_gap") is not None and med_gap is not None:
+        base_gap = float(baseline["median_gap"])
+        rec["gap_vs_baseline"] = None if base_gap == 0 else round(med_gap / base_gap, 4)
+        if base_gap > 0 and med_gap < 0.25 * base_gap:
+            gap_shrunk = True
+    rec["collapsed"] = bool(bunch or gap_dead or gap_shrunk)
+    rec["collapse_reason"] = (
+        "bunch"
+        if bunch
+        else ("gap_near_zero" if gap_dead else ("gap_shrunk" if gap_shrunk else None))
+    )
     return rec
 
 
@@ -204,7 +248,7 @@ def main() -> None:
     cfg = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
     pack = json.loads(PACK_PATH.read_text(encoding="utf-8"))
     pairs = json.loads(PAIRS_PATH.read_text(encoding="utf-8"))
-    score_kind = args.score or cfg.get("score") or "expected_digit"
+    score_kind = args.score or cfg.get("score") or "logit2_minus_logit1"
     gpu = torch.cuda.get_device_name(0)
     progress(f"gpu {gpu} score {score_kind}")
     progress("load Qwen")
@@ -259,23 +303,30 @@ def main() -> None:
     log_path = Path(args.log)
 
     def write_log() -> None:
-        log_path.write_text(
-            json.dumps(
-                {
-                    "gpu": gpu,
-                    "score": score_kind,
-                    "lr": float(cfg["lr"]),
-                    "seconds": round(time.time() - started, 1),
-                    "n_pairs": len(jobs),
-                    "steps": step_logs,
-                    "probes": probes,
-                    "adapter": args.out,
-                    "stopped": stopped,
-                },
-                indent=2,
-            ),
-            encoding="utf-8",
-        )
+        payload = {
+            "gpu": gpu,
+            "score": score_kind,
+            "lr": float(cfg["lr"]),
+            "seconds": round(time.time() - started, 1),
+            "n_pairs": len(jobs),
+            "steps": step_logs,
+            "probes": probes,
+            "adapter": args.out,
+            "stopped": stopped,
+        }
+        log_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        if probes:
+            last = probes[-1]
+            Path(f"lora_probe_{last.get('pair', len(probes))}.json").write_text(
+                json.dumps(last, indent=2),
+                encoding="utf-8",
+            )
+
+    rec0 = probe_dev(tok, model, ids, pack, score_kind, values, max_len, None)
+    rec0["pair"] = 0
+    probes.append(rec0)
+    progress(f"  probe pair 0 {rec0}")
+    write_log()
 
     for epoch in range(epochs):
         if stopped:
@@ -316,7 +367,7 @@ def main() -> None:
                     write_log()
                 touch()
             if (i + 1) in probe_at:
-                rec = probe_dev(tok, model, ids, pack, max_len)
+                rec = probe_dev(tok, model, ids, pack, score_kind, values, max_len, probes[0])
                 rec["pair"] = i + 1
                 probes.append(rec)
                 progress(f"  probe pair {i + 1} {rec}")
@@ -324,7 +375,7 @@ def main() -> None:
                 if rec.get("collapsed"):
                     stopped = True
                     COLLAPSED.write_text(json.dumps(rec), encoding="utf-8")
-                    progress("collapsed, stopping")
+                    progress(f"collapsed ({rec.get('collapse_reason')}), stopping")
                     break
         if running_n and not stopped:
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm)
