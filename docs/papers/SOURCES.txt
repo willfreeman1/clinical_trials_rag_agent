@@ -37,3 +37,20 @@ criteria2query_pmc6402359.html
 
 n2c2_2018_pmc6798568.html
   https://pmc.ncbi.nlm.nih.gov/articles/PMC6798568/
+
+arxiv_2509.19327_trial_matching_pipelines.pdf
+  A systematic review of trial-matching pipelines using large language models
+  https://arxiv.org/abs/2509.19327
+
+arxiv_2506.15301_llm_recruitment_survey.pdf
+  A Survey on LLM-Assisted Clinical Trial Recruitment
+  https://arxiv.org/abs/2506.15301
+  (same survey as ghosh_2025_llm_recruitment_survey.pdf; this is the arXiv copy)
+
+arxiv_2307.00381_entity_enrichment.pdf
+  Effective Matching of Patients to Clinical Trials using Entity Extraction and Neural Re-ranking
+  https://arxiv.org/abs/2307.00381
+
+arxiv_2609.01202_multicenter_deployment.pdf
+  Towards AI-Assisted Clinical Trial Matching: Practical Considerations, Multicenter Evaluation, and Real-World Deployment
+  https://arxiv.org/abs/2609.01202
