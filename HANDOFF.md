@@ -159,9 +159,16 @@ Earlier spike work on a lung-cancer slice (closed-vocabulary matching,
 containment hierarchy, the fabricated-quote audit) is in `docs/step*.md` and
 `docs/STATUS.md`. **The fabricated-citation rate — 1.3% of stored quotes
 absent from the source, traced to 212 specific wrong decisions — is the
-clearest original contribution in the project. Neither published paper
-reports a fabrication rate.** Do not lose that thread; it should be measured
-again on whatever the final reader turns out to be.
+clearest original contribution in the project.** A quote here means a span
+the model attributed to the trial (or the note) that is not in that text.
+Re-read 2026-10-03 against the pile in `docs/papers/` (TrialGPT, TrialMatchAI,
+VERDICT, TrialGPT 2.0, both surveys, Kusa, the TREC notebooks). **The claim
+still holds.** TrialGPT's 87.3% on 1,015 pairs is criterion-label accuracy
+plus "does a doctor accept the rationale / sentence IDs," not a missing-quote
+rate. VERDICT measures rationales that disagree with their own decision, not
+invented spans. Details: `docs/trec_published_standings.md`. Do not lose
+that thread; it should be measured again on whatever the final reader
+turns out to be.
 
 ---
 
@@ -277,9 +284,13 @@ specialist (91.8% vs 88.0%). At **reranking**, the medical specialist beat
 the general-purpose web-search model by more than two to one (8.2% vs 4.2%).
 
 Same corpus, opposite outcome, because the stages ask different questions —
-coverage versus judgement on a specific pair. **Neither paper states this**,
-and it is a defensible original claim with measurements behind it. Worth
-writing up properly.
+coverage versus judgement on a specific pair. **Still unreported as an
+inversion across stages on the same TREC corpus.** Re-read 2026-10-03
+against TrialGPT, TrialMatchAI, Kusa, IBM, VERDICT, TrialGPT 2.0, and both
+surveys. They compare retrievers, or they compare reranker inits, or they
+pick one embedding and move on. None of them states that a general-purpose
+model wins retrieval and a medical specialist wins rerank on this collection.
+Details: `docs/trec_published_standings.md`. Worth writing up properly.
 
 ### 5.8 The recall figures are against the judged pool, not the full registry
 
