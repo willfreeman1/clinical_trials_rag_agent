@@ -1,8 +1,12 @@
 """Retrofit TREC experiment history into a local MLflow store.
 
-Reads numbers already on disk (data/trec/*.json when present, else
-the committed tables in docs/). Does not rescore. Does not call a GPU.
+Requires data/trec/*.json (and the adapter folders) to rebuild the
+store as it exists on this machine. Those files are gitignored and
+are not in a fresh clone, so this script cannot be run from a clone
+alone. The inspectable alternative that is in the repository is
+docs/trec_mlflow_runs.csv, produced by scripts/mlflow_export_runs.py.
 
+Does not rescore. Does not call a GPU.
 The history is retrofitted. Live tracking starts with the reader.
 The system does not say a patient qualifies.
 """
@@ -140,7 +144,7 @@ def register_adapters(client, runs_by_seed: dict[int, str]) -> None:
             client.set_registered_model_tag(
                 reg_name,
                 "why_this_seed",
-                "median of three 1e-5 seeds, closest to the mean 0.779",
+                "median of three 1e-5 seeds, closest to the mean 0.779; only seed scored on the full ranker shortlists",
             )
 
 

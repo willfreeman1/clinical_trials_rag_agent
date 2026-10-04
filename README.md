@@ -145,6 +145,23 @@ where the real work happens.
 
 ---
 
+## Experiment tracking
+
+A local MLflow store holds the eleven TREC runs — settings, metrics with their
+intervals, the write-up, and the threshold commit that governed the run — and
+registers the three fine-tuned adapters, with seed 20261007 marked as the one
+in use. The store is not in git (`mlruns/` is large and local). The same rows
+are in `docs/trec_mlflow_runs.csv`. The history was backfilled from stored
+results rather than captured live; live tracking starts with the reader.
+
+![Five MLflow experiments and their run counts](docs/images/mlflow_experiments.png)
+
+![Fine-tuning run: learning rate, seed, AUROC with interval, threshold commit](docs/images/mlflow_run_adapter.png)
+
+![Model registry: three adapters, AUROC, in_use alias on seed 20261007](docs/images/mlflow_registry.png)
+
+---
+
 ## What is not built
 
 Stated plainly, because the measurement record is deliberately ahead of the
@@ -167,6 +184,7 @@ engineering:
 | `docs/trec_hybrid_retrieval.md` | The search stage and the keyword-decomposition result |
 | `docs/trec_lora_rank.md` | Benchmark-standard measures for every approach tried, both years |
 | `docs/trec_model_currency.md` | How the system would stay current; distillation designed, not run; MLflow |
+| `docs/trec_mlflow_runs.csv` | One row per tracked run: config, metrics with intervals, threshold commit |
 | `docs/trec_lora_elig.md` | The fine-tuning work, including a collapsed first attempt and its diagnosis |
 | `docs/trec_frontier_elig.md` | GPT-5.4 as a measured baseline |
 | `docs/trec_shortlist_diagnosis.md`, `docs/trec_shortlist_fix.md` | What the shortlist contains, and three approaches that did not help |

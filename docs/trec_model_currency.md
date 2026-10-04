@@ -232,15 +232,33 @@ registry later: a candidate is registered, scored on
 the same patients, and promoted or rejected in the
 tool, not only in a markdown file.
 
+The adapter marked `in_use` is seed **20261007**
+(0.773). Two independent reasons, same choice:
+
+1. It is the median of the three 1e-5 seeds
+   (0.770, 0.773, 0.793), closest to the mean
+   **0.779**. Picking the 0.793 seed would be
+   choosing the best score on the test set — the
+   error this project has spent weeks avoiding.
+2. It is the only seed that was scored on the
+   full 1,595-trial shortlists in the ranker run.
+   The other two were scored only on judged
+   1-versus-2 pairs.
+
+`mlruns/` is gitignored (the adapters are hundreds
+of megabytes). A fresh clone cannot rebuild the
+store: `scripts/mlflow_backfill.py` needs
+`data/trec/*.json`, which is not in git. The
+inspectable record in the repository is
+`docs/trec_mlflow_runs.csv`. Screenshots of the
+running interface are in `docs/images/`.
+
 ```
 pip install -r requirements.txt
 set PYTHONIOENCODING=utf-8
 python scripts/mlflow_backfill.py
+python scripts/mlflow_export_runs.py
 python -m mlflow ui --backend-store-uri file:./mlruns --port 5000
 ```
-
-The backfill is reproducible. `mlruns/` is not
-committed; it is built from this repository plus
-`data/trec/` when that folder is present.
 
 The system does not say a patient qualifies.
