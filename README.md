@@ -153,7 +153,6 @@ engineering:
 - The rule-by-rule reader, on this benchmark
 - A production vector database and a pipeline that keeps trials current
 - An agent framework with explicit function calling
-- A named experiment-tracking platform
 - Validated structured output and guardrails
 - A deployed service, an API, or a container
 
@@ -167,6 +166,7 @@ engineering:
 | `docs/trec_published_standings.md` | How this project's numbers relate to published work, and why most comparisons are invalid |
 | `docs/trec_hybrid_retrieval.md` | The search stage and the keyword-decomposition result |
 | `docs/trec_lora_rank.md` | Benchmark-standard measures for every approach tried, both years |
+| `docs/trec_model_currency.md` | How the system would stay current; distillation designed, not run; MLflow |
 | `docs/trec_lora_elig.md` | The fine-tuning work, including a collapsed first attempt and its diagnosis |
 | `docs/trec_frontier_elig.md` | GPT-5.4 as a measured baseline |
 | `docs/trec_shortlist_diagnosis.md`, `docs/trec_shortlist_fix.md` | What the shortlist contains, and three approaches that did not help |

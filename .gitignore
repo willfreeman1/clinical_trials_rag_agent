@@ -5,3 +5,5 @@ __pycache__/
 *.pyc
 .specstory/
 data/
+mlruns/
+mlartifacts/

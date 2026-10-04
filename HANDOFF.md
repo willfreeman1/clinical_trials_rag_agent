@@ -235,9 +235,19 @@ separation for Run 3; keep it.
 ### 5.5 The human labels are free fine-tuning data
 
 **TREC 2021 and 2022 come with 71,226 human relevance judgements.** If Qwen
-is to be fine-tuned, train on those, not on labels distilled from a frontier
-model — distillation teaches Qwen to copy a model's mistakes, costs money,
-and is strictly worse than learning from the actual assessors.
+is to be fine-tuned, prefer those. Distillation from a frontier model —
+training the 7B adapter on GPT labels, then testing on humans — is
+**untested in this project**. It is not known to be strictly worse. The
+case for it is extra volume (82% of the shortlist was never judged) and
+GPT-5.4's 0.83 on a 411-pair sample. The case against is that GPT-5.4's
+errors are systematic, not random: it was consistently stricter than the
+assessors on patterns such as "non-obstructing" versus "obstructive."
+Random noise can wash out; correlated noise gets learned. The experiment
+that would decide, its cost (~$30 for 5,000 pairs), and the three
+outcomes are in `docs/trec_model_currency.md`. Do not run it from a
+handoff. The frontier model being stricter than the assessors **is**
+measured (`docs/trec_frontier_elig.md`). Whether that bias transfers
+when you train on it is not.
 
 Clean split: train on the 2021 patients (35,832 judgements), test on the
 2022 patients (35,394). No patient appears in both.
@@ -251,14 +261,10 @@ Three caveats that must be stated if this is done:
   Either sample unjudged trials as weak negatives and say so, or accept the
   limitation explicitly. Do not ignore it silently.
 - **Label 1 versus label 2 is the hard distinction** — right disease, fails
-  an exclusion. Nothing in this project has separated them. Retrieval is
-  blind: excluded trials come back at 92.1%, eligible at 91.6%. **If a
-  fine-tuned model can separate them, that is the headline result of the
-  whole project** and neither paper reports it.
-
-Cost estimate discussed: a LoRA adapter on a 7B model over ~35,000 short
-examples, a few hours of A100 time, $10–30. Run 3 exists to decide whether
-this is worth doing at all.
+  an exclusion. Retrieval is blind: excluded trials come back at 92.1%,
+  eligible at 91.6%. A LoRA on the human labels reached mean AUROC
+  **0.779 (0.770–0.793)** on held-out 2022. That is the headline; quote
+  the mean and the spread, not the best seed.
 
 ### 5.6 The GPU work was slower than it needed to be
 

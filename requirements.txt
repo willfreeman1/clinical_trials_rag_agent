@@ -3,3 +3,5 @@
 numpy==2.1.3
 # Clarifying-question loop (LangGraph). Not used by Steps 6–7.
 langgraph>=0.2.0
+# Experiment tracking. File store; no hosted server.
+mlflow>=2.16,<3

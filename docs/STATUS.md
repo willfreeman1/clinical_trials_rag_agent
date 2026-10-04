@@ -1,5 +1,11 @@
 # Where this project stands
 
+**Historical record of the lung-cancer matching phase.** Dated **2
+October 2026**. Current claims, TREC numbers, and caveats live in
+`README.md` and `docs/trec_*.md`. Do not quote the ~$57 spend line
+below as project-to-date; TREC GPU work came after. Do not treat
+this file as the live status.
+
 **As of 2 October 2026.** This is a status document, not the final write-up. Step 8
 (the reader) has now been run. Step 9's remaining list is done: 12 stage labels,
 70 crossings, the qualifier convention, a free basket count, then one re-score.
