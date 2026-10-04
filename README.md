@@ -169,7 +169,8 @@ tracking starts with the reader.
 Stated plainly, because the measurement record is deliberately ahead of the
 engineering:
 
-- The rule-by-rule reader, on this benchmark
+- The rule-by-rule reader's agreement with TREC labels on all 50
+  2022 patients (the schema probe is in `docs/trec_reader.md`)
 - A production vector database and a pipeline that keeps trials current
 - An agent framework with explicit function calling
 - Validated structured output and guardrails
@@ -189,6 +190,7 @@ engineering:
 | `docs/trec_mlflow_runs.csv` | Long table of the eleven reported runs: one row per run-and-metric, with intervals |
 | `docs/trec_lora_elig.md` | The fine-tuning work, including a collapsed first attempt and its diagnosis |
 | `docs/trec_frontier_elig.md` | GPT-5.4 as a measured baseline |
+| `docs/trec_reader.md` | Rule-by-rule reader: 13/50 was schema failure, not accuracy; re-probe 50/50 |
 | `docs/trec_shortlist_diagnosis.md`, `docs/trec_shortlist_fix.md` | What the shortlist contains, and three approaches that did not help |
 | `THRESHOLDS.md` | Each run's deciding numbers, committed **before** that run |
 | `DECISIONS.md` | Every decision, its options, and what evidence would reverse it |
