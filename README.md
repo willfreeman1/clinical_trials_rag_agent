@@ -1,130 +1,216 @@
-# Clinical-trial eligibility retrieval — start here
+# Clinical-trial eligibility retrieval
 
-**Where the project is right now:** spike 1 is finished. Spike 2 is run through the
-cheap-filter measurements. Steps 6, 7, 8 and 9 have not been run, and Step 8 is the one
-that would measure whether any answer the system gives is correct. Still no service, no
-vector database, no agent framework, no container.
+Given a short description of a patient, find the clinical trials that patient
+might be able to join — and show a human the specific eligibility rules they
+need to check.
 
-**Read `docs/STATUS.md` first** — it has every number measured so far and the decision
-that is open. This page tells you what to read and which parts of the older files are
-stale.
+**This system never tells anyone they qualify for a trial.** It returns ranked
+candidates plus the criterion text a person must verify. Nothing here touches
+real patient data; the patient descriptions are either invented or taken from a
+published research benchmark.
 
----
-
-## Read these files, in this order
-
-| Order | File | Status | What it is |
-|---|---|---|---|
-| 0 | `HANDOFF.md` | **CURRENT — read before anything else** | Why the architecture is shaped this way, the measurement errors behind four retired gates, what is in flight, the dead ends not to re-run, and how Will wants to be worked with. Also: **`data/` is gitignored and is 2.0 GB, so a fresh clone can reproduce nothing** until the data is moved separately. |
-| 1 | `docs/STATUS.md` | **CURRENT — the numbers** | Where the project stands, in plain language: every number measured so far, what is still broken, what has not been measured at all, and the decision to make. |
-| 2 | `CONTEXT.md` | **CURRENT** | What the project is for, the medical words, who would use it, and every decision that has been argued and settled. Read all of it. |
-| 3 | `SPIKE_2_PLAN.md` | **CURRENT — this is the work** | The seven steps to run, with thresholds. The thresholds are deliberately arbitrary placeholders; they get replaced before each step runs. |
-| 4 | `report.md` | **HISTORICAL RECORD** | What spike 1 measured. The measurements are accurate and worth knowing. **Its two closing sections, "What this means" and "Paths discussed after the result", are superseded — do not follow their recommendations.** It carries a note saying so at the top. |
-
-There is no other documentation. `SPIKE_PLAN.md`, the original spike brief, has been
-**deleted** because its steps were executed and its architecture assumption turned out
-to be wrong. Anything in it that is still true was moved into `CONTEXT.md` or
-`SPIKE_2_PLAN.md`. If you find a reference to it anywhere, the reference is stale.
-
-There is no full project brief, on purpose. The spikes decide whether writing one is
-worth it.
+This is a portfolio project built to demonstrate machine-learning depth, not a
+product. An honest negative result with a threshold committed in advance is
+treated as more valuable here than a flattering number, and the project has
+killed more than eight designs on measured evidence. That record is part of the
+deliverable.
 
 ---
 
-## The design that actually works, in one paragraph
+## What was measured
 
-A patient description gets taken apart into separate facts by a large model. Every rule in
-every trial has already been read once, in advance, by the same model. **Both sides are
-assigned to the same short, fixed list of fact names**, so matching them is exact string
-equality rather than any kind of similarity score — that one change lifted realistic
-elimination from 23.2% to 40.6%. A three-level prior-therapy hierarchy, used only at
-comparison time, then closed the platinum hole and took the realistic figure to **44.7%**.
-A fact only throws a trial out on confident evidence; silence and "can't tell" both keep the
-trial. A large model then reads the survivors in full. See `docs/STATUS.md` for the
-measured numbers and the ceiling that caps them at 54.2%.
+All figures come from the TREC Clinical Trials benchmark — 75 patients from 2021
+and 50 from 2022, with relevance verdicts supplied by medical experts. Each
+patient–trial pair was judged **joinable**, **excluded** (right disease, but a
+rule disqualifies the patient), or **irrelevant**.
 
----
+### Finding the right trials
 
-## What is already on disk
+| | Result |
+|---|---|
+| Eligible trials kept, searching 6% of the collection | **91.6%** (2021), **91.4%** (2022) |
+| Same search using the whole patient note as one query | 58.1% |
 
-### Data — `data/` is gitignored, so it exists locally only
+The single largest win in the project: a model reads the patient note and writes
+10 to 30 search terms, and **each term runs as its own separate search** — word
+matching and vector similarity, merged. Using the note as one query instead
+loses a third of the eligible trials.
 
-| File | What it is | Reuse? |
+A general-purpose embedding model beat a medical specialist at this stage
+(91.8% against 88.0%). At the re-sorting stage the opposite held — the medical
+specialist beat a general-purpose model by more than two to one. Same corpus,
+opposite outcome, because the two stages ask different questions.
+
+### Ordering the results
+
+The default is a self-hosted Qwen2.5-7B model scoring each trial for disease
+relevance (`topical slice` in the code and write-ups).
+
+| | Graded NDCG@10 | Precision@10 |
 |---|---|---|
-| `nsclc_recruiting.jsonl` | The 1,308 recruiting lung-cancer trials, downloaded 2026-09-28 | **Yes. Do not re-download.** |
-| `nsclc_recruiting_meta.json` | The API query that produced them | Yes |
-| `answer_key.jsonl` | Labels for two facts (immunotherapy, brain), plus verbatim quotes. Four hand edits. | **Yes — core ground truth** |
-| `answer_key_markers.jsonl` | The genetic-marker fact, list-shaped, across all trials | **Yes — the strongest filter** |
-| `answer_key_*` for platinum, autoimmune, stage | The other three facts | Yes |
-| `step2_ceiling.json` | Perfect-rule-finding ceiling, six facts: 54.2% | Yes |
-| `step3c_closed_names.jsonl`, `step3c_match_report.json` | Closed-name assignment and the 40.6% figure | Historical — the names-only result |
-| `step3d_closed_names.jsonl`, `step3d_match_report.json` | Hierarchy + containment and the 44.7% realistic figure | **Yes — the current result** |
-| `therapy_hierarchy.json` | Child → parent for the prior-therapy family | **Yes — inspectable, not buried in code** |
-| `step3_report.json`, `step3b_match_report.json` | The two failed free-text matching attempts, 10% and 32% | Historical, but the negatives matter |
-| `step4_parse.json`, `step4_check.md` | Patient-description parsing and its hand check | Yes |
-| `fake_patients.md`, `fake_patients_draw.json` | The 20 invented patients, seed 20260929 | Yes |
-| `answer_key_summary.json` | Label counts, cost, the four edited trial ids | Yes |
-| `keyword_report.json` | Word-search counts and the section split | Yes, as a reference |
-| `search_test_report.json` | Precision and recall for the four spike-1 lookups | Historical |
-| `embeddings_openai.npz`, `embeddings_openai_meta.json` | Whole-document and whole-section vectors from `text-embedding-3-small` | **Superseded.** Spike 2 needs per-bullet vectors, not whole-document ones. |
-| `embeddings.npz`, `embeddings_meta.json` | A discarded run with a small local model | **Ignore.** Not the model under test; kept only for the record. |
-| `mini_pilot*.json`, `gpt54_pilot*.json` | The five labelling pilot runs on 10 trials | Historical |
+| 2021, 75 patients | 0.657 (0.617–0.696) | 0.519 (0.468–0.567) |
+| 2022, 50 patients | 0.662 (0.585–0.734) | 0.570 (0.498–0.646) |
+| `gpt-4o-mini`, 2021, same shortlist | 0.568 (0.522–0.612) | 0.384 (0.331–0.437) |
 
-### Scripts — `scripts/`
+Ranges are 95% intervals from resampling patients (not pairs — pairs from one
+patient are not independent). Precision@10 is the share of the first ten trials
+an expert called joinable. Graded NDCG@10 is the benchmark's own measure, which
+awards full credit for a joinable trial and **half credit for an excluded one**.
 
-| File | What it does | Reuse? |
-|---|---|---|
-| `keyword_section_check.py` | Downloads trials, splits inclusion from exclusion, runs word search | **Reuse the download and the section splitter.** The tightened phrase-list logic is superseded — spike 2 needs the broadest possible lists, not tightened ones. |
-| `mini_pilot.py` | Holds the shared labelling prompt, and the 10-trial runner | **Reuse the prompt.** It is the standard the answer key was built to. |
-| `label_corpus.py` | The full labelling run, six threads, resumable | **Reuse** when labelling more facts |
-| `embed_and_search.py` | Whole-document embedding and the spike-1 search test | **Approach superseded.** Reuse only the embedding-cache plumbing. |
+The self-hosted model beats the paid commercial one on this task, with
+non-overlapping intervals.
 
-### Git
+### Telling "joinable" from "right disease, but excluded"
 
-Every step's deciding numbers were committed to `THRESHOLDS.md` *before* the run that
-produced them, and `DECISIONS.md` records each outcome including two cases where the
-pre-committed reasoning turned out to be wrong. That ordering is visible in the history and
-is part of what the project demonstrates. There is still no remote. `data/`, `.env` and
-`.specstory/` are gitignored, so the data files above exist locally only.
+The hardest judgement in the task, and the one nothing in this project could do
+until late. The measure is AUROC: given one joinable trial and one excluded
+trial, how often does the score rank the joinable one higher? 0.50 is a coin
+flip.
+
+| Approach | AUROC |
+|---|---|
+| Disease-relevance score (the default ranker) | 0.682 |
+| Logistic regression combining every signal already on disk | 0.686 |
+| Asking the model about eligibility instead, untrained | 0.749 |
+| **Fine-tuned on the benchmark's human verdicts** | **0.779** (three seeds: 0.793, 0.770, 0.773) |
+| GPT-5.4 — *different and smaller sample, not comparable* | 0.83 |
+
+The fine-tuning cost about $5 of rented GPU time per training run. It used a
+LoRA adapter — a small file of extra numbers trained on top of a frozen base
+model — learning from comparisons **within a single patient**, so the patient's
+note carries no information about which of two trials ranks higher and the model
+has to read the trial.
+
+Changing the question was worth about seven points; fine-tuning added about
+three more. The cheap insight beat the expensive machinery by more than two to
+one.
+
+### Fabricated citations
+
+When the system quotes a sentence as its evidence, how often does that sentence
+not exist in the source? **1.2%** for the reader, **1.3%** in an audit of 4,384
+stored quote slots.
+
+A naive checker flagged 52% of quotes as suspect. Almost all of that was benign
+— quotes stitched from two real passages, or a word-list miss in the checker
+itself. Only paraphrases and genuinely absent text count, and that is the 1.3%.
+No published system in this area reports a figure like this.
 
 ---
 
-## Things that are true and easy to get wrong
+## Honest caveats
 
-Five mistakes that would cost real time. All of them are explained in `CONTEXT.md`;
-this is the short list.
+Read these before quoting any number above.
 
-1. **Set `PYTHONIOENCODING=utf-8` and pass `encoding="utf-8"` to every file read and
-   write.** The trial text is full of `≥`, `≤` and `×`, which crash a default Windows
-   console.
-2. **Use word boundaries in every pattern, and check sampled hits.** Searching for the
-   abbreviation `ICI` as a plain substring matches 242 of 300 trials; as
-   `\bICIs?\b` it matches 10. The difference is *participants*, *toxicity*,
-   *immunodeficiency*, *physician*.
-3. **Do not match text by similarity at all.** Three attempts failed and are measured:
-   whole-document similarity (spike 1), free-text phrase matching (10% recall), and
-   free-text matching after tidying the wording (32%). The pairs that should match scored
-   *lower* than a pair that should not — brain versus bone spread at 0.86 — so no cutoff
-   works. Closed names with exact equality reached 84% recall; a three-level therapy
-   hierarchy at comparison time took the mean to 94% and platinum from 37% to 89%. Use that.
-4. **A filter's ground truth is every trial with any rule about the fact**, not the
-   trials that refuse it. In answer-key terms that is every label except
-   `not mentioned` — 750 trials for immunotherapy, 719 for brain metastases. Measuring
-   recall against the refusal set instead would test the wrong thing.
-5. **A filter may only eliminate on confident evidence.** Silence is a pass. The whole
-   argument that the filters narrow multiplicatively depends on this, and it is a
-   non-negotiable in `SPIKE_2_PLAN.md`.
+1. **The collection is the judged pool, not the full registry.** Every figure is
+   measured against the 26,162 (2021) / 26,585 (2022) trials that experts
+   judged — not the 375,581 in the full snapshot. Official benchmark
+   submissions searched all 375,581. **That makes this an easier task, in this
+   project's favour, and it means no comparison with official benchmark runs is
+   valid.** See `docs/trec_published_standings.md`.
+2. **No official submission was ever made.** Nothing here was scored by the
+   benchmark organisers.
+3. **No published system shares this evaluation setup.** Different papers use
+   different collections, different treatments of the "excluded" verdict, and at
+   least three incompatible definitions of "precision at 10". The comparison
+   table in `docs/trec_published_standings.md` documents this rather than
+   papering over it.
+4. **The 2023 benchmark year is a different task** and was deliberately left
+   alone. Its criteria are sparse questionnaire fields rather than prose, and
+   first-stage recall falls to 65.4%.
+5. **The two-stage sort is an option, not the default.** Re-sorting the top 25
+   with the eligibility model adds about five points of precision for roughly
+   two-tenths of a cent per patient. It replicated on a pre-registered test, but
+   60 of those 75 patients were in the model's training data, so the
+   conservative figure is the one from unseen patients.
+
+---
+
+## How it works
+
+**Stage 1 — search.** A model turns the patient note into 10 to 30 search terms.
+Each runs as its own query, two ways: BM25 word matching and vector similarity.
+The result lists are merged by reciprocal rank fusion and the top 6% kept, about
+1,570 trials. This stage works and is not under test.
+
+**Stage 2 — ordering those 1,570.** Of them, roughly 4% are joinable, 5% are
+right-disease-but-excluded, and **91% is junk** that matched a generic term like
+"hypertension". A self-hosted Qwen2.5-7B model scores each trial for disease
+relevance. A fine-tuned variant can optionally re-sort the top 25.
+
+**Stage 3 — reading the rules. Not yet built on this benchmark.** A model reads
+each of a trial's roughly 43 eligibility rules against the patient, judges each
+one, and quotes the sentence it relied on. Both published papers say this is
+where the real work happens.
+
+---
+
+## What is not built
+
+Stated plainly, because the measurement record is deliberately ahead of the
+engineering:
+
+- The rule-by-rule reader, on this benchmark
+- A production vector database and a pipeline that keeps trials current
+- An agent framework with explicit function calling
+- A named experiment-tracking platform
+- Validated structured output and guardrails
+- A deployed service, an API, or a container
+
+---
+
+## Where to read what
+
+| File | What it is |
+|---|---|
+| `HANDOFF.md` | Why the architecture is shaped this way, the measurement errors behind four retired thresholds, the dead ends not worth re-running |
+| `docs/trec_published_standings.md` | How this project's numbers relate to published work, and why most comparisons are invalid |
+| `docs/trec_hybrid_retrieval.md` | The search stage and the keyword-decomposition result |
+| `docs/trec_lora_rank.md` | Benchmark-standard measures for every approach tried, both years |
+| `docs/trec_lora_elig.md` | The fine-tuning work, including a collapsed first attempt and its diagnosis |
+| `docs/trec_frontier_elig.md` | GPT-5.4 as a measured baseline |
+| `docs/trec_shortlist_diagnosis.md`, `docs/trec_shortlist_fix.md` | What the shortlist contains, and three approaches that did not help |
+| `THRESHOLDS.md` | Each run's deciding numbers, committed **before** that run |
+| `DECISIONS.md` | Every decision, its options, and what evidence would reverse it |
+| `CONTEXT.md` | Project purpose, medical vocabulary, settled arguments |
+| `docs/papers/` | Local copies of the papers this work is measured against |
+
+Earlier work on a lung-cancer slice — closed-vocabulary matching, the
+containment hierarchy, the fabricated-quote audit — is in `docs/step*.md` and
+`report.md`. `docs/STATUS.md` and `SPIKE_2_PLAN.md` describe that earlier phase
+and are partly superseded.
+
+---
+
+## Reproducing this
+
+**You cannot, from a clone alone.** `data/` is excluded from version control and
+runs to about 2 GB, of which 1.7 GB is the trial corpus. The repository holds
+code and write-ups, and none of the measurements, indexes, scores or expert
+verdicts.
+
+The 2021 snapshot is still downloadable from trec-cds.org
+(`2021_data/ClinicalTrials.2021-04-27.part{1-5}.zip`). The expert verdicts came
+from NIST; `docs/trec_retrievability.md` records the provenance.
+
+Set `PYTHONIOENCODING=utf-8` and pass `encoding="utf-8"` to every file read and
+write. The trial text contains `≥`, `≤` and `×`, which crash a default Windows
+console.
+
+---
 
 ## Working practices
 
-- **`THRESHOLDS.md`** — the real threshold for each step, committed **before** that
-  step runs. The numbers in the plan are placeholders and are labelled as such.
-- **`DECISIONS.md`** — a running log: date, decision, options considered, why, and what
-  evidence would reverse it.
-- **Track cost from the first API call.** Report spend at the checkpoint.
-- **Ask Will** before spending over about $25 in one run, and before changing anything
-  in the plan's Non-negotiables list.
-- Commit small and often, with explanatory messages.
-- You are expected to think, not just type. When the data contradicts an assumption in
-  a plan, say so, propose a change, and log it. **Priorities, in order: honest results >
-  a working end-to-end system > breadth of features.**
+- Each run's deciding numbers go into `THRESHOLDS.md` **before** that run, and
+  are never edited afterwards. The git history showing that order is part of
+  what the project demonstrates.
+- Every reported figure carries an interval, and fine-tuned results report
+  several random seeds with their spread rather than the best one.
+- Results are retracted when they fail re-examination. The fine-tuning headline
+  moved from 0.793 to 0.779 when two more seeds came in, and a claim of parity
+  with a frontier model was withdrawn once the comparison turned out to be
+  measuring something else.
+- Priorities, in order: **honest results > a working end-to-end system >
+  breadth of features.**
+
+**The system does not say a patient qualifies.**
