@@ -15,6 +15,15 @@
   "prompt": "reader/prompt.py",
   "retry_policy": "Up to 3 retries on invalid JSON or schema errors. Omitted rules are filled as not_enough_information and listed on the record. Raw model text is stored every time.",
   "rule_split": "Programmatic. Inclusion/exclusion headers, then bullets or paragraphs. The model does not invent the rule list.",
+  "splitter_audit_before_scores": {
+    "unique_trials_in_top25": 1208,
+    "rules_min_median_mean_max": [1, 10, 13.24, 99],
+    "share_two_or_fewer_rules": 0.112,
+    "modes": {"line_header": 0.922, "loose_header": 0.036, "no_header": 0.041},
+    "no_header_with_exclusion_language": 5,
+    "calib_NCT01160822": "line_header, 33 rules (9 inclusion / 24 exclusion). Overview said 9 + 20.",
+    "decision": "no_header is 4%. The mixed-polarity subset is 5 trials (0.4%). Note in the write-up and run."
+  },
   "aggregation": {
     "any_hard_fail": "Excluded if any exclusion rule is met or any inclusion rule is not_met. Joinable only if every inclusion is met, no exclusion fires, and nothing is unsettled. Otherwise uncertain.",
     "net_balance": "Excluded if any exclusion fires, or if fewer than half of the settled inclusions are met. Joinable if at least half of settled inclusions are met and nothing is unsettled. Otherwise uncertain."
