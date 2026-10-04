@@ -14,6 +14,7 @@ The system does not say a patient qualifies.
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import Callable
 
 from reader.aggregate import aggregate
@@ -30,8 +31,17 @@ from reader.split_rules import split_rules
 from reader.verify_quote import verify_judgement
 
 CompleteFn = Callable[[str, str], str]
-# One repair only. Three greedy retries that paste the last reply
-# reproduced the same empty-quote failure and wasted generations.
+_RULE_ID = re.compile(r"\b(?:inc|exc|u)_\d+\b")
+
+
+def _failed_rule_ids(err: str) -> list[str]:
+    seen: list[str] = []
+    for rid in _RULE_ID.findall(err):
+        if rid not in seen:
+            seen.append(rid)
+    return seen
+# One targeted repair, and only for JSON or leftover schema errors.
+# Empty-quote met/not_met is coerced to not_enough_information, not retried.
 MAX_RETRIES = 1
 
 
@@ -73,6 +83,7 @@ def _fill_missing(expected: list[Rule], parsed: list[dict]) -> tuple[list[dict],
                 "explanation": "model omitted this rule",
                 "quote": "",
                 "quote_source": "trial",
+                "coerced_to_nei": False,
             }
         )
     return filled, missing
@@ -93,6 +104,7 @@ def _to_judgements(
             explanation=row["explanation"],
             quote=row["quote"],
             quote_source=row["quote_source"],
+            coerced_to_nei=bool(row.get("coerced_to_nei")),
         )
         rule = by_id[row["rule_id"]]
         out.append(verify_judgement(item, rule, patient_note, trial_text))
@@ -127,7 +139,11 @@ def read_trial(
     retries = 0
 
     for attempt in range(max_retries + 1):
-        prompt = user if attempt == 0 else user + "\n\n" + retry_message(last_err)
+        prompt = (
+            user
+            if attempt == 0
+            else user + "\n\n" + retry_message(last_err, failed_rule_ids=_failed_rule_ids(last_err))
+        )
         last_raw = complete(SYSTEM, prompt)
         retries = attempt
         try:
@@ -144,6 +160,7 @@ def read_trial(
         parsed = []
     filled, missing = _fill_missing(rules, parsed)
     judgements = _to_judgements(filled, rules, patient_note, trial_text)
+    coerced = [j.rule_id for j in judgements if j.coerced_to_nei]
     return TrialRead(
         patient_id=patient_id,
         nct_id=nct_id,
@@ -153,5 +170,6 @@ def read_trial(
         schema_ok=schema_ok,
         schema_error=last_err,
         missing_rule_ids=missing,
+        coerced_rule_ids=coerced,
         aggregates=aggregate(judgements, rules),
     )

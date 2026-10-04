@@ -51,6 +51,7 @@ class RuleJudgement:
     quote_source: str
     quote_bucket: str = "E"
     quote_flagged: bool = True
+    coerced_to_nei: bool = False
 
     def __post_init__(self) -> None:
         if self.verdict not in VERDICTS:
@@ -71,6 +72,7 @@ class TrialRead:
     schema_ok: bool = False
     schema_error: str = ""
     missing_rule_ids: list[str] = field(default_factory=list)
+    coerced_rule_ids: list[str] = field(default_factory=list)
     aggregates: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
@@ -94,14 +96,37 @@ def _normalise_verdict(verdict: str) -> str:
     return verdict
 
 
+def coerce_absence_row(row: dict) -> dict:
+    """Silence is not_enough_information. That is not the quote guardrail.
+
+    A met or not_met with no span cannot be an evidence judgement.
+    Convert it to not_enough_information and flag the conversion.
+    A quote that exists is still checked against the named source.
+    """
+    out = dict(row)
+    verdict = _normalise_verdict(out.get("verdict"))
+    quote = str(out.get("quote") or "")
+    source = str(out.get("quote_source") or "").strip().lower()
+    if verdict in {"met", "not_met"} and not quote.strip():
+        out["verdict"] = "not_enough_information"
+        out["coerced_to_nei"] = True
+        if source not in QUOTE_SOURCES:
+            out["quote_source"] = "trial"
+        return out
+    out["verdict"] = verdict
+    out["coerced_to_nei"] = bool(out.get("coerced_to_nei"))
+    if verdict == "not_enough_information" and source not in QUOTE_SOURCES:
+        out["quote_source"] = "trial"
+    return out
+
+
 def _row_problem(row: object, i: int, expected_ids: set[str], seen: set[str]) -> str | None:
     if not isinstance(row, dict):
         return f"rules[{i}] is not an object"
+    row = coerce_absence_row(row)
     rid = str(row.get("rule_id") or "").strip()
     verdict = _normalise_verdict(str(row.get("verdict") or ""))
     source = str(row.get("quote_source") or "").strip().lower()
-    if source not in QUOTE_SOURCES:
-        return f"rules[{i}] quote_source must be patient or trial"
     if not rid:
         return f"rules[{i}] missing rule_id"
     if rid not in expected_ids:
@@ -110,12 +135,14 @@ def _row_problem(row: object, i: int, expected_ids: set[str], seen: set[str]) ->
         return f"duplicate rule_id {rid!r}"
     if verdict not in VERDICTS:
         return f"rules[{i}] bad verdict {verdict!r}"
+    if source not in QUOTE_SOURCES:
+        return f"rules[{i}] quote_source must be patient or trial"
     explanation = str(row.get("explanation") or "").strip()
     quote = str(row.get("quote") or "")
-    if verdict != "not_enough_information" and not quote.strip():
-        return f"rules[{i}] {rid} needs a quote"
     if verdict != "not_enough_information" and not explanation:
         return f"rules[{i}] {rid} needs an explanation"
+    if verdict != "not_enough_information" and not quote.strip():
+        return f"rules[{i}] {rid} needs a quote"
     return None
 
 
@@ -145,21 +172,17 @@ def parse_model_rules(payload: object, expected_ids: set[str]) -> list[dict]:
         raise SchemaError(problems[0])
     rules = payload.get("rules")  # type: ignore[union-attr]
     out = []
-    seen: set[str] = set()
     for row in rules:
+        row = coerce_absence_row(row)
         rid = str(row.get("rule_id") or "").strip()
-        verdict = _normalise_verdict(str(row.get("verdict") or ""))
-        source = str(row.get("quote_source") or "").strip().lower()
-        explanation = str(row.get("explanation") or "").strip()
-        quote = str(row.get("quote") or "")
-        seen.add(rid)
         out.append(
             {
                 "rule_id": rid,
-                "verdict": verdict,
-                "explanation": explanation,
-                "quote": quote,
-                "quote_source": source,
+                "verdict": _normalise_verdict(str(row.get("verdict") or "")),
+                "explanation": str(row.get("explanation") or "").strip(),
+                "quote": str(row.get("quote") or ""),
+                "quote_source": str(row.get("quote_source") or "").strip().lower(),
+                "coerced_to_nei": bool(row.get("coerced_to_nei")),
             }
         )
     return out

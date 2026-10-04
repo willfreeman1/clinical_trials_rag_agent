@@ -2480,18 +2480,42 @@ Diagnosis, from the stored raw text, no GPU:
 - All 37 used three greedy retries. The retry pasted the previous
   JSON. Same failure, wasted generations.
 
-Amendment, validator unchanged:
+Two rules that lived in the same place and are not the same:
 
-- Prompt: if the note never mentions the fact, the verdict is
-  `not_enough_information`. An empty quote is legal only then.
-- One repair attempt, not three. The repair lists every problem
-  and does not paste the previous reply.
+1. **Quote guardrail (never loosen).** If a quote is offered, it
+   must actually exist in the named source. That is what measures
+   fabrication. `verify_quote.py` is unchanged.
+2. **Output contract (this was wrong).** Requiring every `met` and
+   `not_met` to carry a quote is unsatisfiable for absence
+   judgements. A silent note has no span to cite.
+
+That contract is the same principle CONTEXT.md already locked:
+a filter may only eliminate on confident evidence; silence is a
+pass. `not_met` means the note positively fails the rule, and
+that always has a quote. A rule the note is silent about is
+`not_enough_information`.
+
+Amendment:
+
+- Prompt restates that rule. This is consistency with a settled
+  project rule, not a workaround.
+- If the model still returns `met` or `not_met` with no quote,
+  convert that row to `not_enough_information`, flag
+  `coerced_to_nei`, and count it. Do not retry that case.
+- One targeted repair remains, only for broken JSON or leftover
+  schema errors (unknown `rule_id`, quoted row with no
+  `quote_source`). It names only the failed rule IDs and does
+  not paste the previous reply.
 - No rule-batching. That was the truncation design. This was
   not truncation.
 - No grammar-constrained decoding. The worker is
-  `transformers.generate`, not vLLM. Adding a serving stack is
-  a detour.
+  `transformers.generate`, not vLLM.
 - `MAX_NEW` stays 2,048.
+
+Write-up note: the output contract required evidence for every
+negative judgement, but judgements grounded in absence have no
+span to cite, so the contract was unsatisfiable for a whole
+class of cases.
 
 Re-probe patients 1 and 2 on the same 50 trials. If the
 projection is under about $25, run the 1,250. If not, stop.

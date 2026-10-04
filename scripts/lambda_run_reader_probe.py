@@ -132,6 +132,7 @@ def generation_stats(path: Path) -> dict:
     n = 0
     ok = 0
     gens = 0
+    coerced = 0
     if path.exists():
         with path.open(encoding="utf-8") as fh:
             for line in fh:
@@ -142,12 +143,14 @@ def generation_stats(path: Path) -> dict:
                 gens += int(row.get("retries") or 0) + 1
                 if row.get("schema_ok"):
                     ok += 1
+                coerced += len(row.get("coerced_rule_ids") or [])
     return {
         "n": n,
         "schema_ok": ok,
         "generations": gens,
         "generations_per_trial": round(gens / n, 3) if n else 0.0,
         "valid_rate": round(ok / n, 3) if n else 0.0,
+        "coerced_rules": coerced,
     }
 
 
@@ -233,6 +236,7 @@ def main() -> None:
             "valid_rate": stats["valid_rate"],
             "generations": stats["generations"],
             "generations_per_trial": stats["generations_per_trial"],
+            "coerced_rules": stats["coerced_rules"],
             "hours": round(hours, 3),
             "usd": round(usd, 2),
             "full_pairs": FULL_PAIRS,

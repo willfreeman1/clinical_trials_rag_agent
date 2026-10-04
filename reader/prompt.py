@@ -27,7 +27,7 @@ Polarity (read this twice):
 
 Also return:
 - explanation: one short sentence. Not a medical opinion — what the quote says about this patient.
-- quote: a word-for-word copy of the supporting span. Copy from the patient note or from the rule/trial text. Required for met and not_met. Empty only for not_enough_information. A met or not_met with an empty quote is rejected.
+- quote: a word-for-word copy of the supporting span. Copy from the patient note or from the rule/trial text. Required for met and not_met, because those verdicts are evidence judgements. Empty only for not_enough_information. If you cannot copy a span, use not_enough_information. A met or not_met with no quote is recorded as not_enough_information and counted; it is not an evidence judgement.
 - quote_source: exactly "patient" or "trial". Never empty.
 
 Return one object per rule_id you were given. Do not add rules. Do not invent rule_ids. You may omit a rule; omitted rules are filled as not_enough_information.
@@ -51,13 +51,16 @@ def user_message(patient_note: str, nct_id: str, title: str, rules: list[Rule]) 
     return "\n".join(lines)
 
 
-def retry_message(error: str, raw: str = "") -> str:
+def retry_message(error: str, raw: str = "", failed_rule_ids: list[str] | None = None) -> str:
     del raw
+    named = ""
+    if failed_rule_ids:
+        ids = ", ".join(failed_rule_ids)
+        named = f"Only these rule_ids need a fix: {ids}.\n"
     return (
         "The previous reply was not valid. Do not copy it.\n"
+        f"{named}"
         f"Problems:\n{error}\n"
-        "If a rule has no verbatim quote, change that verdict to "
-        "not_enough_information and leave the quote empty.\n"
         "quote_source must be exactly patient or trial.\n"
         "Do not emit a rule_id that was not in the list.\n"
         "Return JSON only, no markdown."

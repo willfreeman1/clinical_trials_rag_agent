@@ -13,14 +13,22 @@
   "not_2023": true,
   "schema": "reader/schema.py",
   "prompt": "reader/prompt.py",
-  "retry_policy": "One repair on invalid JSON or schema errors. The repair names every problem and does not paste the previous reply. Omitted rules are filled as not_enough_information and listed on the record. Raw model text is stored every time.",
+  "retry_policy": "Empty-quote met/not_met is coerced to not_enough_information and counted, not retried. One targeted repair remains for broken JSON or leftover schema errors; it names only the failed rule_ids and does not paste the previous reply. Omitted rules are filled as not_enough_information. Raw model text is stored every time.",
+  "quote_guardrail": "If a quote is offered, it must exist in the named source. verify_quote.py is unchanged. That is not the same rule as requiring every met/not_met to carry a quote.",
+  "silence_is_nei": "CONTEXT.md: a filter may only eliminate on confident evidence; silence is a pass. not_met requires a span. A silent note is not_enough_information.",
   "probe_13_of_50_diagnosis": {
     "not_accuracy": "13 of 50 is schema-conformance on the first probe, not agreement with TREC labels.",
-    "guardrail": "The validator rejected 37 malformed outputs. That is the design working.",
+    "guardrail": "The quote-exists-in-source check rejected nothing that had a span. The 37 trial failures were the output contract, not the fabrication guardrail.",
     "not_max_new": "No stored failure sat at or near 2048 output tokens. Longest failure was 1390 tokens. A 45-rule trial passed; a 2-rule trial failed.",
-    "cause": "27 of 37 last replies used met or not_met with an empty quote (145 not_met, 16 met). Five had an empty quote_source. Four were broken JSON. One invented a rule_id. The model treated a silent note as not_met.",
+    "trial_errors": {
+      "empty_quote": 27,
+      "empty_quote_source": 5,
+      "broken_json": 4,
+      "unexpected_rule_id": 1
+    },
+    "empty_quote_rows_in_parseable_failures": {"not_met": 145, "met": 16},
     "retries_were_waste": "All 37 used three greedy retries. The retry pasted the previous JSON, so the same empty quotes came back.",
-    "fix": "Prompt: silent note is not_enough_information; empty quote is legal only then. One named-problem repair, no pasted reply. Validator unchanged. No batching (that was a truncation fix). No vLLM (worker is transformers.generate).",
+    "fix": "Prompt matches CONTEXT.md silence-is-pass. Coerce leftover empty-quote met/not_met to NEI and count it. Targeted repair only for JSON or leftover schema. Quote verifier unchanged. No batching. No vLLM.",
     "max_new": 2048
   },
   "rule_split": "Programmatic. Inclusion/exclusion headers, then bullets or paragraphs. The model does not invent the rule list.",

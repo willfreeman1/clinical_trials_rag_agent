@@ -55,22 +55,23 @@ class SchemaTests(unittest.TestCase):
                 EXPECTED,
             )
 
-    def test_met_requires_quote(self) -> None:
-        with self.assertRaises(SchemaError):
-            parse_model_rules(
-                {
-                    "rules": [
-                        {
-                            "rule_id": "inc_01",
-                            "verdict": "met",
-                            "explanation": "x",
-                            "quote": "",
-                            "quote_source": "patient",
-                        }
-                    ]
-                },
-                {"inc_01"},
-            )
+    def test_empty_quote_met_coerced_to_nei(self) -> None:
+        rows = parse_model_rules(
+            {
+                "rules": [
+                    {
+                        "rule_id": "inc_01",
+                        "verdict": "met",
+                        "explanation": "x",
+                        "quote": "",
+                        "quote_source": "patient",
+                    }
+                ]
+            },
+            {"inc_01"},
+        )
+        self.assertEqual(rows[0]["verdict"], "not_enough_information")
+        self.assertTrue(rows[0]["coerced_to_nei"])
 
     def test_retry_then_ok(self) -> None:
         replies = [
@@ -107,25 +108,25 @@ class SchemaTests(unittest.TestCase):
         self.assertEqual(result.retries, 1)
         self.assertEqual(result.rules[0].verdict, "met")
 
-    def test_not_met_requires_quote(self) -> None:
-        with self.assertRaises(SchemaError) as ctx:
-            parse_model_rules(
-                {
-                    "rules": [
-                        {
-                            "rule_id": "inc_01",
-                            "verdict": "not_met",
-                            "explanation": "Note never mentions an adnexal mass.",
-                            "quote": "",
-                            "quote_source": "trial",
-                        }
-                    ]
-                },
-                {"inc_01"},
-            )
-        self.assertIn("needs a quote", str(ctx.exception))
+    def test_empty_quote_not_met_coerced_to_nei(self) -> None:
+        rows = parse_model_rules(
+            {
+                "rules": [
+                    {
+                        "rule_id": "inc_01",
+                        "verdict": "not_met",
+                        "explanation": "Note never mentions an adnexal mass.",
+                        "quote": "",
+                        "quote_source": "trial",
+                    }
+                ]
+            },
+            {"inc_01"},
+        )
+        self.assertEqual(rows[0]["verdict"], "not_enough_information")
+        self.assertTrue(rows[0]["coerced_to_nei"])
 
-    def test_lists_every_schema_problem(self) -> None:
+    def test_quoted_met_still_needs_a_real_source(self) -> None:
         problems = list_schema_problems(
             {
                 "rules": [
@@ -147,15 +148,55 @@ class SchemaTests(unittest.TestCase):
             },
             EXPECTED,
         )
-        self.assertTrue(any("needs a quote" in p for p in problems))
-        self.assertTrue(any("quote_source" in p for p in problems))
+        self.assertFalse(any("needs a quote" in p for p in problems))
+        self.assertTrue(any("unexpected rule_id" in p for p in problems))
 
-    def test_retry_does_not_paste_previous_json(self) -> None:
+    def test_retry_names_failed_rules_and_does_not_paste_json(self) -> None:
         previous = '{"rules": [{"rule_id": "inc_01", "verdict": "not_met", "quote": ""}]}'
-        text = retry_message("rules[0] inc_01 needs a quote", previous)
+        text = retry_message(
+            "rules[1] unexpected rule_id 'exc_99'",
+            previous,
+            failed_rule_ids=["exc_99"],
+        )
         self.assertNotIn(previous, text)
-        self.assertIn("needs a quote", text)
-        self.assertIn("not_enough_information", text)
+        self.assertIn("exc_99", text)
+        self.assertIn("Only these rule_ids need a fix", text)
+
+    def test_empty_quote_does_not_spend_a_retry(self) -> None:
+        calls = []
+
+        def complete(_system: str, user: str) -> str:
+            calls.append(user)
+            return json.dumps(
+                {
+                    "rules": [
+                        {
+                            "rule_id": "inc_01",
+                            "verdict": "not_met",
+                            "explanation": "Note never mentions an adnexal mass.",
+                            "quote": "",
+                            "quote_source": "trial",
+                        }
+                    ]
+                }
+            )
+
+        result = read_trial(
+            "1",
+            "NCT0",
+            "A 67-year-old with lung cancer.",
+            "A trial",
+            "Inclusion Criteria\n- Age 18 years or older\nExclusion Criteria\n- Pregnant patients must not enroll\n",
+            complete,
+        )
+        self.assertTrue(result.schema_ok)
+        self.assertEqual(result.retries, 0)
+        self.assertEqual(len(calls), 1)
+        self.assertIn("inc_01", result.coerced_rule_ids)
+        self.assertEqual(
+            [r.verdict for r in result.rules if r.rule_id == "inc_01"][0],
+            "not_enough_information",
+        )
 
     def test_one_repair_then_give_up(self) -> None:
         calls = []
