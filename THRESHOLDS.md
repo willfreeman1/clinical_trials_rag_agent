@@ -2414,3 +2414,45 @@ starts only if the projection stays near or under about \.
 
 The system does not say a patient qualifies.
 
+---
+
+## Rule-by-rule reader — 2022, top 25, no pass/fail
+
+**Committed before any reader score exists.** We want to know how
+it does. A number invented beforehand adds nothing.
+
+### What is locked
+
+- Patients: all 50 from 2022. Not 2021. Not 2023.
+- Trials: the top 25 of the topical-slice continuous ranking, the
+  cutoff that already replicated. 1,250 pairs.
+- Model: Qwen2.5-7B-Instruct, self-hosted. No frontier model.
+- Prompt, schema, retries, rule split, and both aggregation rules:
+  `scripts/trec_reader_config.json`, `reader/`.
+- Pair IDs: `scripts/trec_reader_pairs.json`.
+
+### What is reported
+
+- Agreement with TREC labels under **any_hard_fail** and
+  **net_balance**. If they disagree on the headline, that is the
+  finding.
+- Joinable-versus-excluded AUROC on the same 1-versus-2 basis as
+  the 0.779 scorer.
+- Quote check: raw flag rate, bucket shares (A–E), and D+E as the
+  honest fabrication rate. Earlier work treated above **5%** as a
+  support problem and measured **1.3%**. That is the reference,
+  not a new gate.
+- A 50-to-100 row sample for Will to hand-check.
+- Cost.
+
+No per-rule accuracy. TREC labels are per trial. TrialGPT's 87.3%
+used paid clinicians on 1,015 judgements. There are none here.
+
+### Probe
+
+Patients 1 and 2, 25 trials each. Project the full 50. Stop and
+ask if it heads past about $25. Copy reads off. Terminate via
+the API.
+
+The system does not say a patient qualifies.
+
