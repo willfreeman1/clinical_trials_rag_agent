@@ -11,9 +11,21 @@ the cascade **promising, not better**.
 The adapter alone is 0.550 against 0.570. That
 interval is **−7.4 to +3.0 points**. Zero sits
 inside that one too, and the ordering may not be
-real. On the field’s graded metric the adapter
-alone is worse: NDCG@10 **−0.069** (−0.125 to
-−0.012), and zero is outside that interval.
+real. On TREC’s **graded** NDCG@10 the adapter
+is worse: **−0.069** (−0.125 to −0.012), zero
+outside. On **binary** NDCG@10 — eligible
+counts 1, excluded counts 0 — it is a wash:
+**−0.017** (−0.077 to +0.043), 24 patients
+higher, 25 lower. The graded loss is the
+metric giving half credit for a trial the
+patient is excluded from. A coordinator gets
+nothing from that trial. The adapter was
+trained to push those trials down, so it
+loses graded points by doing the thing it
+was built to do. It does not win the first
+page on the coordinator metric either. The
+depth multiples are a separate fact, about
+joinable trials past the first ten.
 
 That is a product choice, not a pass/fail gate.
 Config and pair IDs were committed in `3b50e06`
@@ -31,10 +43,18 @@ human-joinable (label 2), as a fraction. Excluded
 (label 1: right disease, a rule fails) does not
 count. That is TREC’s binary rule.
 
-**NDCG@10** is TREC’s graded rule: eligible 2,
-excluded 1, not relevant or unjudged 0. Order in
-the top ten matters, and excluded is a partial
-hit.
+**NDCG@10 (graded)** is TREC’s official rule:
+eligible 2, excluded 1, not relevant or
+unjudged 0. Order in the top ten matters, and
+excluded is a partial hit.
+
+**NDCG@10 (binary)** uses the same formula
+with eligible 1 and everything else 0. It
+rewards *where* in the top ten a joinable
+trial lands, not how many there are (that is
+P@10) and not excluded trials (that is
+graded NDCG). It is the coordinator’s
+version of the ranking score.
 
 **Equivalent depth** is: reading N trials in this
 order finds as many joinable trials as reading
@@ -70,14 +90,15 @@ topical slice, then patients are redrawn.
 | Contrast | Point | Interval | Cascade / adapter higher | Topical higher | Tie |
 |---|---:|---|---:|---:|---:|
 | Cascade top-100 − topical, P@10 | +0.046 | −0.004 to +0.096 | 22 | 15 | 13 |
-| Cascade top-100 − topical, NDCG@10 | +0.000 | −0.052 to +0.053 | 23 | 26 | 1 |
+| Cascade top-100 − topical, NDCG@10 graded | +0.000 | −0.052 to +0.053 | 23 | 26 | 1 |
 | Adapter-alone − topical, P@10 | −0.020 | −0.074 to +0.030 | 17 | 20 | 13 |
-| Adapter-alone − topical, NDCG@10 | −0.069 | −0.125 to −0.012 | 18 | 31 | 1 |
+| Adapter-alone − topical, NDCG@10 graded | −0.069 | −0.125 to −0.012 | 18 | 31 | 1 |
+| Adapter-alone − topical, NDCG@10 binary | −0.017 | −0.077 to +0.043 | 24 | 25 | 1 |
 
-Zero is inside the first three. The fourth
-interval sits entirely below zero: replacing the
-topical list with the adapter **hurts** graded
-top-ten quality.
+Zero is inside every row except graded
+NDCG for the adapter. Replacing the topical
+list **hurts** TREC’s graded top-ten score
+and ties on the coordinator’s binary one.
 
 10-in-20 moves from 25/50 (topical) to 30/50
 (cascade 100) and 33/50 (cascade 25). That is
@@ -182,6 +203,7 @@ our earlier conventions.
 | Column | Rule |
 |---|---|
 | NDCG@10 | Graded. Eligible 2, excluded 1, not relevant / unjudged 0. Ideal DCG from all qrels for that topic. |
+| NDCG@10 bin | Binary. Eligible 1, excluded and not relevant / unjudged 0. Same formula, no partial credit. |
 | P@10 | Binary. Eligible is relevant; excluded is merged with not relevant. |
 | RPrec | Binary. Precision at R, R = number of eligible qrels for the topic. |
 | MRR | Binary. 1 / rank of the first eligible trial; 0 if none. |
@@ -217,50 +239,53 @@ standings row mixed 2021’s best rerank arm
 (0.510 / 0.384) with 2022 MedCPT-CE (0.586 /
 0.508). That is HANDOFF error 4.
 
-| Year | n | NDCG@10 mean (interval) | NDCG@10 median | P@10 mean (interval) | P@10 median | RPrec mean | MRR mean |
-|---|---:|---|---:|---|---:|---:|---:|
-| 2021 | 75 | 0.657 (0.617–0.696) | 0.680 | 0.519 (0.468–0.567) | 0.500 | 0.415 | 0.700 |
-| 2022 | 50 | 0.662 (0.585–0.734) | 0.696 | 0.570 (0.498–0.646) | 0.600 | 0.439 | 0.741 |
+| Year | n | NDCG@10 graded (interval) | NDCG@10 binary (interval) | P@10 (interval) | P@10 median |
+|---|---:|---|---|---|---:|
+| 2021 | 75 | 0.657 (0.617–0.696) | 0.520 (0.466–0.572) | 0.519 (0.468–0.567) | 0.500 |
+| 2022 | 50 | 0.662 (0.585–0.734) | 0.576 (0.498–0.654) | 0.570 (0.498–0.646) | 0.600 |
 
 These are still judged-pool numbers. They are
 not a NIST submission from the 375k snapshot.
 
 ### 2021, all 75 patients
 
-NDCG@10 graded 2/1/0. P@10, RPrec, MRR binary
-(eligible only).
+NDCG@10 graded is 2/1/0. NDCG@10 binary is
+eligible=1, excluded=0. P@10 is binary
+eligible only. Means with patient-resampled
+intervals. RPrec and MRR stay in
+`data/trec/trec_lora_rank_finish.json`.
 
-| Arm | n | NDCG@10 mean (interval) | NDCG median | P@10 mean (interval) | P@10 median | RPrec mean (interval) | MRR mean (interval) |
-|---|---:|---|---:|---|---:|---|---|
-| Fused search order | 75 | 0.453 (0.409–0.497) | 0.460 | 0.285 (0.235–0.337) | 0.200 | 0.238 (0.205–0.272) | 0.484 (0.404–0.567) |
-| gpt-4o-mini, full shortlist | 75 | 0.568 (0.522–0.612) | 0.582 | 0.384 (0.331–0.437) | 0.400 | 0.353 (0.311–0.393) | 0.609 (0.529–0.687) |
-| Topical slice, digit | 75 | 0.597 (0.553–0.640) | 0.606 | 0.431 (0.377–0.484) | 0.400 | 0.396 (0.355–0.437) | 0.658 (0.578–0.740) |
-| **Topical slice, continuous** | 75 | **0.657 (0.617–0.696)** | 0.680 | **0.519 (0.468–0.567)** | 0.500 | 0.415 (0.377–0.455) | 0.700 (0.623–0.777) |
-| Title+conditions, digit | 75 | 0.578 (0.536–0.621) | 0.581 | 0.412 (0.359–0.465) | 0.400 | 0.366 (0.325–0.408) | 0.609 (0.529–0.689) |
-| Title+conditions, continuous | 75 | 0.613 (0.576–0.651) | 0.625 | 0.451 (0.397–0.501) | 0.400 | 0.385 (0.346–0.426) | 0.676 (0.602–0.750) |
-| MedCPT-CE, raw note | 75 | 0.538 (0.486–0.589) | 0.561 | 0.348 (0.292–0.407) | 0.300 | 0.289 (0.249–0.329) | 0.557 (0.470–0.644) |
-| MedCPT-CE, keywords | 75 | 0.551 (0.497–0.605) | 0.542 | 0.369 (0.305–0.435) | 0.300 | 0.278 (0.236–0.320) | 0.545 (0.460–0.630) |
-| Untrained eligibility, continuous | 15 | 0.610 (0.519–0.701) | 0.620 | 0.553 (0.460–0.647) | 0.500 | 0.398 (0.318–0.487) | 0.724 (0.571–0.869) |
+| Arm | n | NDCG graded (interval) | NDCG binary (interval) | P@10 (interval) | P@10 median |
+|---|---:|---|---|---|---:|
+| Fused search order | 75 | 0.453 (0.409–0.497) | 0.290 (0.240–0.343) | 0.285 (0.235–0.337) | 0.200 |
+| gpt-4o-mini, full shortlist | 75 | 0.568 (0.522–0.612) | 0.394 (0.339–0.450) | 0.384 (0.331–0.437) | 0.400 |
+| Topical slice, digit | 75 | 0.597 (0.553–0.640) | 0.444 (0.386–0.503) | 0.431 (0.377–0.484) | 0.400 |
+| **Topical slice, continuous** | 75 | **0.657 (0.617–0.696)** | **0.520 (0.466–0.572)** | **0.519 (0.468–0.567)** | 0.500 |
+| Title+conditions, digit | 75 | 0.578 (0.536–0.621) | 0.414 (0.357–0.471) | 0.412 (0.359–0.465) | 0.400 |
+| Title+conditions, continuous | 75 | 0.613 (0.576–0.651) | 0.459 (0.404–0.512) | 0.451 (0.397–0.501) | 0.400 |
+| MedCPT-CE, raw note | 75 | 0.538 (0.486–0.589) | 0.359 (0.300–0.421) | 0.348 (0.292–0.407) | 0.300 |
+| MedCPT-CE, keywords | 75 | 0.551 (0.497–0.605) | 0.375 (0.311–0.443) | 0.369 (0.305–0.435) | 0.300 |
+| Untrained eligibility, continuous | 15 | 0.610 (0.519–0.701) | 0.565 (0.453–0.669) | 0.553 (0.460–0.647) | 0.500 |
 
 ### 2022, all 50 patients
 
 Same rules as the 2021 table.
 
-| Arm | n | NDCG@10 mean (interval) | NDCG median | P@10 mean (interval) | P@10 median | RPrec mean (interval) | MRR mean (interval) |
-|---|---:|---|---:|---|---:|---|---|
-| Fused search order | 50 | 0.506 (0.434–0.578) | 0.491 | 0.386 (0.318–0.458) | 0.300 | 0.296 (0.245–0.350) | 0.596 (0.502–0.687) |
-| gpt-4o-mini, full shortlist | 50 | 0.627 (0.555–0.697) | 0.645 | 0.492 (0.416–0.568) | 0.500 | 0.415 (0.356–0.476) | 0.695 (0.602–0.786) |
-| Topical slice, digit | 50 | 0.635 (0.566–0.703) | 0.682 | 0.514 (0.442–0.588) | 0.500 | 0.427 (0.365–0.488) | 0.720 (0.628–0.805) |
-| **Topical slice, continuous** | 50 | **0.662 (0.585–0.734)** | 0.696 | **0.570 (0.498–0.646)** | 0.600 | 0.439 (0.377–0.502) | 0.741 (0.643–0.837) |
-| Title+conditions, digit | 50 | 0.622 (0.552–0.691) | 0.671 | 0.490 (0.416–0.564) | 0.500 | 0.406 (0.345–0.466) | 0.710 (0.616–0.805) |
-| Title+conditions, continuous | 50 | 0.618 (0.542–0.692) | 0.643 | 0.500 (0.426–0.576) | 0.500 | 0.411 (0.348–0.475) | 0.665 (0.561–0.765) |
-| MedCPT-CE, raw note | 50 | 0.601 (0.523–0.677) | 0.680 | 0.482 (0.398–0.560) | 0.500 | 0.347 (0.289–0.407) | 0.744 (0.640–0.843) |
-| MedCPT-CE, keywords | 50 | 0.620 (0.547–0.690) | 0.680 | 0.508 (0.432–0.582) | 0.500 | 0.372 (0.314–0.431) | 0.687 (0.588–0.786) |
-| Eligibility adapter, continuous | 50 | 0.592 (0.528–0.655) | 0.569 | 0.550 (0.484–0.616) | 0.500 | 0.461 (0.406–0.516) | 0.737 (0.652–0.817) |
-| Eligibility adapter, digit | 50 | 0.617 (0.557–0.676) | 0.615 | 0.514 (0.444–0.582) | 0.400 | 0.453 (0.399–0.507) | 0.693 (0.611–0.775) |
-| Cascade top 25 | 50 | 0.688 (0.612–0.758) | 0.725 | 0.624 (0.546–0.702) | 0.700 | 0.446 (0.382–0.508) | 0.831 (0.749–0.907) |
-| Cascade top 100 | 50 | 0.662 (0.595–0.725) | 0.661 | 0.616 (0.546–0.688) | 0.600 | 0.471 (0.412–0.531) | 0.782 (0.700–0.860) |
-| Untrained eligibility, continuous | 15 | 0.685 (0.537–0.822) | 0.778 | 0.627 (0.480–0.773) | 0.600 | 0.440 (0.322–0.562) | 0.871 (0.713–1.000) |
+| Arm | n | NDCG graded (interval) | NDCG binary (interval) | P@10 (interval) | P@10 median |
+|---|---:|---|---|---|---:|
+| Fused search order | 50 | 0.506 (0.434–0.578) | 0.397 (0.324–0.472) | 0.386 (0.318–0.458) | 0.300 |
+| gpt-4o-mini, full shortlist | 50 | 0.627 (0.555–0.697) | 0.507 (0.430–0.583) | 0.492 (0.416–0.568) | 0.500 |
+| Topical slice, digit | 50 | 0.635 (0.566–0.703) | 0.527 (0.453–0.603) | 0.514 (0.442–0.588) | 0.500 |
+| **Topical slice, continuous** | 50 | **0.662 (0.585–0.734)** | **0.576 (0.498–0.654)** | **0.570 (0.498–0.646)** | 0.600 |
+| Title+conditions, digit | 50 | 0.622 (0.552–0.691) | 0.510 (0.433–0.587) | 0.490 (0.416–0.564) | 0.500 |
+| Title+conditions, continuous | 50 | 0.618 (0.542–0.692) | 0.503 (0.425–0.581) | 0.500 (0.426–0.576) | 0.500 |
+| MedCPT-CE, raw note | 50 | 0.601 (0.523–0.677) | 0.507 (0.426–0.585) | 0.482 (0.398–0.560) | 0.500 |
+| MedCPT-CE, keywords | 50 | 0.620 (0.547–0.690) | 0.518 (0.440–0.592) | 0.508 (0.432–0.582) | 0.500 |
+| Eligibility adapter, continuous | 50 | 0.592 (0.528–0.655) | 0.559 (0.494–0.624) | 0.550 (0.484–0.616) | 0.500 |
+| Eligibility adapter, digit | 50 | 0.617 (0.557–0.676) | 0.517 (0.450–0.585) | 0.514 (0.444–0.582) | 0.400 |
+| Cascade top 25 | 50 | 0.688 (0.612–0.758) | 0.646 (0.571–0.719) | 0.624 (0.546–0.702) | 0.700 |
+| Cascade top 100 | 50 | 0.662 (0.595–0.725) | 0.626 (0.557–0.696) | 0.616 (0.546–0.688) | 0.600 |
+| Untrained eligibility, continuous | 15 | 0.685 (0.537–0.822) | 0.663 (0.515–0.801) | 0.627 (0.480–0.773) | 0.600 |
 
 On official NDCG@10 the topical slice and the
 pre-specified cascade are the same mean (0.662).
@@ -290,26 +315,37 @@ topical order.
 **3.71 hours, $6.65**, then terminated through
 the API. H100 was out of stock at launch.
 
-## Why replace loses the page
+## Why graded NDCG and equivalent depth disagree
 
 The adapter is better at joinable versus
-excluded (AUROC 0.773 on this seed). The first
-page is still a fight with **junk**: trials
-that matched a generic word and are not about
-this patient. The topical slice is a “is this
-even the right problem?” score on title,
-conditions, and a short criteria slice. That
-is the cheaper question, and it is the one
-NDCG@10 still needs — excluded trials in the
-top ten are a partial hit, and the adapter
-pulls them up.
+excluded (AUROC 0.773 on this seed). TREC’s
+graded NDCG@10 gives excluded trials half
+credit. A coordinator who has to read the
+criteria gets nothing from those trials.
+Binary NDCG@10 tests that directly.
 
-Once junk is mostly out of the way, the
-eligibility score starts to pay at depth 200.
-That is why adapter-only equivalent depth at
-200 is the best of the whole-list sorts, and
-why a short cascade can move P@10 without
-moving depth 200.
+The adapter **loses graded NDCG** and **ties
+binary NDCG**. The explanation holds: the
+graded loss is the metric rewarding the
+excluded trials the adapter was trained to
+push down. It is not a first-page win on
+the coordinator metric. P@10 was already a
+wash. Binary NDCG, which also cares about
+order inside the top ten, is the same wash.
+
+The depth multiples are the other half of
+the story and they survive. Reading 20, 200
+or 500 adapter-sorted trials still finds as
+many joinable trials as a longer stretch of
+the fused list (4.03× / 3.28× / 2.23×
+against topical 3.42× / 2.77× / 1.95×).
+That is about positions past ten, not about
+how excluded trials are scored in the top
+ten.
+
+A short cascade can still move P@10 without
+moving equivalent depth at 200, because the
+tail of that list stays in topical order.
 
 ## Recommendation
 
@@ -319,19 +355,19 @@ moving depth 200.
 2. Sort that whole list with the topical slice,
    continuous score. That is the default.
    Incremental adapter cost: **$0 per patient**.
-3. Do not ship adapter-only. It loses NDCG@10
-   by enough that zero is outside the interval.
+3. Do not ship adapter-only. It loses graded
+   NDCG@10 by enough that zero is outside the
+   interval, and it only ties on binary
+   NDCG@10.
 4. Do not ship the pre-specified top-100
    cascade as “better.” It is promising.
 
 **If eligibility is scored for ranking anyway**
 
-Use cutoff **25**, not 100: **$0.002 per
-patient**, about 3.5 minutes of A100-class
-GPU for all 50, best P@10 in the sweep, only
-cutoff whose P@10 interval excludes zero.
-Say it is a sweep finding. Do not treat it as
-locked.
+Use cutoff **25**, not 100. The 2022 sweep
+finding **replicated on 2021** (section
+below). About **$0.002 per patient**. The
+topical slice is still the default.
 
 The adapter stays in the pipeline as a
 1-versus-2 score (AUROC 0.779, 0.770–0.793)
@@ -344,21 +380,119 @@ default first-page sort.
 
 - Not a decision that anyone qualifies.
 - Not official TREC against the 375k snapshot.
-- Not 2021 adapter ranking, and not the
-  other-way fold.
-- Not GPT-5.4 on these 50 shortlists.
+- Not 2021 as a patient-holdout for the
+  adapter. Sixty of those 75 patients were
+  in the 1-versus-2 training set. The
+  cutoff was the thing held out, not the
+  patients.
+- Not the other-way fold (train 2022, test
+  2021).
+- Not GPT-5.4 on these shortlists.
 - Not a reason to discard anything from the
-  1,595.
-- Not a confirmed win for cascade 25. That
-  cutoff was read off the same 50 patients.
+  shortlist.
+
+## 5. 2021 replication of cutoff 25
+
+Locked in `ed41185` before any 2021 adapter
+score existed. Cutoff **25**, fixed. No
+sweep. Same adapter as 2022 (seed
+**20261007**). All 75 patients, 117,750
+pairs. Primary measure, stated in advance:
+paired P@10, cascade-at-25 minus the
+topical slice, patients resampled.
+
+**It replicated.** Cascade 25 is 0.627
+against topical 0.519. The difference is
+**+0.108** (0.068 to 0.148). Zero is
+outside. Cascade higher on 47 patients,
+topical on 13, tie 15.
+
+That is the number the 2022 sweep was not
+allowed to decide. 2021 was never swept.
+The 2022 +0.054 interval was not a
+multiplicity artefact.
+
+The topical slice stays the default. This
+makes cutoff 25 a **defensible option** at
+about two-tenths of a cent per patient, not
+a change of the pipeline.
+
+### What was committed in advance
+
+| Item | Locked value |
+|---|---|
+| Cutoff | 25 only |
+| Arms | Topical slice continuous vs cascade-at-25 |
+| Adapter | Seed 20261007, same file as 2022 |
+| Patients | All 75 of 2021 |
+| Primary | Paired P@10, cascade minus topical |
+| If interval excludes 0, same direction | Replicates; option is defensible |
+| If interval includes 0 | Multiplicity artefact; say so |
+| If interval excludes 0, opposite | Report that; most informative |
+
+Sixty of the 75 were in the adapter’s
+training set for joinable-versus-excluded.
+The 15-patient 2021 tuning set was watched
+during training. This run tests the
+**cutoff**, not whether the adapter
+generalises off the patients it was trained
+on.
+
+### Primary measure
+
+| | Cascade 25 | Topical slice | Difference |
+|---|---:|---:|---|
+| P@10 | 0.627 (0.576–0.676) | 0.519 (0.467–0.569) | **+0.108 (0.068–0.148)** |
+| Patients higher | 47 | 13 | 15 ties |
+
+Binary rule: eligible is a hit, excluded is
+not. 5,000 patient resamples, seed
+20261009.
+
+### Secondaries (not deciding)
+
+| | Cascade 25 | Topical | Paired difference |
+|---|---:|---:|---|
+| NDCG@10 graded | 0.696 (0.649–0.740) | 0.657 (0.616–0.695) | +0.039 (−0.000 to +0.078), zero inside |
+| NDCG@10 binary | 0.635 (0.583–0.688) | 0.520 (0.467–0.574) | **+0.115 (0.068–0.162)** |
+| P@20 | 0.519 | 0.479 | — |
+| 10-in-20 | 45 / 75 | 37 / 75 | — |
+| Read 20 | 3.86× | 3.48× | — |
+| Read 200 | 2.73× | 2.73× | same tail |
+| Read 500 | 1.98× | 1.98× | same tail |
+
+Graded NDCG includes zero. Binary NDCG and
+P@10 do not. That matches the 2022 reading:
+the coordinator metrics move, TREC’s
+partial credit for excluded trials does
+not, or not by enough to clear noise.
+Equivalent depth at 200 is identical
+because ranks 26–200 stay in topical order.
+
+### Cost
+
+A100 SXM4 in us-west-2. H100 was out.
+Probe: 3,140 pairs, 3.94 pairs/sec,
+projected **$15**. Actual: **117,750
+scores, 6.93 hours, $12.40**, copied off,
+then terminated through the API. Instance
+`15afceae626c40dda839621ec314e5dd`.
+
+### Verdict
+
+The 2022 cutoff-25 finding held up on a
+year that was never swept. Cascade at 25
+is a defensible operating point. The
+default remains the topical slice at $0
+extra per patient.
 
 ## Measurements this suggests (not started)
 
-1. **Lock cutoff 25 and confirm on 2021.**
-   Needs a full 2021 adapter shortlist
-   (~75 × 1,570 ≈ 118k pairs, about $10 and
-   5.5 hours at this run’s rate). Do not
-   start it from this brief.
+1. **The other-way fold** (train 2022, test
+   2021) if we need to know whether the
+   adapter itself, not just the cutoff,
+   generalises. Different question. Do not
+   start it from this write-up.
 2. **Full-shortlist scores for the other two
    seeds** if a ranking seed-spread is
    required. Two more 50-patient jobs,

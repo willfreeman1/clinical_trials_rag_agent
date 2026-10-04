@@ -100,15 +100,19 @@ First-page rescore on all 50 2022 shortlists is done.
 paired patient interval is −0.4 to +9.6 and includes
 zero. Adapter-alone **0.550** is not a real loss on
 P@10 either (−7.4 to +3.0) and is a real loss on
-NDCG@10. Cutoff 25 is the cheapest sweep point
-($0.002/patient) and the only window whose P@10
-interval excludes zero; it was not locked in
-advance. 79,750 pairs, A100 SXM4, **$6.65**,
-terminated. Official-style NDCG@10 / P@10 / RPrec /
-MRR are in `docs/trec_lora_rank.md`. Headline arm,
-both years: topical slice **0.657 / 0.519** (2021)
-and **0.662 / 0.570** (2022), judged pool, not the
-375k snapshot. Run 3 not started.
+graded NDCG@10; binary NDCG@10 is a wash, so the
+graded loss is excluded-trial credit. Cutoff 25
+was locked in `ed41185` and **replicated on 2021**:
+P@10 **0.627** vs **0.519**, +0.108 (0.068–0.148),
+zero outside. It is a defensible option at about
+$0.002/patient. The default stays the topical
+slice. 2022 scoring 79,750 pairs, **$6.65**; 2021
+scoring 117,750 pairs, **$12.40**; both A100 SXM4,
+terminated. Details: `docs/trec_lora_rank.md`.
+Headline arm, both years: topical slice
+**0.657 / 0.519** (2021) and **0.662 / 0.570**
+(2022), judged pool, not the 375k snapshot. Run 3
+not started.
 
 The 1,570 is **91% junk**. Mean 2021 shortlist: 67 eligible,
 73 excluded, 143 judged-not-relevant, **1,287 unjudged** for

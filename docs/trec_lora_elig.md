@@ -282,10 +282,14 @@ on the same sample).
 
 The fine-tuning question is closed.
 
-Decided, first-page ranking on these 50 shortlists:
-**keep the topical slice.** The cascade's +4.6 P@10
-does not survive a paired patient interval. Adapter-only
-wins equivalent depth at 200 and loses NDCG@10.
+Decided, first-page ranking:
+**keep the topical slice.** The pre-specified
+cascade-100 +4.6 P@10 does not survive a paired
+interval. Cutoff 25, locked before any 2021 score,
+**replicated** on 2021 (+0.108 P@10, zero outside)
+and is a defensible option, not the default.
+Adapter-only wins equivalent depth at 200, loses
+graded NDCG@10, and ties binary NDCG@10.
 Details: `docs/trec_lora_rank.md`.
 
 The other-way fold (train 2022, test 2021) is not run.

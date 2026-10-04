@@ -114,9 +114,30 @@ def idcg10(labels: dict[str, int]) -> float:
     return s
 
 
+def binary_gain(nct: str, labels: dict[str, int]) -> int:
+    return 1 if labels.get(nct) == 2 else 0
+
+
+def dcg10_bin(order: list[str], labels: dict[str, int]) -> float:
+    s = 0.0
+    for i, nct in enumerate(order[:10], 1):
+        s += binary_gain(nct, labels) / math.log2(i + 1)
+    return s
+
+
+def idcg10_bin(labels: dict[str, int]) -> float:
+    n_elig = sum(1 for v in labels.values() if v == 2)
+    s = 0.0
+    for i in range(1, min(10, n_elig) + 1):
+        s += 1.0 / math.log2(i + 1)
+    return s
+
+
 def official_row(order: list[str], labels: dict[str, int]) -> dict:
     ideal = idcg10(labels)
     ndcg = (dcg10(order, labels) / ideal) if ideal else 0.0
+    ideal_b = idcg10_bin(labels)
+    ndcg_b = (dcg10_bin(order, labels) / ideal_b) if ideal_b else 0.0
     p10 = sum(1 for nct in order[:10] if labels.get(nct) == 2) / 10.0
     r_count = sum(1 for v in labels.values() if v == 2)
     rprec = (
@@ -129,12 +150,12 @@ def official_row(order: list[str], labels: dict[str, int]) -> dict:
         if labels.get(nct) == 2:
             mrr = 1.0 / i
             break
-    return {"ndcg@10": ndcg, "p@10": p10, "rprec": rprec, "mrr": mrr}
+    return {"ndcg@10": ndcg, "ndcg@10_bin": ndcg_b, "p@10": p10, "rprec": rprec, "mrr": mrr}
 
 
 def summarize_official(rows: list[dict], rng: random.Random) -> dict:
     out = {"n": len(rows)}
-    for key in ("ndcg@10", "p@10", "rprec", "mrr"):
+    for key in ("ndcg@10", "ndcg@10_bin", "p@10", "rprec", "mrr"):
         vals = [r[key] for r in rows if r.get(key) is not None]
         boot = boot_mean(vals, rng)
         out[key] = {
@@ -258,6 +279,17 @@ def main() -> None:
         paired[f"cascade{n}_minus_topical_ndcg"] = boot_paired_diff(
             [r["ndcg@10"] for r in per_official[f"cascade_top{n}"]],
             [r["ndcg@10"] for r in per_official["topical_slice_cont"]],
+            rng_n,
+        )
+    paired["adapter_minus_topical_ndcg_bin"] = boot_paired_diff(
+        [r["ndcg@10_bin"] for r in per_official["elig_lora_cont"]],
+        [r["ndcg@10_bin"] for r in per_official["topical_slice_cont"]],
+        rng_n,
+    )
+    for n in (25, 100):
+        paired[f"cascade{n}_minus_topical_ndcg_bin"] = boot_paired_diff(
+            [r["ndcg@10_bin"] for r in per_official[f"cascade_top{n}"]],
+            [r["ndcg@10_bin"] for r in per_official["topical_slice_cont"]],
             rng_n,
         )
     unjudged_top10 = {}
@@ -444,6 +476,7 @@ def main() -> None:
         "official": official,
         "official_rules": {
             "ndcg@10": "graded: eligible=2, excluded=1, not relevant/unjudged=0; IDCG from all qrels for the topic",
+            "ndcg@10_bin": "binary NDCG@10: eligible=1, excluded and not relevant/unjudged=0; IDCG from eligible qrels only",
             "p@10": "binary: eligible is relevant; excluded merged with not relevant",
             "rprec": "binary: precision at R, R = number of eligible qrels for the topic",
             "mrr": "binary: 1 / rank of first eligible; 0 if none",
@@ -464,6 +497,9 @@ def main() -> None:
     print(f"wrote {OUT}", flush=True)
     print("paired cascade-topical P@10", paired["cascade100_minus_topical_p10"], flush=True)
     print("paired adapter-topical P@10", paired["adapter_minus_topical_p10"], flush=True)
+    print("paired adapter-topical NDCG", paired["adapter_minus_topical_ndcg"], flush=True)
+    print("paired adapter-topical NDCGbin", paired["adapter_minus_topical_ndcg_bin"], flush=True)
+    print("paired cascade25-topical NDCGbin", paired["cascade25_minus_topical_ndcg_bin"], flush=True)
     for row in sweep:
         print(
             f"  cut {row['cutoff']}: P@10 {row['precision@10']:.3f} P@20 {row.get('precision@20'):.3f} "
@@ -476,8 +512,10 @@ def main() -> None:
         for tag, rec_o in official[year].items():
             p = rec_o["p@10"]
             n = rec_o["ndcg@10"]
+            nb = rec_o["ndcg@10_bin"]
             print(
                 f"  {tag}: n={rec_o['n']} NDCG {n['mean']:.4f} [{n['lo']:.4f},{n['hi']:.4f}] "
+                f"NDCGb {nb['mean']:.4f} [{nb['lo']:.4f},{nb['hi']:.4f}] "
                 f"P@10 {p['mean']:.4f} [{p['lo']:.4f},{p['hi']:.4f}] medP {p['median']:.4f} "
                 f"RPrec {rec_o['rprec']['mean']:.4f} MRR {rec_o['mrr']['mean']:.4f}",
                 flush=True,
