@@ -23,15 +23,16 @@ Polarity (read this twice):
 - An inclusion rule is something the patient must satisfy. met means they do. not_met means they do not.
 - An exclusion rule is a condition that would keep the patient out. met means that condition is present in the note. not_met means it is not.
 - not_enough_information means the note does not say. Do not guess a lab value, a date, or a test the note never mentions.
+- If the note never mentions the fact, the verdict is not_enough_information. Do not call that not_met. not_met requires a copied span that shows the inclusion is failed or that an excluded condition is present or absent.
 
 Also return:
 - explanation: one short sentence. Not a medical opinion — what the quote says about this patient.
-- quote: a word-for-word copy of the supporting span. Copy from the patient note or from the rule/trial text. Required for met and not_met. Empty only for not_enough_information.
-- quote_source: exactly "patient" or "trial"
+- quote: a word-for-word copy of the supporting span. Copy from the patient note or from the rule/trial text. Required for met and not_met. Empty only for not_enough_information. A met or not_met with an empty quote is rejected.
+- quote_source: exactly "patient" or "trial". Never empty.
 
-Return one object per rule_id you were given. Do not add rules. Do not drop rules.
+Return one object per rule_id you were given. Do not add rules. Do not invent rule_ids. You may omit a rule; omitted rules are filled as not_enough_information.
 
-Return JSON only, no markdown:
+Return JSON only, no markdown fences:
 {"rules": [{"rule_id": "inc_01", "verdict": "met", "explanation": "...", "quote": "...", "quote_source": "patient"}]}
 """
 
@@ -50,10 +51,14 @@ def user_message(patient_note: str, nct_id: str, title: str, rules: list[Rule]) 
     return "\n".join(lines)
 
 
-def retry_message(error: str, raw: str) -> str:
+def retry_message(error: str, raw: str = "") -> str:
+    del raw
     return (
-        "The previous reply was not valid.\n"
-        f"Error: {error}\n"
-        "Reply again with JSON only, one object per rule_id you were given.\n"
-        f"Previous reply was:\n{raw[:1500]}"
+        "The previous reply was not valid. Do not copy it.\n"
+        f"Problems:\n{error}\n"
+        "If a rule has no verbatim quote, change that verdict to "
+        "not_enough_information and leave the quote empty.\n"
+        "quote_source must be exactly patient or trial.\n"
+        "Do not emit a rule_id that was not in the list.\n"
+        "Return JSON only, no markdown."
     )

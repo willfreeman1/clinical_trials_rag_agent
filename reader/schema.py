@@ -69,6 +69,7 @@ class TrialRead:
     raw_model_output: str = ""
     retries: int = 0
     schema_ok: bool = False
+    schema_error: str = ""
     missing_rule_ids: list[str] = field(default_factory=list)
     aggregates: dict = field(default_factory=dict)
 
@@ -76,49 +77,81 @@ class TrialRead:
         return asdict(self)
 
 
-def parse_model_rules(payload: object, expected_ids: set[str]) -> list[dict]:
-    """Accept only a JSON object with a rules array. Raise SchemaError."""
+def _normalise_verdict(verdict: str) -> str:
+    verdict = str(verdict or "").strip().lower().replace(" ", "_")
+    if verdict in {"not_met", "notmet", "failed"}:
+        return "not_met"
+    if verdict in {"met", "satisfied"}:
+        return "met"
+    if verdict in {
+        "not_enough_information",
+        "not_enough_info",
+        "unknown",
+        "unsure",
+        "nei",
+    }:
+        return "not_enough_information"
+    return verdict
+
+
+def _row_problem(row: object, i: int, expected_ids: set[str], seen: set[str]) -> str | None:
+    if not isinstance(row, dict):
+        return f"rules[{i}] is not an object"
+    rid = str(row.get("rule_id") or "").strip()
+    verdict = _normalise_verdict(str(row.get("verdict") or ""))
+    source = str(row.get("quote_source") or "").strip().lower()
+    if source not in QUOTE_SOURCES:
+        return f"rules[{i}] quote_source must be patient or trial"
+    if not rid:
+        return f"rules[{i}] missing rule_id"
+    if rid not in expected_ids:
+        return f"rules[{i}] unexpected rule_id {rid!r}"
+    if rid in seen:
+        return f"duplicate rule_id {rid!r}"
+    if verdict not in VERDICTS:
+        return f"rules[{i}] bad verdict {verdict!r}"
+    explanation = str(row.get("explanation") or "").strip()
+    quote = str(row.get("quote") or "")
+    if verdict != "not_enough_information" and not quote.strip():
+        return f"rules[{i}] {rid} needs a quote"
+    if verdict != "not_enough_information" and not explanation:
+        return f"rules[{i}] {rid} needs an explanation"
+    return None
+
+
+def list_schema_problems(payload: object, expected_ids: set[str]) -> list[str]:
+    """Same checks as parse_model_rules, every problem, no accept-on-error."""
     if not isinstance(payload, dict):
-        raise SchemaError("model output is not a JSON object")
+        return ["model output is not a JSON object"]
     rules = payload.get("rules")
     if not isinstance(rules, list) or not rules:
-        raise SchemaError("rules must be a non-empty array")
-    out = []
+        return ["rules must be a non-empty array"]
+    problems = []
     seen: set[str] = set()
     for i, row in enumerate(rules):
-        if not isinstance(row, dict):
-            raise SchemaError(f"rules[{i}] is not an object")
+        problem = _row_problem(row, i, expected_ids, seen)
+        if problem:
+            problems.append(problem)
+            continue
+        assert isinstance(row, dict)
+        seen.add(str(row.get("rule_id") or "").strip())
+    return problems
+
+
+def parse_model_rules(payload: object, expected_ids: set[str]) -> list[dict]:
+    """Accept only a JSON object with a rules array. Raise SchemaError."""
+    problems = list_schema_problems(payload, expected_ids)
+    if problems:
+        raise SchemaError(problems[0])
+    rules = payload.get("rules")  # type: ignore[union-attr]
+    out = []
+    seen: set[str] = set()
+    for row in rules:
         rid = str(row.get("rule_id") or "").strip()
-        verdict = str(row.get("verdict") or "").strip().lower().replace(" ", "_")
-        if verdict in {"not_met", "notmet", "failed"}:
-            verdict = "not_met"
-        elif verdict in {"met", "satisfied"}:
-            verdict = "met"
-        elif verdict in {
-            "not_enough_information",
-            "not_enough_info",
-            "unknown",
-            "unsure",
-            "nei",
-        }:
-            verdict = "not_enough_information"
+        verdict = _normalise_verdict(str(row.get("verdict") or ""))
         source = str(row.get("quote_source") or "").strip().lower()
-        if source not in QUOTE_SOURCES:
-            raise SchemaError(f"rules[{i}] quote_source must be patient or trial")
-        if not rid:
-            raise SchemaError(f"rules[{i}] missing rule_id")
-        if rid not in expected_ids:
-            raise SchemaError(f"rules[{i}] unexpected rule_id {rid!r}")
-        if rid in seen:
-            raise SchemaError(f"duplicate rule_id {rid!r}")
-        if verdict not in VERDICTS:
-            raise SchemaError(f"rules[{i}] bad verdict {verdict!r}")
         explanation = str(row.get("explanation") or "").strip()
         quote = str(row.get("quote") or "")
-        if verdict != "not_enough_information" and not quote.strip():
-            raise SchemaError(f"rules[{i}] {rid} needs a quote")
-        if verdict != "not_enough_information" and not explanation:
-            raise SchemaError(f"rules[{i}] {rid} needs an explanation")
         seen.add(rid)
         out.append(
             {

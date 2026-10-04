@@ -13,7 +13,16 @@
   "not_2023": true,
   "schema": "reader/schema.py",
   "prompt": "reader/prompt.py",
-  "retry_policy": "Up to 3 retries on invalid JSON or schema errors. Omitted rules are filled as not_enough_information and listed on the record. Raw model text is stored every time.",
+  "retry_policy": "One repair on invalid JSON or schema errors. The repair names every problem and does not paste the previous reply. Omitted rules are filled as not_enough_information and listed on the record. Raw model text is stored every time.",
+  "probe_13_of_50_diagnosis": {
+    "not_accuracy": "13 of 50 is schema-conformance on the first probe, not agreement with TREC labels.",
+    "guardrail": "The validator rejected 37 malformed outputs. That is the design working.",
+    "not_max_new": "No stored failure sat at or near 2048 output tokens. Longest failure was 1390 tokens. A 45-rule trial passed; a 2-rule trial failed.",
+    "cause": "27 of 37 last replies used met or not_met with an empty quote (145 not_met, 16 met). Five had an empty quote_source. Four were broken JSON. One invented a rule_id. The model treated a silent note as not_met.",
+    "retries_were_waste": "All 37 used three greedy retries. The retry pasted the previous JSON, so the same empty quotes came back.",
+    "fix": "Prompt: silent note is not_enough_information; empty quote is legal only then. One named-problem repair, no pasted reply. Validator unchanged. No batching (that was a truncation fix). No vLLM (worker is transformers.generate).",
+    "max_new": 2048
+  },
   "rule_split": "Programmatic. Inclusion/exclusion headers, then bullets or paragraphs. The model does not invent the rule list.",
   "splitter_audit_before_scores": {
     "unique_trials_in_top25": 1208,

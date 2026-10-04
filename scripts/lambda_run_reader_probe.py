@@ -21,7 +21,7 @@ from lambda_run_lora import start_remote, terminate, wait_flag  # noqa: E402
 import lambda_run_lora_junk as ljunk  # noqa: E402
 from lambda_run_lora_junk import HOURLY, launch, spend  # noqa: E402
 from lambda_run_rerank import scp_from, scp_to, ssh_base, wait_ip, wait_ssh, write_unix  # noqa: E402
-from trec_reader_common import DATA, PROBE_PAIRS, PROBE_READS  # noqa: E402
+from trec_reader_common import DATA, PAIRS, PROBE_PAIRS, PROBE_READS, PROBE_READS_V2, READS  # noqa: E402
 from trec_score_common import PACK  # noqa: E402
 
 SSH_KEY = Path.home() / ".ssh" / "lambda_key"
@@ -42,13 +42,13 @@ TYPE_PREF = (
 VENV_PY = "/home/ubuntu/venv/bin/python"
 
 
-def wait_name_free(key: str) -> None:
+def wait_name_free(key: str, name: str = NAME) -> None:
     while True:
         listed = api("GET", "/instances", key)
         live = [
             row
             for row in (listed.get("data") or [])
-            if row.get("name") == NAME and row.get("status") not in {"terminated"}
+            if row.get("name") == name and row.get("status") not in {"terminated"}
         ]
         if not live:
             return
@@ -110,15 +110,15 @@ pip install -q transformers accelerate
     subprocess.check_call(ssh_base(ip) + ["bash", "/tmp/ensure_reader_stack.sh"])
 
 
-def start_reader(ip: str) -> None:
+def start_reader(ip: str, pairs_name: str, out_name: str) -> None:
     script = write_stage_sh(
         "start_reader.sh",
         f"""#!/bin/bash
 set -e
 export PYTHONIOENCODING=utf-8
 export READER_PACK=score_pack.json
-export READER_PAIRS=trec_reader_probe_pairs.json
-export READER_OUT=trec_reader_probe_reads.jsonl
+export READER_PAIRS={pairs_name}
+export READER_OUT={out_name}
 cd /home/ubuntu
 nohup {VENV_PY} -u lambda_qwen_reader.py > /tmp/reader.log 2>&1 &
 echo $!
@@ -126,6 +126,29 @@ echo $!
     )
     scp_to(ip, script, "/tmp/start_reader.sh")
     subprocess.check_call(ssh_base(ip) + ["bash", "/tmp/start_reader.sh"])
+
+
+def generation_stats(path: Path) -> dict:
+    n = 0
+    ok = 0
+    gens = 0
+    if path.exists():
+        with path.open(encoding="utf-8") as fh:
+            for line in fh:
+                if not line.strip():
+                    continue
+                row = json.loads(line)
+                n += 1
+                gens += int(row.get("retries") or 0) + 1
+                if row.get("schema_ok"):
+                    ok += 1
+    return {
+        "n": n,
+        "schema_ok": ok,
+        "generations": gens,
+        "generations_per_trial": round(gens / n, 3) if n else 0.0,
+        "valid_rate": round(ok / n, 3) if n else 0.0,
+    }
 
 
 def reads_count(path: Path) -> int:
@@ -140,25 +163,33 @@ def reads_count(path: Path) -> int:
 
 
 def main() -> None:
+    full = "--full" in sys.argv
+    local_pairs = PAIRS if full else PROBE_PAIRS
+    local_reads = READS if full else PROBE_READS_V2
+    remote_pairs = "trec_reader_pairs.json" if full else "trec_reader_probe_pairs.json"
+    remote_out = "trec_reader_reads.jsonl" if full else "trec_reader_probe_reads_v2.jsonl"
+    job_name = "trec-reader-full" if full else NAME
+    state = DATA / ("reader_full_lambda_state.json" if full else "reader_probe_v2_lambda_state.json")
+    need = FULL_PAIRS if full else PROBE_PAIRS_N
     if not SSH_KEY.exists():
         raise SystemExit(f"missing {SSH_KEY}")
-    if not PACK.exists() or not PROBE_PAIRS.exists():
-        raise SystemExit("pack or probe pairs missing; run trec_reader_draw.py")
+    if not PACK.exists() or not local_pairs.exists():
+        raise SystemExit("pack or pairs missing; run trec_reader_draw.py")
     key = load_lambda_key()
-    ljunk.NAME = NAME
-    lrl.NAME = NAME
-    lrl.STATE = STATE
+    ljunk.NAME = job_name
+    lrl.NAME = job_name
+    lrl.STATE = state
     lrl.HOURLY = HOURLY
     lrl.spend = spend
     lrl.SPEND_CAP = SPEND_CAP
-    wait_name_free(key)
+    wait_name_free(key, job_name)
     instance_id = None
     itype = ""
     t0 = time.time()
     try:
         instance_id, itype, region = wait_launch(key)
         t0 = time.time()
-        STATE.write_text(
+        state.write_text(
             json.dumps({"instance_id": instance_id, "type": itype, "region": region, "t0": t0}, indent=2),
             encoding="utf-8",
         )
@@ -173,7 +204,7 @@ def main() -> None:
         subprocess.check_call(ssh_base(ip) + ["mkdir", "-p", "reader"])
         scp_to(ip, write_unix(here / "lambda_qwen_reader.py", STAGE / "lambda_qwen_reader.py"), "lambda_qwen_reader.py")
         scp_to(ip, PACK, "score_pack.json")
-        scp_to(ip, PROBE_PAIRS, "trec_reader_probe_pairs.json")
+        scp_to(ip, local_pairs, remote_pairs)
         for name in (
             "__init__.py",
             "schema.py",
@@ -185,29 +216,35 @@ def main() -> None:
         ):
             scp_to(ip, root / "reader" / name, f"reader/{name}")
         ensure_stack(ip)
-        start_reader(ip)
+        start_reader(ip, remote_pairs, remote_out)
         wait_flag(ip, "/tmp/reader.done", t0, itype)
-        scp_from(ip, "trec_reader_probe_reads.jsonl", PROBE_READS)
-        n = reads_count(PROBE_READS)
+        scp_from(ip, remote_out, local_reads)
+        stats = generation_stats(local_reads)
+        n = stats["n"]
         hours = (time.time() - t0) / 3600.0
         usd = spend(t0, itype)
-        if n < PROBE_PAIRS_N:
-            raise SystemExit(f"probe reads only {n}")
+        if n < need:
+            raise SystemExit(f"{'full' if full else 'probe'} reads only {n}")
         scale = FULL_PAIRS / max(n, 1)
         proj = {
-            "probe_pairs": n,
-            "probe_hours": round(hours, 3),
-            "probe_usd": round(usd, 2),
+            "mode": "full" if full else "probe_v2",
+            "pairs": n,
+            "schema_ok": stats["schema_ok"],
+            "valid_rate": stats["valid_rate"],
+            "generations": stats["generations"],
+            "generations_per_trial": stats["generations_per_trial"],
+            "hours": round(hours, 3),
+            "usd": round(usd, 2),
             "full_pairs": FULL_PAIRS,
             "proj_hours": round(hours * scale, 2),
             "proj_usd": round(usd * scale, 2),
             "type": itype,
+            "baseline_valid": "13/50" if not full else None,
         }
-        (DATA / "trec_reader_projection.json").write_text(
-            json.dumps(proj, indent=2), encoding="utf-8"
-        )
+        out_proj = DATA / ("trec_reader_full_cost.json" if full else "trec_reader_projection_v2.json")
+        out_proj.write_text(json.dumps(proj, indent=2), encoding="utf-8")
         print(json.dumps(proj, indent=2), flush=True)
-        if proj["proj_usd"] > 25:
+        if not full and proj["proj_usd"] > 25:
             print("projection over $25; not starting the full pass", flush=True)
     finally:
         if instance_id:

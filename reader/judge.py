@@ -23,13 +23,16 @@ from reader.schema import (
     RuleJudgement,
     SchemaError,
     TrialRead,
+    list_schema_problems,
     parse_model_rules,
 )
 from reader.split_rules import split_rules
 from reader.verify_quote import verify_judgement
 
 CompleteFn = Callable[[str, str], str]
-MAX_RETRIES = 3
+# One repair only. Three greedy retries that paste the last reply
+# reproduced the same empty-quote failure and wasted generations.
+MAX_RETRIES = 1
 
 
 def _parse_json(raw: str) -> object:
@@ -40,6 +43,22 @@ def _parse_json(raw: str) -> object:
             text = text[4:]
         text = text.strip()
     return json.loads(text)
+
+
+def _describe_failure(raw: str, expected: set[str], exc: Exception) -> str:
+    if isinstance(exc, json.JSONDecodeError):
+        return (
+            f"JSON does not parse ({exc.msg} at char {exc.pos}). "
+            "Return one JSON object only. No markdown fences."
+        )
+    try:
+        payload = _parse_json(raw)
+    except Exception:
+        return str(exc)
+    problems = list_schema_problems(payload, expected)
+    if problems:
+        return "\n".join(f"- {p}" for p in problems)
+    return str(exc)
 
 
 def _fill_missing(expected: list[Rule], parsed: list[dict]) -> tuple[list[dict], list[str]]:
@@ -108,15 +127,16 @@ def read_trial(
     retries = 0
 
     for attempt in range(max_retries + 1):
-        prompt = user if attempt == 0 else user + "\n\n" + retry_message(last_err, last_raw)
+        prompt = user if attempt == 0 else user + "\n\n" + retry_message(last_err)
         last_raw = complete(SYSTEM, prompt)
         retries = attempt
         try:
             payload = _parse_json(last_raw)
             parsed = parse_model_rules(payload, expected)
+            last_err = ""
             break
         except (json.JSONDecodeError, SchemaError, TypeError) as exc:
-            last_err = str(exc)
+            last_err = _describe_failure(last_raw, expected, exc)
             parsed = None
 
     schema_ok = parsed is not None
@@ -131,6 +151,7 @@ def read_trial(
         raw_model_output=last_raw,
         retries=retries,
         schema_ok=schema_ok,
+        schema_error=last_err,
         missing_rule_ids=missing,
         aggregates=aggregate(judgements, rules),
     )

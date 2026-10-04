@@ -2456,3 +2456,45 @@ the API.
 
 The system does not say a patient qualifies.
 
+### Amendment — 4 Oct 2026, after the 13/50 probe
+
+**13 of 50 is not accuracy.** It is the share of trials whose
+JSON passed the validator on the first probe, while the model
+was returning empty quotes. Do not score that run against TREC
+labels. Do not quote it as model performance.
+
+**The guardrail worked.** Thirty-seven replies were rejected
+rather than stored as judgements. That belongs in the method as
+a positive.
+
+Diagnosis, from the stored raw text, no GPU:
+
+- Not `MAX_NEW = 2048`. No failure sat at or near 2,048 output
+  tokens. The longest failure was 1,390 tokens. Failures were
+  not concentrated in high-rule-count trials. One 45-rule trial
+  passed. One 2-rule trial failed.
+- 27 of 37 last replies failed because `met` or `not_met` had an
+  empty quote (145 `not_met`, 16 `met`). Five had an empty
+  `quote_source`. Four were broken JSON. One invented a
+  `rule_id`. The model treated a silent note as `not_met`.
+- All 37 used three greedy retries. The retry pasted the previous
+  JSON. Same failure, wasted generations.
+
+Amendment, validator unchanged:
+
+- Prompt: if the note never mentions the fact, the verdict is
+  `not_enough_information`. An empty quote is legal only then.
+- One repair attempt, not three. The repair lists every problem
+  and does not paste the previous reply.
+- No rule-batching. That was the truncation design. This was
+  not truncation.
+- No grammar-constrained decoding. The worker is
+  `transformers.generate`, not vLLM. Adding a serving stack is
+  a detour.
+- `MAX_NEW` stays 2,048.
+
+Re-probe patients 1 and 2 on the same 50 trials. If the
+projection is under about $25, run the 1,250. If not, stop.
+
+The system does not say a patient qualifies.
+
