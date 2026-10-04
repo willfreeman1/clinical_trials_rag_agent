@@ -1,0 +1,40 @@
+{
+  "question": "Does cascade-at-25 beat the topical slice on 2021 P@10, a year the 2022 cutoff sweep never touched?",
+  "cutoff": 25,
+  "cutoff_fixed": true,
+  "no_sweep": true,
+  "adapter_seed": 20261007,
+  "adapter_why": "Same adapter as the 2022 ranker run. This is a test of the cutoff, not of a different model.",
+  "year": 2021,
+  "patients": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75"],
+  "n_patients": 75,
+  "shortlist_depth": 1570,
+  "discard": false,
+  "probe_patients": ["1", "2"],
+  "score": "continuous expected digit, same stored field as the 2022 ranker run",
+  "arms": [
+    "topical_slice_cont",
+    "cascade_top25"
+  ],
+  "comparison": "cascade_top25 minus topical_slice_cont",
+  "primary": {
+    "metric": "p@10",
+    "rule": "binary: eligible is relevant; excluded merged with not relevant",
+    "estimator": "paired patient-resampled interval on the 75-patient mean difference, cascade-at-25 minus topical slice"
+  },
+  "secondary": [
+    "ndcg@10 graded 2/1/0",
+    "ndcg@10 binary eligible=1 excluded=0",
+    "p@20 binary eligible only",
+    "equivalent depth at 20/200/500 vs fused baseline calibration",
+    "10-in-20 count"
+  ],
+  "interpretation": {
+    "interval_excludes_zero_positive": "The 2022 cutoff-25 finding replicates on a year that was never swept. Cascade at 25 is a defensible operating point. The topical slice remains the default.",
+    "interval_includes_zero": "The 2022 result was most likely the multiplicity artefact we suspected. Say so. The default stays the topical slice.",
+    "interval_excludes_zero_negative": "Cascade at 25 is worse on 2021. Report that. It is the most informative of the three outcomes. The default stays the topical slice."
+  },
+  "caveat_train_overlap": "60 of these 75 patients were in the adapter's 1-versus-2 training set. The 15-patient 2021 tuning set was watched during training. This run tests whether cutoff 25 generalises off the year that was swept, not whether the adapter generalises off the patients it was trained on.",
+  "no_pass_fail": true,
+  "note": "No pass/fail threshold. Cutoff 25 is fixed. No sweep and no alternative cutoffs on 2021. Other cutoffs computed from these scores, if any, are exploratory and cannot replace 25. 2023 is not used. Nothing is discarded from the shortlist. The topical slice stays the pipeline default. The system does not say a patient qualifies."
+}

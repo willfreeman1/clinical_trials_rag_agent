@@ -61,6 +61,11 @@ RANK_PAIRS = HERE / "trec_lora_rank_pairs.json"
 RANK_PROBE_PAIRS = HERE / "trec_lora_rank_probe_pairs.json"
 RANK_SCORES = ROOT / "data" / "trec" / "score_qwen_elig_lora_rank.json"
 RANK_RESULTS = ROOT / "data" / "trec" / "trec_lora_rank_results.json"
+RANK_2021_CONFIG = HERE / "trec_lora_rank_2021_config.json"
+RANK_2021_PAIRS = HERE / "trec_lora_rank_2021_pairs.json"
+RANK_2021_PROBE_PAIRS = HERE / "trec_lora_rank_2021_probe_pairs.json"
+RANK_2021_SCORES = ROOT / "data" / "trec" / "score_qwen_elig_lora_rank_2021.json"
+RANK_2021_RESULTS = ROOT / "data" / "trec" / "trec_lora_rank_2021_results.json"
 
 FEATURE_NAMES = (
     "topical_title_cond_digit",
