@@ -1,12 +1,46 @@
-experiment,run_name,model,prompt,learning_rate,adapter_size,seed,cutoff_depth,year,n_patients,other_params,adapter_minus_topical_ndcg,adapter_minus_topical_ndcg_bin,adapter_minus_topical_ndcg_hi,adapter_minus_topical_ndcg_lo,auroc_1v2,auroc_1v2_2022,auroc_2022,auroc_2022_hi,auroc_2022_lo,auroc_2022_max,auroc_2022_mean,auroc_2022_min,auroc_trec_prompt,auroc_untrained_same_pairs,auroc_v1,cascade25_minus_topical_p10,cascade25_minus_topical_p10_hi,cascade25_minus_topical_p10_lo,cascade_higher,eligible_recall_6pct_2021,eligible_recall_6pct_2022,eligible_recall_6pct_2023,ndcg10_graded_2021,ndcg10_graded_2021_hi,ndcg10_graded_2021_lo,ndcg10_graded_2022,ndcg10_graded_2022_hi,ndcg10_graded_2022_lo,p10_2021,p10_2021_hi,p10_2021_lo,p10_2022,p10_2022_hi,p10_2022_lo,p10_adapter,p10_cascade100,p10_cascade25,p10_topical,p10_topical_hi,p10_topical_lo,p20_2021_sample,p20_v1_same_sample,p_elig_ge_0.75_joinable_rate,patients_adapter_higher,primary_delta_p10,primary_delta_p10_hi,primary_delta_p10_lo,recall_at_10_2021_baseline,recall_at_10_2021_best,spread,tie,topical_higher,usd,threshold_commit,retrofitted
-trec_frontier,gpt54_elig_411pairs,gpt-5.4,v1_and_trec_label,,,,,,30,pairs=411,,,,,,,,,,,,,0.829,,0.828,,,,,,,,,,,,,,,,,,,,,,,,,,,,0.85,,,,,,,,,,1.75,99f795c,true
-trec_lora,adapter_seed_20261003,Qwen/Qwen2.5-7B-Instruct,v1_ELIG_SYSTEM_DIGIT,1e-05,r=16 alpha=32,20261003,,,50,score=logit2_minus_logit1; test_year=2022; train_year=2021,,,,,,,0.793,0.834454,0.748229,,,,,0.749,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,43,,,,,,,,,,2f04bfa,true
-trec_lora,adapter_seed_20261006,Qwen/Qwen2.5-7B-Instruct,v1_ELIG_SYSTEM_DIGIT,1e-05,r=16 alpha=32,20261006,,,50,score=logit2_minus_logit1; test_year=2022; train_year=2021,,,,,,,0.77,,,,,,,0.749,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,44,,,,,,,,,,778721f,true
-trec_lora,adapter_seed_20261007,Qwen/Qwen2.5-7B-Instruct,v1_ELIG_SYSTEM_DIGIT,1e-05,r=16 alpha=32,20261007,,,50,score=logit2_minus_logit1; test_year=2022; train_year=2021,,,,,,,0.773,,,,,,,0.749,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,43,,,,,,,,,,778721f,true
-trec_lora,three_seed_mean,,,1e-05,r=16,,,,,"seeds=20261003,20261006,20261007",,,,,,,,,,0.793,0.779,0.77,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0.023,,,,778721f,true
-trec_ranking,ranker_2022_sweep,,,,,,"shortlist=1595; cascade=25,50,100,200,300,500",2022,50,adapter_seed=20261007,-0.069,-0.017,-0.012,-0.125,,,,,,,,,,,,0.054,0.092,0.016,,,,,,,,,,,,,,,,,0.55,0.616,0.624,0.57,0.646,0.498,,,,,,,,,,,,,6.65,3b50e06,true
-trec_ranking,ranker_2021_cutoff25_prereg,,,,,,25,2021,75,adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,,,,,,,,,,,,,,,,,,,47,,,,,,,,,,,,,,,,,,0.627,0.519,,,,,,,0.108,0.148,0.068,,,,15,13,12.4,ed41185,true
-trec_retrieval,keyword_hybrid_6pct,,,,,,6pct,"2021,2022,2023",,collection=judged_pool; fusion=RRF,,,,,,,,,,,,,,,,,,,,0.916,0.914,0.654,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,613635e,true
-trec_retrieval,rerank_shortlist,,,,,,,,,ce=medcpt_ce + msmarco; llm=gpt-4o-mini_top200_2021; shortlist=keyword_hybrid_6pct,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0.057,0.09,,,,,44878a7,true
-trec_scoring,qwen_topical_slice,Qwen/Qwen2.5-7B-Instruct,topical_title_cond_slice,,,,,,2021=75; 2022=50,score=continuous_expected_digit,,,,,,0.682,,,,,,,,,,,,,,,,,0.657,0.696,0.617,0.662,0.734,0.585,0.519,0.567,0.468,0.57,0.646,0.498,,,,,,,,,,,,,,,,,,,,114cce7,true
-trec_scoring,elig_prompt_v2,,v2_CHECK_then_eligible,,,,,,30_sample,,,,,,0.6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0.34,0.487,,,,,,,,,,,,4424157,true
+experiment,run_name,metric,value,lo,hi,config,threshold_commit,retrofitted
+trec_frontier,gpt54_elig_411pairs,auroc_trec_prompt,0.829,,,model=gpt-5.4; prompt=v1_and_trec_label; patients=30; pairs=411,99f795c,true
+trec_frontier,gpt54_elig_411pairs,auroc_v1,0.828,,,model=gpt-5.4; prompt=v1_and_trec_label; patients=30; pairs=411,99f795c,true
+trec_frontier,gpt54_elig_411pairs,p_elig_ge_0.75_joinable_rate,0.85,,,model=gpt-5.4; prompt=v1_and_trec_label; patients=30; pairs=411,99f795c,true
+trec_frontier,gpt54_elig_411pairs,usd,1.75,,,model=gpt-5.4; prompt=v1_and_trec_label; patients=30; pairs=411,99f795c,true
+trec_lora,adapter_seed_20261003,auroc_2022,0.793,0.748229,0.834454,model=Qwen/Qwen2.5-7B-Instruct; prompt=v1_ELIG_SYSTEM_DIGIT; lr=1e-05; adapter=r=16 alpha=32; seed=20261003; patients=50; score=logit2_minus_logit1; test_year=2022; train_year=2021,2f04bfa,true
+trec_lora,adapter_seed_20261003,auroc_untrained_same_pairs,0.749,,,model=Qwen/Qwen2.5-7B-Instruct; prompt=v1_ELIG_SYSTEM_DIGIT; lr=1e-05; adapter=r=16 alpha=32; seed=20261003; patients=50; score=logit2_minus_logit1; test_year=2022; train_year=2021,2f04bfa,true
+trec_lora,adapter_seed_20261003,patients_adapter_higher,43,,,model=Qwen/Qwen2.5-7B-Instruct; prompt=v1_ELIG_SYSTEM_DIGIT; lr=1e-05; adapter=r=16 alpha=32; seed=20261003; patients=50; score=logit2_minus_logit1; test_year=2022; train_year=2021,2f04bfa,true
+trec_lora,adapter_seed_20261006,auroc_2022,0.77,,,model=Qwen/Qwen2.5-7B-Instruct; prompt=v1_ELIG_SYSTEM_DIGIT; lr=1e-05; adapter=r=16 alpha=32; seed=20261006; patients=50; score=logit2_minus_logit1; test_year=2022; train_year=2021,778721f,true
+trec_lora,adapter_seed_20261006,auroc_untrained_same_pairs,0.749,,,model=Qwen/Qwen2.5-7B-Instruct; prompt=v1_ELIG_SYSTEM_DIGIT; lr=1e-05; adapter=r=16 alpha=32; seed=20261006; patients=50; score=logit2_minus_logit1; test_year=2022; train_year=2021,778721f,true
+trec_lora,adapter_seed_20261006,patients_adapter_higher,44,,,model=Qwen/Qwen2.5-7B-Instruct; prompt=v1_ELIG_SYSTEM_DIGIT; lr=1e-05; adapter=r=16 alpha=32; seed=20261006; patients=50; score=logit2_minus_logit1; test_year=2022; train_year=2021,778721f,true
+trec_lora,adapter_seed_20261007,auroc_2022,0.773,,,model=Qwen/Qwen2.5-7B-Instruct; prompt=v1_ELIG_SYSTEM_DIGIT; lr=1e-05; adapter=r=16 alpha=32; seed=20261007; patients=50; score=logit2_minus_logit1; test_year=2022; train_year=2021,778721f,true
+trec_lora,adapter_seed_20261007,auroc_untrained_same_pairs,0.749,,,model=Qwen/Qwen2.5-7B-Instruct; prompt=v1_ELIG_SYSTEM_DIGIT; lr=1e-05; adapter=r=16 alpha=32; seed=20261007; patients=50; score=logit2_minus_logit1; test_year=2022; train_year=2021,778721f,true
+trec_lora,adapter_seed_20261007,patients_adapter_higher,43,,,model=Qwen/Qwen2.5-7B-Instruct; prompt=v1_ELIG_SYSTEM_DIGIT; lr=1e-05; adapter=r=16 alpha=32; seed=20261007; patients=50; score=logit2_minus_logit1; test_year=2022; train_year=2021,778721f,true
+trec_lora,three_seed_mean,auroc_2022_max,0.793,,,"lr=1e-05; adapter=r=16; seeds=20261003,20261006,20261007",778721f,true
+trec_lora,three_seed_mean,auroc_2022_mean,0.779,,,"lr=1e-05; adapter=r=16; seeds=20261003,20261006,20261007",778721f,true
+trec_lora,three_seed_mean,auroc_2022_min,0.77,,,"lr=1e-05; adapter=r=16; seeds=20261003,20261006,20261007",778721f,true
+trec_lora,three_seed_mean,spread,0.023,,,"lr=1e-05; adapter=r=16; seeds=20261003,20261006,20261007",778721f,true
+trec_ranking,ranker_2022_sweep,adapter_minus_topical_ndcg,-0.069,-0.125,-0.012,"cutoff=shortlist=1595; cascade=25,50,100,200,300,500; year=2022; patients=50; adapter_seed=20261007",3b50e06,true
+trec_ranking,ranker_2022_sweep,adapter_minus_topical_ndcg_bin,-0.017,,,"cutoff=shortlist=1595; cascade=25,50,100,200,300,500; year=2022; patients=50; adapter_seed=20261007",3b50e06,true
+trec_ranking,ranker_2022_sweep,cascade25_minus_topical_p10,0.054,0.016,0.092,"cutoff=shortlist=1595; cascade=25,50,100,200,300,500; year=2022; patients=50; adapter_seed=20261007",3b50e06,true
+trec_ranking,ranker_2022_sweep,p10_adapter,0.55,,,"cutoff=shortlist=1595; cascade=25,50,100,200,300,500; year=2022; patients=50; adapter_seed=20261007",3b50e06,true
+trec_ranking,ranker_2022_sweep,p10_cascade100,0.616,,,"cutoff=shortlist=1595; cascade=25,50,100,200,300,500; year=2022; patients=50; adapter_seed=20261007",3b50e06,true
+trec_ranking,ranker_2022_sweep,p10_cascade25,0.624,,,"cutoff=shortlist=1595; cascade=25,50,100,200,300,500; year=2022; patients=50; adapter_seed=20261007",3b50e06,true
+trec_ranking,ranker_2022_sweep,p10_topical,0.57,0.498,0.646,"cutoff=shortlist=1595; cascade=25,50,100,200,300,500; year=2022; patients=50; adapter_seed=20261007",3b50e06,true
+trec_ranking,ranker_2022_sweep,usd,6.65,,,"cutoff=shortlist=1595; cascade=25,50,100,200,300,500; year=2022; patients=50; adapter_seed=20261007",3b50e06,true
+trec_ranking,ranker_2021_cutoff25_prereg,cascade_higher,47,,,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
+trec_ranking,ranker_2021_cutoff25_prereg,p10_cascade25,0.627,,,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
+trec_ranking,ranker_2021_cutoff25_prereg,p10_topical,0.519,,,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
+trec_ranking,ranker_2021_cutoff25_prereg,primary_delta_p10,0.108,0.068,0.148,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
+trec_ranking,ranker_2021_cutoff25_prereg,tie,15,,,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
+trec_ranking,ranker_2021_cutoff25_prereg,topical_higher,13,,,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
+trec_ranking,ranker_2021_cutoff25_prereg,usd,12.4,,,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
+trec_retrieval,keyword_hybrid_6pct,eligible_recall_6pct_2021,0.916,,,"cutoff=6pct; year=2021,2022,2023; collection=judged_pool; fusion=RRF",613635e,true
+trec_retrieval,keyword_hybrid_6pct,eligible_recall_6pct_2022,0.914,,,"cutoff=6pct; year=2021,2022,2023; collection=judged_pool; fusion=RRF",613635e,true
+trec_retrieval,keyword_hybrid_6pct,eligible_recall_6pct_2023,0.654,,,"cutoff=6pct; year=2021,2022,2023; collection=judged_pool; fusion=RRF",613635e,true
+trec_retrieval,rerank_shortlist,recall_at_10_2021_baseline,0.057,,,ce=medcpt_ce + msmarco; llm=gpt-4o-mini_top200_2021; shortlist=keyword_hybrid_6pct,44878a7,true
+trec_retrieval,rerank_shortlist,recall_at_10_2021_best,0.09,,,ce=medcpt_ce + msmarco; llm=gpt-4o-mini_top200_2021; shortlist=keyword_hybrid_6pct,44878a7,true
+trec_scoring,qwen_topical_slice,auroc_1v2_2022,0.682,,,model=Qwen/Qwen2.5-7B-Instruct; prompt=topical_title_cond_slice; patients=2021=75; 2022=50; score=continuous_expected_digit,114cce7,true
+trec_scoring,qwen_topical_slice,ndcg10_graded_2021,0.657,0.617,0.696,model=Qwen/Qwen2.5-7B-Instruct; prompt=topical_title_cond_slice; patients=2021=75; 2022=50; score=continuous_expected_digit,114cce7,true
+trec_scoring,qwen_topical_slice,ndcg10_graded_2022,0.662,0.585,0.734,model=Qwen/Qwen2.5-7B-Instruct; prompt=topical_title_cond_slice; patients=2021=75; 2022=50; score=continuous_expected_digit,114cce7,true
+trec_scoring,qwen_topical_slice,p10_2021,0.519,0.468,0.567,model=Qwen/Qwen2.5-7B-Instruct; prompt=topical_title_cond_slice; patients=2021=75; 2022=50; score=continuous_expected_digit,114cce7,true
+trec_scoring,qwen_topical_slice,p10_2022,0.57,0.498,0.646,model=Qwen/Qwen2.5-7B-Instruct; prompt=topical_title_cond_slice; patients=2021=75; 2022=50; score=continuous_expected_digit,114cce7,true
+trec_scoring,elig_prompt_v2,auroc_1v2,0.6,,,prompt=v2_CHECK_then_eligible; patients=30_sample,4424157,true
+trec_scoring,elig_prompt_v2,p20_2021_sample,0.34,,,prompt=v2_CHECK_then_eligible; patients=30_sample,4424157,true
+trec_scoring,elig_prompt_v2,p20_v1_same_sample,0.487,,,prompt=v2_CHECK_then_eligible; patients=30_sample,4424157,true

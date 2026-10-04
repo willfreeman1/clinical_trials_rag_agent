@@ -1,4 +1,11 @@
-"""Write a committed table of every MLflow run.
+"""Write a committed table of the tracked MLflow runs.
+
+Long format: one row per run-and-metric. Interval bounds sit in
+lo / hi on the same row rather than as extra columns. Config that
+distinguishes the run rides along so a spreadsheet stays dense.
+
+These eleven runs are the ones that produced reported results, not
+every experiment the project ran.
 
 Reads the local file store (mlruns/). Does not rescore. Does not
 need data/trec/. Regenerates docs/trec_mlflow_runs.csv so the
@@ -18,24 +25,18 @@ ROOT = Path(__file__).resolve().parents[1]
 STORE = f"file:{(ROOT / 'mlruns').as_posix()}"
 OUT = ROOT / "docs" / "trec_mlflow_runs.csv"
 
-# Columns the brief asked for, in that order, then every metric
-# that appears on any run, then the two honesty tags.
-CONFIG_COLS = [
+FIELDNAMES = [
     "experiment",
     "run_name",
-    "model",
-    "prompt",
-    "learning_rate",
-    "adapter_size",
-    "seed",
-    "cutoff_depth",
-    "year",
-    "n_patients",
-    "other_params",
+    "metric",
+    "value",
+    "lo",
+    "hi",
+    "config",
+    "threshold_commit",
+    "retrofitted",
 ]
-TRAIL_COLS = ["threshold_commit", "retrofitted"]
 
-# Param names that fold into the config columns above.
 CONSUMED = {
     "model",
     "prompt",
@@ -79,7 +80,15 @@ def _cutoff(params: dict[str, str]) -> str:
     cutoff = _first(params, "cutoff", "depth")
     short = params.get("shortlist_depth", "")
     cascade = params.get("cascade_cutoffs", "")
-    parts = [p for p in (cutoff, f"shortlist={short}" if short else "", f"cascade={cascade}" if cascade else "") if p]
+    parts = [
+        p
+        for p in (
+            cutoff,
+            f"shortlist={short}" if short else "",
+            f"cascade={cascade}" if cascade else "",
+        )
+        if p
+    ]
     return "; ".join(parts)
 
 
@@ -94,16 +103,43 @@ def _n_patients(params: dict[str, str]) -> str:
     return ""
 
 
-def _other(params: dict[str, str]) -> str:
+def _config(params: dict[str, str]) -> str:
+    parts: list[str] = []
+    named = [
+        ("model", params.get("model", "")),
+        ("prompt", params.get("prompt", "")),
+        ("lr", params.get("lr", "")),
+        ("adapter", _adapter_size(params)),
+        ("seed", params.get("seed", "")),
+        ("cutoff", _cutoff(params)),
+        ("year", _first(params, "year", "years")),
+        ("patients", _n_patients(params)),
+    ]
+    for key, val in named:
+        if val:
+            parts.append(f"{key}={val}")
     leftover = {k: v for k, v in sorted(params.items()) if k not in CONSUMED and v}
-    return "; ".join(f"{k}={v}" for k, v in leftover.items())
+    parts.extend(f"{k}={v}" for k, v in leftover.items())
+    return "; ".join(parts)
 
 
-def _metric_cell(v: float) -> str:
+def _num(v: float | None) -> str:
     if v is None:
         return ""
-    text = f"{v:.6f}".rstrip("0").rstrip(".")
-    return text
+    return f"{v:.6f}".rstrip("0").rstrip(".")
+
+
+def _fold_metrics(metrics: dict[str, float]) -> list[tuple[str, float, float | None, float | None]]:
+    names = set(metrics)
+    rows: list[tuple[str, float, float | None, float | None]] = []
+    for name in sorted(names):
+        if name.endswith("_lo") or name.endswith("_hi"):
+            if name[:-3] in names:
+                continue
+        lo = metrics.get(f"{name}_lo")
+        hi = metrics.get(f"{name}_hi")
+        rows.append((name, metrics[name], lo, hi))
+    return rows
 
 
 def main() -> None:
@@ -123,43 +159,40 @@ def main() -> None:
     client = MlflowClient(tracking_uri=STORE)
 
     rows: list[dict[str, str]] = []
-    metric_keys: set[str] = set()
     for exp in sorted(client.search_experiments(), key=lambda e: e.name):
         if exp.name == "Default":
             continue
         for run in client.search_runs(exp.experiment_id, order_by=["start_time ASC"]):
             params = {k: str(v) for k, v in run.data.params.items()}
-            metrics = run.data.metrics
-            metric_keys.update(metrics)
             tags = run.data.tags
-            rows.append(
-                {
-                    "experiment": exp.name,
-                    "run_name": tags.get("mlflow.runName", run.info.run_id),
-                    "model": params.get("model", ""),
-                    "prompt": params.get("prompt", ""),
-                    "learning_rate": params.get("lr", ""),
-                    "adapter_size": _adapter_size(params),
-                    "seed": params.get("seed", ""),
-                    "cutoff_depth": _cutoff(params),
-                    "year": _first(params, "year", "years"),
-                    "n_patients": _n_patients(params),
-                    "other_params": _other(params),
-                    "threshold_commit": tags.get("threshold_commit", ""),
-                    "retrofitted": tags.get("retrofitted", ""),
-                    **{k: _metric_cell(v) for k, v in metrics.items()},
-                }
-            )
+            shared = {
+                "experiment": exp.name,
+                "run_name": tags.get("mlflow.runName", run.info.run_id),
+                "config": _config(params),
+                "threshold_commit": tags.get("threshold_commit", ""),
+                "retrofitted": tags.get("retrofitted", ""),
+            }
+            for name, value, lo, hi in _fold_metrics(run.data.metrics):
+                rows.append(
+                    {
+                        **shared,
+                        "metric": name,
+                        "value": _num(value),
+                        "lo": _num(lo),
+                        "hi": _num(hi),
+                    }
+                )
 
-    metric_cols = sorted(metric_keys)
-    fieldnames = CONFIG_COLS + metric_cols + TRAIL_COLS
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w", encoding="utf-8", newline="") as fh:
-        writer = csv.DictWriter(fh, fieldnames=fieldnames, extrasaction="ignore")
+        writer = csv.DictWriter(fh, fieldnames=FIELDNAMES)
         writer.writeheader()
-        for row in rows:
-            writer.writerow({k: row.get(k, "") for k in fieldnames})
-    print(f"wrote {OUT.relative_to(ROOT)} ({len(rows)} runs, {len(metric_cols)} metrics)", flush=True)
+        writer.writerows(rows)
+    n_runs = len({(r["experiment"], r["run_name"]) for r in rows})
+    print(
+        f"wrote {OUT.relative_to(ROOT)} ({len(rows)} metric rows, {n_runs} runs)",
+        flush=True,
+    )
 
 
 if __name__ == "__main__":

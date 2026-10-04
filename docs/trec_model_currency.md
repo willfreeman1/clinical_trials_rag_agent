@@ -250,8 +250,11 @@ of megabytes). A fresh clone cannot rebuild the
 store: `scripts/mlflow_backfill.py` needs
 `data/trec/*.json`, which is not in git. The
 inspectable record in the repository is
-`docs/trec_mlflow_runs.csv`. Screenshots of the
-running interface are in `docs/images/`.
+`docs/trec_mlflow_runs.csv` — one row per
+run-and-metric, eleven runs, the ones that
+produced reported results, not every experiment
+the project ran. Screenshots of the running
+interface are in `docs/images/`.
 
 ```
 pip install -r requirements.txt
