@@ -94,7 +94,21 @@ the same judged-0 pool as the 0.85 figure did **not**
 degrade (adapter 2-vs-0 **0.921** vs slice 0.888). Extra
 seeds: H100 SXM5, **$8.20**, terminated. The fine-tuning
 question is closed. Details: `docs/trec_lora_elig.md`.
-No first-page rescore. Run 3 not started.
+First-page rescore on all 50 2022 shortlists is done.
+**Keep the topical slice.** Cascade top-100 P@10
+**0.616** vs topical **0.570** is +4.6 points; the
+paired patient interval is −0.4 to +9.6 and includes
+zero. Adapter-alone **0.550** is not a real loss on
+P@10 either (−7.4 to +3.0) and is a real loss on
+NDCG@10. Cutoff 25 is the cheapest sweep point
+($0.002/patient) and the only window whose P@10
+interval excludes zero; it was not locked in
+advance. 79,750 pairs, A100 SXM4, **$6.65**,
+terminated. Official-style NDCG@10 / P@10 / RPrec /
+MRR are in `docs/trec_lora_rank.md`. Headline arm,
+both years: topical slice **0.657 / 0.519** (2021)
+and **0.662 / 0.570** (2022), judged pool, not the
+375k snapshot. Run 3 not started.
 
 The 1,570 is **91% junk**. Mean 2021 shortlist: 67 eligible,
 73 excluded, 143 judged-not-relevant, **1,287 unjudged** for

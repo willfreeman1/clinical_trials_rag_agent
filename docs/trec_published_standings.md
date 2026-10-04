@@ -1,9 +1,13 @@
 # Where published TREC numbers actually sit
 
-Reading only. No new scores. The ranker run is a separate brief.
 This is the related-work note for anything we publish: what the
 field's numbers mean, which ones can sit on the same axis, and
 where we stand without pretending the axes match.
+
+Official-style NDCG@10, P@10, RPrec and MRR for our arms are
+now in `docs/trec_lora_rank.md`. They use TREC's label rules.
+They still do not sit on the official collection. Read the
+caveat first.
 
 **NDCG@10** is a ranking score that cares about order in the
 top ten and about how good each hit is. **P@10** is how much
@@ -12,6 +16,64 @@ positive example and one negative example, how often the
 model scores the positive higher. 0.50 is a coin flip.
 
 The system does not say a patient qualifies.
+
+## The collection is not the official one
+
+This applies to **every row** below, including ours.
+
+Official TREC 2021 and 2022 runs searched the April 27, 2021
+ClinicalTrials.gov snapshot: **375,580** documents
+(ir_datasets; 375,581 records on disk). Assessors then
+judged a **pool** of what those runs retrieved — 2022 to
+depth 40, 35,394 pairs. The judged union is **26,162**
+unique trials in 2021 and **26,585** in 2022.
+
+We search that judged union. `docs/trec_hybrid_retrieval.md`
+says it in one line: "Judged pool is the collection."
+TrialGPT did the same (26,149 / 26,581). Official
+participants, and Kusa's BM25 first stage, searched the
+375k snapshot.
+
+That is a different and easier task, in our favour.
+
+- We never retrieve a trial that no official system put
+  in the pool. Those ~350,000 never-pooled trials score
+  zero by convention if they land in an official top ten.
+  We cannot waste a slot on them, because they are not
+  in the collection.
+- We sort trials other systems already found. First-stage
+  recall of 91.6% / 91.4% at 6% is recall inside the
+  26k union, not inside the 375k snapshot.
+- We cannot claim parity with, or a win over, **h2oloo**,
+  **TD-MINER**, or **DoSSIER** on P@10 or NDCG@10. Their
+  numbers are NIST `trec_eval` on the snapshot.
+- **Kusa** is not comparable either, and also in our
+  favour. That paper's first stage is BM25 over the full
+  snapshot. Any "closest neighbour" sentence has to say
+  so.
+- **TrialGPT** is the only published system that shares
+  the pool. It still breaks elsewhere: graded P@10
+  (sum of grades / (max grade × 10)), and a mean across
+  SIGIR 2016 + 2021 + 2022.
+
+One correction to a stronger claim that is **not** true:
+our top ten is **not** guaranteed judged for that
+patient. The 26k is the union across topics. For a given
+2022 patient, about **386 of 1,595** shortlist rows are
+judged for that topic; the rest score zero if they reach
+the top ten. On the topical slice, a mean **0.84 of the
+top ten** are unjudged for that patient (18 of 50
+patients have at least one). Official runs can also put
+unjudged-for-this-topic trials in the top ten. The
+inflation that remains is the missing 350k, not a
+perfectly judged first page.
+
+The honest conclusion is that **no published system
+shares our axis**. Official TREC is the snapshot.
+TrialGPT is the pool with a different P@10 and a
+three-cohort average. That is a more interesting
+statement than a parity claim, and it is the one a
+methods write-up can be built on.
 
 ## 1. TrialGPT's exclusion AUROC — do not claim parity
 
@@ -139,7 +201,11 @@ after the track stayed on it.
 Numbers are copied from the papers, not remembered.
 A blank cell means the paper does not report it.
 **Not comparable** means the number exists but is not
-on TREC's official axis.
+on TREC's official axis. **Every row is subject to
+the collection caveat above.** Official TREC rows
+searched 375k. Ours and TrialGPT searched the judged
+pool. Do not read a P@10 or NDCG@10 across those
+two groups as a ranking.
 
 | System | Cohorts and patients | Evaluation pool | Label handling | Metric definition | Mean or median | Model, hosted how | Cost or compute reported |
 |---|---|---|---|---|---|---|---|
@@ -157,7 +223,7 @@ on TREC's official axis.
 | **Nievas / Trial-LLaMA 2024** (survey row) | SIGIR + TREC 2021 + TREC 2022 (same three as TrialGPT) | TrialGPT-style; they extend TrialGPT to open models | Survey reports AUROC alongside NDCG/P@10, so likely TrialGPT's excluding setup, classes still unstated | NDCG@10, P@10, AUROC, AUPRC | Trial-LLaMA 70B: NDCG@10 **0.6636**, P@10 **0.5886**, AUROC **0.6528**. Their GPT-4 re-run: 0.7728 / 0.7005 / 0.7390. Three-cohort, TrialGPT-shaped | Fine-tuned LLaMA 70B, self-hosted, plus GPT-4 comparison | Survey says fine-tuning cost was high; no figure in the row |
 | **Panacea** (Lin et al. 2024; survey) | TREC 2021 and SIGIR 2016, plus their TrialAlign set | Survey: "yes; no metrics provided" for the TREC ranking column | — | F1 / precision / recall on their matching task | **No TREC NDCG or P@10 in the survey** | Fine-tuned Mistral-7B, self-hosted | — |
 | **VERDICT** (Zhou et al., arXiv 2609.03366) | SIGIR-derived **552 pairs** (labels re-done by a GPT-5 panel, not official SIGIR); TREC 2021 **363 official-judgement pairs**, sampled | Pair classification, **not** a ranking over the collection | SIGIR labels replaced. TREC 2021 uses official eligibility judgements on the sampled pairs | Decision F1 / accuracy, policy consistency, counterfactual self-faithfulness. **No NDCG, no P@10** | TREC 2021 F1: 0.828 (GPT-5-mini), 0.800 (Claude Haiku 4.5), 0.738 (Qwen2.5-7B; 0.829 after distillation). Accuracies 0.838 / 0.815 / 0.697 | LLM formalizes; SMT solver decides. API and open backbones | Budget-limited backbone split across the two sets |
-| **This project** (for the standings paragraph, not a published paper) | TREC 2021 **75**, TREC 2022 **50**. 2023 stopped | Judged pool **26,162 / 26,585**. Shortlist top **6%** (~1,570 / 1,595). Unjudged treated as not relevant for ranking tables we have computed | Official-style when we compute NDCG (graded) and P@10 eligible (binary). 1-vs-2 AUROC drops label 0 | See `trec_hybrid_retrieval.md`, `trec_rerank.md`, `trec_lora_elig.md`. **No NIST `trec_eval` submission** | Retrieval: eligible recall **91.6% / 91.4% at 6%**. Rerank 2021 best NDCG@10 **0.510**, P@10 eligible **0.384**; 2022 MedCPT-CE NDCG@10 **0.586**, P@10 eligible **0.508**. Adapter 1-vs-2 AUROC **0.779 (0.770–0.793)** | Keyword hybrid + Qwen2.5-7B LoRA, self-hosted. GPT used for the reader spike, not for TREC retrieval | LoRA ~$5/seed. Reader-spike citation audit on a lung-cancer slice: **1.2%** of GPT-5.4 quotes missing from the trial text |
+| **This project** (for the standings paragraph, not a published paper) | TREC 2021 **75**, TREC 2022 **50**. 2023 stopped | **Judged pool 26,162 / 26,585, not the 375k snapshot.** Shortlist top **6%** (~1,570 / 1,595). Unjudged-for-this-topic treated as 0. See the collection caveat above — this row is the easier task | Official-style NDCG@10 graded 2/1/0; P@10 / RPrec / MRR binary, eligible only. 1-vs-2 AUROC drops label 0 | `trec_lora_rank.md` (TREC-official tables), `trec_hybrid_retrieval.md`, `trec_lora_elig.md`. **No NIST `trec_eval` submission** | **One arm, both years: topical slice, continuous.** 2021 NDCG@10 **0.657** (0.617–0.696), P@10 **0.519** (0.468–0.567). 2022 NDCG@10 **0.662** (0.585–0.734), P@10 **0.570** (0.498–0.646). Per-arm table in `trec_lora_rank.md`. Do not quote the old mix (2021 best-rerank 0.510 / 0.384 with 2022 MedCPT-CE 0.586 / 0.508). Adapter 1-vs-2 AUROC **0.779 (0.770–0.793)**; seeds 0.793, 0.770, 0.773 — quote the mean and the spread. Cascade top-100 P@10 0.616 vs topical 0.570 does **not** clear a paired interval. Retrieval: eligible recall **91.6% / 91.4% at 6% of the pool** | Keyword hybrid + Qwen2.5-7B LoRA, self-hosted. GPT used for the reader spike, not for TREC retrieval | LoRA ~$5/seed. Full 2022 adapter shortlist $6.65. Reader-spike citation audit on a lung-cancer slice: **1.2%** of GPT-5.4 quotes missing from the trial text |
 
 Surveys used to find extra TREC 2021/2022 rows:
 `2509.19327` (pipeline review) and `2506.15301` /
@@ -196,14 +262,19 @@ et al. (entity enrichment / TCRR). They say they follow
 TREC, treat unjudged as not relevant, treat P@10 as
 eligible-only, train on one year and test on the other,
 and land at 0.604 / 0.482 on 2022 — next to official
-h2oloo 0.6125 / 0.5080. Still not a NIST submission
-(they rerank BM25's top 50, not a 1,000-deep run from
-the snapshot), but it is the one paper that is trying
-to be on the same axis.
+h2oloo 0.6125 / 0.5080. Their first stage is still
+BM25 over the **full snapshot**, so they did the
+harder retrieval job. We cannot sit next to that
+row as a neighbour without the collection caveat.
+They are also not a NIST submission (they rerank
+BM25's top 50).
 
 That gap is itself worth writing about. The field's
 headline LLM numbers and TREC's official table are
-not the same measurement.
+not the same measurement. Our numbers are not on
+that official table either. We share a pool with
+TrialGPT and a metric definition with TREC, and
+no published system shares both.
 
 ## 5. The two originality claims
 
@@ -308,21 +379,29 @@ eligible trial. That is a design choice, not a
 better retriever.
 
 On **first-page ranking**, the only numbers that
-are truly like-for-like are the official TREC
-means: 0.715 / 0.576 (TD-MINER, 2021) and
-0.6125 / 0.5080 (h2oloo, 2022). Our stored
-official-style figures — 0.510 / 0.384 (2021,
-best rerank arm) and 0.586 / 0.508 (2022,
-MedCPT-CE) — sit **below 2021's winner** and
-**near 2022's winner on P@10**, on a shortlist
-reorder rather than a 1,000-deep official run.
-TrialGPT's 0.7275 / 0.6688 and TrialMatchAI's
-median 0.75 / 0.72 look higher and are **not
-on that axis** (three-cohort average, graded
-P@10, or an unstated P@10). Kusa's 0.604 / 0.482
-on 2022 is the fairest published post-hoc
-neighbour; we have not yet published a number
-that sits next to it on purpose.
+are truly like-for-like **with each other** are
+the official TREC means: 0.715 / 0.576
+(TD-MINER, 2021) and 0.6125 / 0.5080 (h2oloo,
+2022). Ours are not in that set. The headline
+arm is now the same both years — topical slice,
+continuous, TREC-official rules, patient-resampled
+intervals — **0.657 / 0.519** on 2021 and
+**0.662 / 0.570** on 2022. The old mix (2021
+best-rerank 0.510 / 0.384 with 2022 MedCPT-CE
+0.586 / 0.508) is retired; that was a different
+arm per year. The 2022 P@10 of 0.570 sitting
+above h2oloo's 0.508 is **not a win**. Different
+and easier collection. Same for NDCG@10 0.662
+next to 0.6125. TrialGPT's 0.7275 / 0.6688 and
+TrialMatchAI's median 0.75 / 0.72 look higher
+and are **not on TREC's metric axis**
+(three-cohort average, graded P@10, or an
+unstated P@10). Kusa's 0.604 / 0.482 on 2022
+used official-looking metrics on a full-snapshot
+first stage; we cannot claim that neighbour
+either. The cascade's 0.616 P@10 on 2022 does
+not survive a paired interval against our own
+topical slice. Details: `trec_lora_rank.md`.
 
 On **label 1 versus label 2**, we have a
 measurement the ranking papers mostly skip:
@@ -366,12 +445,14 @@ exclusion-AUROC headline does not.
 
 ## 7. Measurements this reading suggests (not started)
 
-1. **Official-style `trec_eval`** on 2021 and 2022
-   for whatever ranker we ship — NDCG@10 graded,
-   P@10 binary, unjudged = 0, one year at a time —
-   so we can sit next to TD-MINER and h2oloo
-   without a footnote. The live ranker brief is
-   the place for that, not this one.
+1. **Official-style metrics, same rules as TREC,
+   are now computed** for every stored full-shortlist
+   arm (`docs/trec_lora_rank.md`). They do **not**
+   let us sit next to TD-MINER or h2oloo without
+   the collection caveat — that would take a
+   375k-snapshot run, which this brief did not
+   start. The leftover measurement is a real NIST
+   submission, not another shortlist reorder.
 2. **Do not recompute TrialGPT's AUROC** unless
    they release the scored pairs and the `y_true`
    mapping. Re-inferring classes from Table 2
@@ -393,6 +474,7 @@ TrialMatchAI 2026; Kusa 2307.00381; surveys
 2609.01202; VERDICT 2609.03366. TrialGPT GitHub
 `README.md` and `trialgpt_ranking/rank_results.py`.
 Our numbers from `trec_hybrid_retrieval.md`,
-`trec_rerank.md`, `trec_lora_elig.md`, `STATUS.md`.
+`trec_rerank.md`, `trec_lora_elig.md`,
+`trec_lora_rank.md`, `STATUS.md`.
 
 The system does not say a patient qualifies.

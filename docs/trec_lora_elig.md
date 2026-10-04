@@ -282,14 +282,11 @@ on the same sample).
 
 The fine-tuning question is closed.
 
-Not decided: whether eligibility should replace the topical
-slice as the default ranker. That needs first-page numbers,
-depth-200 numbers, and the cost of reading full criteria
-instead of titles, side by side. Run 2 had eligibility
-winning the page and losing at depth 200; the adapter
-changes both sides of that. It is a product decision with
-a real compute bill, not another measurement of
-fine-tuning, and it is not started.
+Decided, first-page ranking on these 50 shortlists:
+**keep the topical slice.** The cascade's +4.6 P@10
+does not survive a paired patient interval. Adapter-only
+wins equivalent depth at 200 and loses NDCG@10.
+Details: `docs/trec_lora_rank.md`.
 
 The other-way fold (train 2022, test 2021) is not run.
 GPT-5.4 was not recomputed on the full 50 patients.
