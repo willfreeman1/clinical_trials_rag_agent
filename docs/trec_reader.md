@@ -7,22 +7,29 @@ and checks that any quoted sentence actually appears in the named
 source. It never says the patient qualifies.
 
 **The headline.** On all 50 patients from 2022, reading the top 25
-trials the default ranker had already surfaced (1,250 pairs), the
-reader almost always says **not enough information**. It does
-**not** sort expert-joinable trials from expert-excluded ones the
-way the fine-tuned eligibility scorer does. That scorer's mean
-1-versus-2 AUROC is **0.779**. The reader's is **0.59**
-(0.55–0.64). A coin flip is 0.50.
+trials the default ranker had already surfaced (1,250 pairs), a
+TREC patient note settles **7.6%** of a trial's eligibility
+rules. That is a fact about the notes, not about the model: they
+are 5 to 10 sentences on purpose. Under the combination rule the
+assessors used — compatible unless a quote contradicts — the
+reader calls **1,164** of 1,250 trials compatible and **86**
+excluded. It still does **not** sort expert-joinable trials from
+expert-excluded ones. The fine-tuned scorer's mean 1-versus-2
+AUROC is **0.779**. The reader's is **0.59** under all three
+combination rules (0.55–0.64). A coin flip is 0.50.
 
 When the model *does* offer a quote, the quote is usually real:
-**3.75%** of offered quotes were paraphrased or absent (D+E). The
-locked reference treated above **5%** as a support problem and
-earlier work measured **1.3%**. This sits between those two. It is
-not a new gate.
+**3.75%** of offered quotes were paraphrased or absent (D+E). That
+is a different measurement from the **5%** support-problem
+reference on an earlier lung-cancer slice, and from the **1.3%**
+GPT-5.4 audit on that same slice. The three numbers are not
+points on one scale.
 
-There is no overall accuracy number here. Most calls are
-"uncertain," and that third label is not a wrong 1 or 2. Do not
-average it into a percentage.
+There is no overall accuracy number here. Under the first two
+combination rules most calls are "uncertain," and that third
+label is not a wrong 1 or 2. Under the third rule most calls are
+"compatible," which means only that nothing in the note rules
+the trial out. Do not average either into a percentage.
 
 13 of 50 from the first probe is **not** accuracy. That was a
 schema-conformance rate while an output contract was rejecting
@@ -37,16 +44,31 @@ Locked in `f852d6c` before any score, then amended in `621e898` and
 those patients trained the adapter). Not 2023. No frontier model.
 No pass/fail threshold.
 
-Two ways to turn per-rule verdicts into one trial-level call:
+Three ways to turn per-rule verdicts into one trial-level call.
+The first two were locked before the GPU pass. The third was
+locked in `e8befec` before any stored verdict was re-read. No
+new model calls.
 
 - **any_hard_fail** — one failed inclusion, or one firing
   exclusion, and the trial is excluded. Joinable only if every
   inclusion is met, no exclusion fires, and nothing is unsettled.
 - **net_balance** — a firing exclusion still excludes. Otherwise
   the share of settled inclusions that were met is the score.
+- **compatible_unless_contradicted** — the TREC 2022 assessors'
+  rule. Excluded if an exclusion fires or an inclusion is
+  positively failed. Otherwise compatible. Unsettled rules get
+  no vote. Silence never excludes.
 
-If those two disagree on the headline, that is the finding. They
-do not. Both say: mostly uncertain, and a weak sort of 1 vs 2.
+Unsplit rules: `not_met` is a contradiction, `met` is a
+confirmation, the same as the first two rules. Five trials
+(0.4%) had exclusion language inside an unsplit block, where
+that polarity can invert. Noted, not repaired.
+
+The first two rules demand proof. The judges asked for
+compatibility. The 0.59 that used only the first two was an
+unfair reading of what the reader can do as a label, and it
+should not stand uncorrected. The ranking number was already
+using the settled-rule share, so it does not move.
 
 **AUROC** here means: pick one trial experts called joinable
 (label 2) and one they called excluded — right disease, a rule
@@ -66,35 +88,76 @@ failure.
 Of 1,250 pairs, experts had called **629** joinable, **202**
 excluded, **280** irrelevant (label 0), and **139** unjudged.
 
-| Trial-level call | any_hard_fail | net_balance |
-|---|---:|---:|
-| Uncertain | 1,138 | 1,164 |
-| Excluded | 86 | 60 |
-| Joinable | 26 | 26 |
+| Trial-level call | any_hard_fail | net_balance | compatible-unless-contradicted |
+|---|---:|---:|---:|
+| Uncertain | 1,138 | 1,164 | 0 |
+| Excluded | 86 | 60 | 86 |
+| Joinable / compatible | 26 | 26 | 1,164 |
 
-About **91%** of trials stay unsettled. That is what
-silence-is-a-pass does when most rules come back
-`not_enough_information`: the trial is not called joinable.
+About **91%** of trials stay unsettled under the first two
+rules. That is not the model failing. Three things produce it
+together: the prompt was told to answer "not enough information"
+when the note is silent, a deliberate choice with a cost; TREC
+notes are 5 to 10 sentences by design, so most of a 13-rule
+list has nothing to quote; and those two rules refuse to call
+a trial joinable while any rule is still open. The judges did
+not require that.
 
-When the reader did call **joinable** (26 pairs, both rules):
+Under the assessors' rule the same 1,138 "uncertain" trials
+become **compatible**. Compatible means "nothing in this note
+rules the trial out." That is a weaker claim than "this is a
+good match."
+
+When the first two rules called **joinable** (26 pairs):
 experts had said joinable on 17, excluded on 2, irrelevant on 4,
-unjudged on 3. When it called **excluded** under any_hard_fail
-(86 pairs): experts had said joinable on 34, excluded on 26,
-irrelevant on 18, unjudged on 8. A loud “no” often lands on a
-trial humans still called joinable. A loud “yes” is rare.
+unjudged on 3. When any_hard_fail or the third rule called
+**excluded** (86 pairs): experts had said joinable on 34,
+excluded on 26, irrelevant on 18, unjudged on 8. A loud “no”
+often lands on a trial humans still called joinable.
+
+Of the 1,164 **compatible** calls, 595 were expert-joinable
+(label 2), 176 expert-excluded (label 1), 262 irrelevant
+(label 0), 131 unjudged. Precision of compatible for label 2
+among the 1-versus-2 pairs it called: **77.2%** (595 / 771).
+The base rate of label 2 among 1-versus-2 in this slice is
+**75.7%** (629 / 831). Calling almost everything compatible
+recovers the prior. Precision of excluded for label 1 among
+1-versus-2: **43.3%** (26 / 60; Wilson 0.32–0.56). Do not read
+either figure as overall accuracy.
 
 | 1-versus-2 AUROC | Pooled | 95% patient interval |
 |---|---:|---:|
 | any_hard_fail | 0.595 | 0.551–0.635 |
 | net_balance | 0.584 | 0.537–0.630 |
+| compatible_unless_contradicted | 0.594 | 0.550–0.635 |
 | Fine-tuned eligibility scorer (mean of three seeds) | **0.779** | — |
 
-Neither interval includes 0.779. Neither includes 0.50, but both
-are close to a coin flip. The two aggregations agree: this reader
-is not the 1-versus-2 instrument.
+The third rule's ranking score penalises each contradiction
+into a band at most 0.05, then ranks the rest by how many
+rules the note confirms (0.50 to 1.00). Silence is zero either
+way. Those weights were committed in `e8befec` before this
+table. The AUROC is the same as any_hard_fail because, once
+contradictions are sent to the bottom, "share confirmed" is a
+monotone rewrite of "share settled." The unfairness of the old
+rule was in the **label**, not in the **sort**.
+
+Neither interval includes 0.779. The reader does not beat the
+purpose-built scorer, and it was not expected to. **0.59 under
+the fair rule is the honest ranking answer.** The reader's
+value is evidence on an already-ranked shortlist, not ranking.
 
 One of the 50 patients had no label-1 or label-2 trial in this
 top 25, so the AUROC uses 49 patients (38 had both a 2 and a 1).
+
+## How much of a trial a TREC note can settle
+
+16,516 rules across 1,250 pairs. The note settles **1,252** of
+them — **7.6%** of eligibility criteria, **14.1%** if you
+average the per-trial share (some lists have more rules the
+note can speak to). That is why a ranking score built on
+confirmations still has thin signal, and why 91% of trials
+looked uncertain under the old rule. This project has not seen
+that fraction reported elsewhere. It is a limit of the benchmark.
 
 ## Quotes
 
@@ -115,7 +178,15 @@ fabrication: the verdict already says the note does not settle it.
 
 Raw flag rate (anything other than ok): **10.9%**. Honest
 fabrication (D+E): **47 / 1,252 = 3.75%**. n ≥ 200, so no Wilson
-interval. Under the 5% reference; above the earlier 1.3%.
+interval.
+
+That 3.75% is Qwen2.5-7B-Instruct on TREC 2022, offered quotes
+only, buckets D (paraphrase) and E (absent). The **5%** figure
+was a support-problem reference on an earlier lung-cancer
+slice. The **1.3%** was GPT-5.4 on that same slice, a different
+model, a different corpus, and a different quote-audit task.
+They answer different questions. They are not three readings
+of one rate.
 
 A 80-row sheet for a hand check is in
 `docs/trec_reader_will_check.md`. Reading only: does the quoted
@@ -127,13 +198,22 @@ medical judgment.
 **As a citation check, partly.** When the model claims a span, the
 span is usually on the page.
 
-**As a stand-in for the 0.779 eligibility scorer, no.** It will
-not tell joinable from excluded on this shortlist. Silence-is-pass
-is the same principle the project already locked; applied
-rule-by-rule on TREC notes it leaves almost every trial unsettled.
+**As a stand-in for the 0.779 eligibility scorer, no.** Even
+under the assessors' own combination rule it will not tell
+joinable from excluded on this shortlist (AUROC 0.59, same as
+before). A TREC note settles 7.6% of the rules. That is not
+enough ranking signal. The fine-tuned scorer was built for
+exactly this comparison.
 
-That is a measured finding, not a pass/fail. The locked question
-was how it does. This is how it does.
+**As a label that matches how the judges defined eligible,
+partly.** Compatible-unless-contradicted stops treating silence
+as a failed proof. Most trials come back compatible because
+that is what the definition says to do. Precision of that call
+is the prior. The value that already delivered is the quote
+check: 3.75% fabrication on 1,252 offered quotes.
+
+That is a measured finding, not a pass/fail. The locked
+question was how it does. This is how it does.
 
 ## First probe, and why 13 of 50 is not a score
 
@@ -202,7 +282,9 @@ The re-probe projected $11.50. The full pass came in under that,
 inside the original $7–$15 sketch, without cutting patients or
 trials.
 
-Live MLflow run `reader_2022_top25` (not retrofitted). The same
-numbers are in `docs/trec_mlflow_runs.csv`.
+Live MLflow runs `reader_2022_top25` (the GPU pass) and
+`reader_2022_top25_compatible` (this re-read; threshold
+`e8befec`; not retrofitted). The same numbers are in
+`docs/trec_mlflow_runs.csv`.
 
 The system does not say a patient qualifies.

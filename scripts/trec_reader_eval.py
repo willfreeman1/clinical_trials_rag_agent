@@ -13,8 +13,12 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from reader.aggregate import aggregate  # noqa: E402
+from reader.schema import Rule, RuleJudgement  # noqa: E402
 from trec_cheap_common import wilson  # noqa: E402
 from trec_reader_common import (  # noqa: E402
     FABRICATION_REFERENCE,
@@ -28,7 +32,7 @@ BOOT_SEED = 20261004
 N_BOOT = 5000
 WILL_N = 80
 WILL_SEED = 20261004
-THRESHOLD_COMMIT = "89a2bf4"
+THRESHOLD_COMMIT = "e8befec"
 
 
 def auroc(pos: list[float], neg: list[float]) -> float | None:
@@ -93,6 +97,57 @@ def cross(rows: list[dict], pred_key: str) -> dict:
         tab.setdefault(pred, {})
         tab[pred][lab_s] = tab[pred].get(lab_s, 0) + 1
     return tab
+
+
+def section_of(rid: str) -> str:
+    if str(rid).startswith("inc_"):
+        return "inclusion"
+    if str(rid).startswith("exc_"):
+        return "exclusion"
+    return "unsplit"
+
+
+def reaggregate(stored: dict) -> dict:
+    raw_rules = stored.get("rules") or []
+    rules = [Rule(str(x.get("rule_id") or f"u_{i}"), section_of(str(x.get("rule_id") or "")), ".") for i, x in enumerate(raw_rules)]
+    rows = []
+    for x in raw_rules:
+        src = str(x.get("quote_source") or "trial")
+        if src not in ("patient", "trial"):
+            src = "trial"
+        verdict = str(x.get("verdict") or "not_enough_information")
+        if verdict not in ("met", "not_met", "not_enough_information"):
+            verdict = "not_enough_information"
+        bucket = str(x.get("quote_bucket") or "E")
+        if bucket not in ("ok", "A", "B", "C", "D", "E"):
+            bucket = "E"
+        rid = str(x.get("rule_id") or "")
+        rows.append(
+            RuleJudgement(
+                rule_id=rid or f"u_{len(rows)}",
+                verdict=verdict,
+                explanation=str(x.get("explanation") or ""),
+                quote=str(x.get("quote") or ""),
+                quote_source=src,
+                quote_bucket=bucket,
+                quote_flagged=bool(x.get("quote_flagged", True)),
+                coerced_to_nei=bool(x.get("coerced_to_nei")),
+            )
+        )
+    return aggregate(rows, rules)
+
+
+def precision_block(rows: list[dict], pred_key: str, positive: str, gold: int) -> dict:
+    called = [r for r in rows if (r.get("aggregates") or {}).get(pred_key) == positive]
+    judged12 = [r for r in called if r.get("label") in (1, 2)]
+    judged012 = [r for r in called if r.get("label") in (0, 1, 2)]
+    hit12 = sum(1 for r in judged12 if r.get("label") == gold)
+    hit012 = sum(1 for r in judged012 if r.get("label") == gold)
+    return {
+        "called": len(called),
+        "among_1_and_2": wilson(hit12, len(judged12)) if judged12 else None,
+        "among_0_1_2": wilson(hit012, len(judged012)) if judged012 else None,
+    }
 
 
 def offered_quotes(rows: list[dict]) -> list[dict]:
@@ -185,7 +240,9 @@ def log_mlflow(rec: dict) -> None:
     hard = (aurocs.get("any_hard_fail") or {})
     net = (aurocs.get("net_balance") or {})
     fab = rec.get("fabrication_offered") or {}
-    with mlflow.start_run(run_name="reader_2022_top25"):
+    compat = aurocs.get("compatible_unless_contradicted") or {}
+    settled = rec.get("settled") or {}
+    with mlflow.start_run(run_name="reader_2022_top25_compatible"):
         mlflow.set_tags(
             {
                 "retrofitted": "false",
@@ -200,7 +257,7 @@ def log_mlflow(rec: dict) -> None:
                 "cutoff": "25",
                 "n_patients": "50",
                 "n_pairs": str(rec.get("n_pairs")),
-                "aggregation": "any_hard_fail_and_net_balance",
+                "aggregation": "three_rules_compatible_unless_contradicted",
             }
         )
         def put(name: str, value: object) -> None:
@@ -218,6 +275,10 @@ def log_mlflow(rec: dict) -> None:
         put("auroc_net_balance", net.get("pooled"))
         put("auroc_net_balance_lo", net.get("lo"))
         put("auroc_net_balance_hi", net.get("hi"))
+        put("auroc_compatible", compat.get("pooled"))
+        put("auroc_compatible_lo", compat.get("lo"))
+        put("auroc_compatible_hi", compat.get("hi"))
+        put("settled_rule_share", settled.get("share_of_rules"))
         put("offered_quotes", fab.get("n"))
         put("fabrication_d_plus_e", fab.get("d_plus_e_rate"))
         put("adapter_1v2_mean", 0.779)
@@ -234,8 +295,22 @@ def main() -> None:
     coerced = sum(len(r.get("coerced_rule_ids") or []) for r in rows)
     n_rules = sum(len(r.get("rules") or []) for r in rows)
     labels = Counter(r.get("label") for r in rows)
+    for r in rows:
+        merged = dict(r.get("aggregates") or {})
+        merged.update(reaggregate(r))
+        r["aggregates"] = merged
     hard_pred = Counter((r.get("aggregates") or {}).get("any_hard_fail") for r in rows)
     net_pred = Counter((r.get("aggregates") or {}).get("net_balance") for r in rows)
+    compat_pred = Counter((r.get("aggregates") or {}).get("compatible_unless_contradicted") for r in rows)
+    settled_shares = []
+    settled_n = 0
+    for r in rows:
+        c = (r.get("aggregates") or {}).get("counts") or {}
+        n_r = int(c.get("n") or 0)
+        nei = int(c.get("inc_nei") or 0) + int(c.get("exc_nei") or 0) + int(c.get("u_nei") or 0)
+        if n_r:
+            settled_shares.append((n_r - nei) / n_r)
+            settled_n += n_r - nei
     quotes = offered_quotes(rows)
     buckets = Counter(q.get("quote_bucket") for q in quotes)
     d_e = buckets.get("D", 0) + buckets.get("E", 0)
@@ -255,6 +330,7 @@ def main() -> None:
                 "label": lab,
                 "any_hard_fail": (r.get("aggregates") or {}).get("score_any_hard_fail"),
                 "net_balance": (r.get("aggregates") or {}).get("score_net"),
+                "compatible_unless_contradicted": (r.get("aggregates") or {}).get("score_compatible"),
             }
             groups.setdefault(str(r.get("patient_id")), []).append(rec)
         usable = [t for t, g in groups.items() if any(x["label"] == 2 for x in g) and any(x["label"] == 1 for x in g)]
@@ -284,11 +360,28 @@ def main() -> None:
         "labels": {str(k): v for k, v in labels.items()},
         "pred_any_hard_fail": dict(hard_pred),
         "pred_net_balance": dict(net_pred),
+        "pred_compatible_unless_contradicted": dict(compat_pred),
         "cross_any_hard_fail": cross(rows, "any_hard_fail"),
         "cross_net_balance": cross(rows, "net_balance"),
+        "cross_compatible_unless_contradicted": cross(rows, "compatible_unless_contradicted"),
+        "precision_compatible_on_2": precision_block(
+            rows, "compatible_unless_contradicted", "compatible", 2
+        ),
+        "precision_excluded_on_1": precision_block(
+            rows, "compatible_unless_contradicted", "excluded", 1
+        ),
+        "settled": {
+            "rules_settled": settled_n,
+            "rules_total": n_rules,
+            "share_of_rules": round(settled_n / n_rules, 4) if n_rules else None,
+            "mean_share_per_trial": round(sum(settled_shares) / len(settled_shares), 4)
+            if settled_shares
+            else None,
+        },
         "auroc_1v2": {
             "any_hard_fail": pack_auroc("any_hard_fail"),
             "net_balance": pack_auroc("net_balance"),
+            "compatible_unless_contradicted": pack_auroc("compatible_unless_contradicted"),
             "adapter_mean_reference": 0.779,
         },
         "fabrication_offered": {
@@ -309,11 +402,9 @@ def main() -> None:
         "threshold_commit": THRESHOLD_COMMIT,
     }
     RESULTS.write_text(json.dumps(rec, indent=2), encoding="utf-8")
-    write_will_sample(quotes, titles())
     log_mlflow(rec)
     print(json.dumps(rec, indent=2), flush=True)
     print(f"wrote {RESULTS}", flush=True)
-    print(f"wrote {WILL_SAMPLE}", flush=True)
 
 
 if __name__ == "__main__":

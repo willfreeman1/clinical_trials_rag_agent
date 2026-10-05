@@ -6,7 +6,7 @@ system does not say a patient qualifies. A human still has to read
 the criteria.
 """
 
-from reader.aggregate import aggregate, score_any_hard_fail, score_net
+from reader.aggregate import aggregate, score_any_hard_fail, score_compatible, score_net
 from reader.judge import read_trial
 from reader.schema import Rule, RuleJudgement, TrialRead
 from reader.split_rules import split_rules
@@ -20,6 +20,7 @@ __all__ = [
     "bucket_quote",
     "read_trial",
     "score_any_hard_fail",
+    "score_compatible",
     "score_net",
     "split_rules",
     "verify_judgement",
