@@ -1,0 +1,44 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo
+      POSTGRES_DB: demo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - demo-pg:/var/lib/postgresql/data
+
+  app:
+    build: .
+    ports:
+      - "8088:8000"
+    environment:
+      DATABASE_URL: postgresql://demo:demo@db:5432/demo
+      MODEL_MODE: replay
+      SEED_DIR: /app/demo/seed
+      PYTHONPATH: /app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  test:
+    build: .
+    command: python -m unittest discover -s tests -v
+    environment:
+      DATABASE_URL: postgresql://demo:demo@db:5432/demo
+      MODEL_MODE: replay
+      SEED_DIR: /app/demo/seed
+      PYTHONPATH: /app
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - test
+
+volumes:
+  demo-pg:

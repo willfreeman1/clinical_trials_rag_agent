@@ -1,0 +1,37 @@
+{
+  "year": 2022,
+  "patients": [
+    "1",
+    "8",
+    "18"
+  ],
+  "n_trials": 423,
+  "n_qrels": 440,
+  "n_scores": 381,
+  "n_reads": 75,
+  "label_mix": {
+    "1": {
+      "0": 48,
+      "1": 117,
+      "2": 76
+    },
+    "8": {
+      "0": 57,
+      "1": 26,
+      "2": 14
+    },
+    "18": {
+      "0": 53,
+      "1": 13,
+      "2": 36
+    }
+  },
+  "splitter": {
+    "line_header": 393,
+    "no_header": 21,
+    "awkward_nct": "NCT00001412"
+  },
+  "embedding_model": "text-embedding-3-small",
+  "embedding_dim": 1536,
+  "note": "Seed for the laptop demo. Not a new measurement. The system does not say a patient qualifies."
+}

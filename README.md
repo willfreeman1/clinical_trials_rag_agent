@@ -17,6 +17,50 @@ deliverable.
 
 ---
 
+## Run the demo (no GPU, no API key)
+
+Someone clones this repository, runs one command, and gets a working
+system that produces real output. The default **does not call a
+model**. Search, fusion, ranking, rule splitting, quote checks, and
+combination all run. The model replies for the three seed patients
+are stored and replayed, and every response says so.
+
+```bash
+git clone https://github.com/willfreeman1/clinical_trials_rag_agent.git
+cd clinical_trials_rag_agent
+docker compose up --build
+```
+
+Wait until the logs say the app is ready. Then:
+
+```bash
+curl http://127.0.0.1:8088/health
+curl -s http://127.0.0.1:8088/v1/match -H "Content-Type: application/json" -d "{\"patient_id\":\"1\"}"
+```
+
+`model_mode` will be `replay`. The body includes ranked trials,
+per-rule verdicts, verified quotes, and the expert mark when we
+have one. It does not say the patient qualifies.
+
+On Windows PowerShell, use `curl.exe` and put the JSON in a
+file (`--data-binary @req.json`). The `curl` alias will eat
+the quotes.
+
+To run the existing tests inside the container:
+
+```bash
+docker compose --profile test run --rm test
+```
+
+The seed is three 2022 patients and 423 trials (~3 MB), including
+precomputed embeddings. Licensing: `demo/seed/LICENSE.md`. What
+replay does and does not execute: `docs/trec_demo.md`.
+
+A live model server is optional (`MODEL_MODE=live` and
+`MODEL_URL`). It is not needed for the demo.
+
+---
+
 ## What was measured
 
 All figures come from the TREC Clinical Trials benchmark — 75 patients from 2021
@@ -212,6 +256,7 @@ engineering:
 | `docs/trec_lora_elig.md` | The fine-tuning work, including a collapsed first attempt and its diagnosis |
 | `docs/trec_frontier_elig.md` | GPT-5.4 as a measured baseline |
 | `docs/trec_gpt_vs_adapter.md` | GPT-5.4 vs the trained 7B on the same 6,249 2022 pairs: 0.821 vs 0.779 |
+| `docs/trec_demo.md` | Seed data, replay mode, and the clean-clone container test |
 | `docs/trec_reader.md` | Rule-by-rule reader on the 2022 top 25: 7.6% of rules settled, AUROC 0.59 under all three combination rules, D+E 3.75% |
 | `docs/trec_short_notes.md` | What a TREC note can support: 7.6% of requirements, why walking every rule is the wrong ranking method, what to discuss next |
 | `docs/trec_shortlist_diagnosis.md`, `docs/trec_shortlist_fix.md` | What the shortlist contains, and three approaches that did not help |

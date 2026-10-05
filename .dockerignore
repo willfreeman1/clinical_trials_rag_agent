@@ -1,0 +1,13 @@
+data
+mlruns
+mlartifacts
+.git
+.venv
+__pycache__
+*.pyc
+.env
+.env.*
+.specstory
+docs/papers
+scripts/_paper_grep.py
+scripts/_paper_pages.py
