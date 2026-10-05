@@ -85,11 +85,28 @@ Changing the question was worth about seven points; fine-tuning added about
 three more. The cheap insight beat the expensive machinery by more than two to
 one.
 
+### Reading the rules, one by one
+
+A later pass asked the same 7B model to judge each eligibility
+rule on the 2022 top 25 (1,250 pairs) and to quote the sentence it
+used. Design locked before any score; the first 50-trial probe
+broke on empty quotes and is not an accuracy figure.
+
+The reader almost always says not enough information. It does
+**not** sort joinable from excluded (AUROC **0.59**, interval
+0.55–0.64) the way the fine-tuned scorer does (0.779). When it
+does offer a quote, **3.75%** of those quotes were paraphrased or
+absent from the source (the locked reference was 5%; an earlier
+audit was 1.3%). Cost **$7.70**. Details:
+`docs/trec_reader.md`.
+
 ### Fabricated citations
 
 When the system quotes a sentence as its evidence, how often does that sentence
-not exist in the source? **1.2%** for the reader, **1.3%** in an audit of 4,384
-stored quote slots.
+not exist in the source? On the earlier lung-cancer slice, **1.2%** for the
+reader and **1.3%** in an audit of 4,384 stored quote slots. On the TREC
+2022 top-25 reader, **3.75%** of offered quotes were paraphrased or
+absent (`docs/trec_reader.md`).
 
 A naive checker flagged 52% of quotes as suspect. Almost all of that was benign
 — quotes stitched from two real passages, or a word-list miss in the checker
@@ -138,16 +155,18 @@ right-disease-but-excluded, and **91% is junk** that matched a generic term like
 "hypertension". A self-hosted Qwen2.5-7B model scores each trial for disease
 relevance. A fine-tuned variant can optionally re-sort the top 25.
 
-**Stage 3 — reading the rules. Not yet built on this benchmark.** A model reads
-each of a trial's roughly 43 eligibility rules against the patient, judges each
-one, and quotes the sentence it relied on. Both published papers say this is
-where the real work happens.
+**Stage 3 — reading the rules.** Measured on this benchmark's 2022
+top 25. The model reads each eligibility rule (about 13 per trial
+here, not the ~43 from the earlier lung-cancer slice), judges it,
+and quotes the sentence it relied on. It usually says not enough
+information, so it does not replace the fine-tuned eligibility
+score. `docs/trec_reader.md`.
 
 ---
 
 ## Experiment tracking
 
-A local MLflow store holds the eleven TREC runs that produced reported
+A local MLflow store holds the twelve TREC runs that produced reported
 results — not every experiment the project ran — with settings, metrics and
 intervals, the write-up, and the threshold commit that governed the run. The
 three fine-tuned adapters are on the registry; seed 20261007 is marked as the
@@ -169,8 +188,6 @@ tracking starts with the reader.
 Stated plainly, because the measurement record is deliberately ahead of the
 engineering:
 
-- The rule-by-rule reader's agreement with TREC labels on all 50
-  2022 patients (the schema probe is in `docs/trec_reader.md`)
 - A production vector database and a pipeline that keeps trials current
 - An agent framework with explicit function calling
 - Validated structured output and guardrails
@@ -187,10 +204,10 @@ engineering:
 | `docs/trec_hybrid_retrieval.md` | The search stage and the keyword-decomposition result |
 | `docs/trec_lora_rank.md` | Benchmark-standard measures for every approach tried, both years |
 | `docs/trec_model_currency.md` | How the system would stay current; distillation designed, not run; MLflow |
-| `docs/trec_mlflow_runs.csv` | Long table of the eleven reported runs: one row per run-and-metric, with intervals |
+| `docs/trec_mlflow_runs.csv` | Long table of the twelve reported runs: one row per run-and-metric, with intervals |
 | `docs/trec_lora_elig.md` | The fine-tuning work, including a collapsed first attempt and its diagnosis |
 | `docs/trec_frontier_elig.md` | GPT-5.4 as a measured baseline |
-| `docs/trec_reader.md` | Rule-by-rule reader: 13/50 was schema failure, not accuracy; re-probe 50/50 |
+| `docs/trec_reader.md` | Rule-by-rule reader on the 2022 top 25: mostly uncertain, AUROC 0.59, D+E 3.75% |
 | `docs/trec_shortlist_diagnosis.md`, `docs/trec_shortlist_fix.md` | What the shortlist contains, and three approaches that did not help |
 | `THRESHOLDS.md` | Each run's deciding numbers, committed **before** that run |
 | `DECISIONS.md` | Every decision, its options, and what evidence would reverse it |

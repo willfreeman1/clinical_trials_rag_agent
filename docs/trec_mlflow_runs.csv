@@ -31,6 +31,16 @@ trec_ranking,ranker_2021_cutoff25_prereg,primary_delta_p10,0.108,0.068,0.148,cut
 trec_ranking,ranker_2021_cutoff25_prereg,tie,15,,,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
 trec_ranking,ranker_2021_cutoff25_prereg,topical_higher,13,,,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
 trec_ranking,ranker_2021_cutoff25_prereg,usd,12.4,,,cutoff=25; year=2021; patients=75; adapter_seed=20261007; no_sweep=True; primary=paired_p10_cascade25_minus_topical,ed41185,true
+trec_reader,reader_2022_top25,adapter_1v2_mean,0.779,,,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
+trec_reader,reader_2022_top25,auroc_any_hard_fail,0.5945,0.5508,0.6352,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
+trec_reader,reader_2022_top25,auroc_net_balance,0.5835,0.5367,0.6297,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
+trec_reader,reader_2022_top25,coerced_rules,1009,,,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
+trec_reader,reader_2022_top25,fabrication_d_plus_e,0.0375,,,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
+trec_reader,reader_2022_top25,generations_per_trial,1.101,,,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
+trec_reader,reader_2022_top25,hours,4.3,,,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
+trec_reader,reader_2022_top25,offered_quotes,1252,,,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
+trec_reader,reader_2022_top25,usd,7.7,,,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
+trec_reader,reader_2022_top25,valid_rate,0.992,,,model=Qwen/Qwen2.5-7B-Instruct; cutoff=25; year=2022; patients=50; aggregation=any_hard_fail_and_net_balance; n_pairs=1250,89a2bf4,false
 trec_retrieval,keyword_hybrid_6pct,eligible_recall_6pct_2021,0.916,,,"cutoff=6pct; year=2021,2022,2023; collection=judged_pool; fusion=RRF",613635e,true
 trec_retrieval,keyword_hybrid_6pct,eligible_recall_6pct_2022,0.914,,,"cutoff=6pct; year=2021,2022,2023; collection=judged_pool; fusion=RRF",613635e,true
 trec_retrieval,keyword_hybrid_6pct,eligible_recall_6pct_2023,0.654,,,"cutoff=6pct; year=2021,2022,2023; collection=judged_pool; fusion=RRF",613635e,true

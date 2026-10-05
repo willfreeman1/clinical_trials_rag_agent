@@ -4,7 +4,7 @@ Long format: one row per run-and-metric. Interval bounds sit in
 lo / hi on the same row rather than as extra columns. Config that
 distinguishes the run rides along so a spreadsheet stays dense.
 
-These eleven runs are the ones that produced reported results, not
+These twelve runs are the ones that produced reported results, not
 every experiment the project ran.
 
 Reads the local file store (mlruns/). Does not rescore. Does not
