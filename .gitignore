@@ -7,3 +7,23 @@ __pycache__/
 data/
 mlruns/
 mlartifacts/
+
+# Local lab notebook. On disk here; not published.
+CONTEXT.md
+DECISIONS.md
+HANDOFF.md
+SPIKE_2_PLAN.md
+report.md
+requirements.txt
+fake_patients_vague.md
+questions_design.json
+questions_oracle_draw.json
+sparse_configs.json
+sparse_design.json
+step8_design.json
+step9_consequential_ids.json
+therapy_hierarchy.json
+scripts/
+docs/papers/
+docs/*.md
+docs/*.csv
