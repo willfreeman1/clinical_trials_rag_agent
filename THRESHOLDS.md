@@ -2551,3 +2551,29 @@ and the share of rules a TREC note can settle.
 
 The system does not say a patient qualifies.
 
+### Amendment — 4 Oct 2026, GPT-5.4 vs 0.779 on the same pairs
+
+**Committed before any new GPT call.** No pass/fail.
+
+Question: on the same 2022 judged joinable-versus-excluded
+pairs as the 0.779 adapter mean, what is GPT-5.4's AUROC?
+
+- Pairs: `scripts/trec_lora_eval_pairs.json` `test_2022`,
+  copied not redrawn. 6,249 pairs, 2,635 excluded, 3,614
+  joinable, all 50 patients.
+- Prompt: `v1_ELIG_SYSTEM_DIGIT` only. Not the TREC-label
+  prompt.
+- Score: expected digit from token logprobs. Fallback: the
+  typed digit.
+- Reuse stored v1 scores from the 411-pair run when the
+  topic and trial match.
+- Interval: patient bootstrap, 5,000 draws, seed 20261004.
+- Spend cap $20. Expected $12–15. Stop and ask if the cap
+  is hit.
+- Not 2021, not 2023, not a first-page score, not overall
+  accuracy.
+
+Compare beside 0.779 (mean of seeds 20261003 / 06 / 07) and
+untrained Qwen 0.749. This is not a decision that a patient
+qualifies.
+
