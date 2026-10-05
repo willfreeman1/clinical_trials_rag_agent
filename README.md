@@ -178,7 +178,7 @@ disease relevance.
 | | Graded NDCG@10 | Precision@10 |
 |---|---|---|
 | 2021, 75 patients | 0.657 (0.617–0.696) | 0.519 (0.468–0.567) |
-| 2022, 50 patients | 0.662 (0.585–0.734) | 0.570 (0.498–0.646) |
+| 2022, 50 patients | 0.662 (0.585–0.734) | 0.570 (0.494–0.642) |
 | `gpt-4o-mini`, 2021, same shortlist | 0.568 (0.522–0.612) | 0.384 (0.331–0.437) |
 
 Ranges are 95% intervals from resampling patients — not pairs, since pairs from
