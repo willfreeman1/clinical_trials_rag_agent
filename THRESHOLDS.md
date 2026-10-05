@@ -25,6 +25,8 @@ later commits that recorded the results shows the ordering.
 Some later runs were locked in machine-readable form instead of prose, in
 `locks/*_config.json` — the model, the random seeds, the exact patient and pair
 lists, and what was deliberately out of scope. Same convention, same ordering.
+They were written during development and name a couple of working data files that
+are not published here; the settings each one fixes are self-contained.
 
 **This header was added after the fact for readability. Nothing below it has been
 changed.**
