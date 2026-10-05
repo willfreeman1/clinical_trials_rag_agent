@@ -20,10 +20,10 @@ git log --follow --oneline THRESHOLDS.md
 
 Every commit message here begins with a word like *lock*, *commit* or *record*,
 and names what was being fixed in advance. Comparing those dates against the
-commits that added the corresponding results in `docs/` shows the ordering.
+later commits that recorded the results shows the ordering.
 
 Some later runs were locked in machine-readable form instead of prose, in
-`scripts/*_config.json` — the model, the random seeds, the exact patient and pair
+`locks/*_config.json` — the model, the random seeds, the exact patient and pair
 lists, and what was deliberately out of scope. Same convention, same ordering.
 
 **This header was added after the fact for readability. Nothing below it has been
@@ -41,10 +41,10 @@ changed.**
 | The eligibility prompt rewrite that made things worse | line 2219 |
 | Adapter against the default ranker, 50 held-out patients | line 2377 |
 | The rule-by-rule reader — 7.6% of rules settled, 3.75% fabricated quotes | line 2419 |
-| Fine-tuning settings, seeds and training pairs | `scripts/trec_lora_config.json` |
-| The pre-registered cutoff replication on a year never used in the sweep | `scripts/trec_lora_rank_2021_config.json` |
-| GPT-5.4 against the fine-tuned model on identical pairs | `scripts/trec_gpt_vs_adapter_config.json` |
-| The reader's design, scope and exclusions | `scripts/trec_reader_config.json` |
+| Fine-tuning settings, seeds and training pairs | `locks/trec_lora_config.json` |
+| The pre-registered cutoff replication on a year never used in the sweep | `locks/trec_lora_rank_2021_config.json` |
+| GPT-5.4 against the fine-tuned model on identical pairs | `locks/trec_gpt_vs_adapter_config.json` |
+| The reader's design, scope and exclusions | `locks/trec_reader_config.json` |
 
 Sections before line 1545 belong to an earlier phase of the project on a
 lung-cancer slice of the registry. That work produced the first measurement of

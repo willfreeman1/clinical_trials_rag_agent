@@ -1,0 +1,22 @@
+{
+  "splits_file": "scripts/trec_lora_splits.json",
+  "sample_seed": 20261001,
+  "pair_seed": 20261003,
+  "prompt": "v1_ELIG_SYSTEM_DIGIT",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "score": "logit2_minus_logit1",
+  "fallback_score": "expected_digit",
+  "mix": {"2v1": 0.5, "2v0": 0.25, "1v0": 0.25},
+  "comparisons_per_patient": 80,
+  "lora_r": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+  "lr": 1e-5,
+  "epochs": 1,
+  "max_len": 3072,
+  "grad_accum": 8,
+  "max_grad_norm": 1.0,
+  "weight_decay": 0.01,
+  "note": "Pairwise logistic loss on the raw score for token 2 minus token 1, before softmax. Half the comparisons are joinable vs excluded; the rest are those two against not-relevant. Learning rate 1e-5. Probe the 15 tuning patients at the start and at 25%/50%. Stop if the typical win-minus-lose gap collapses toward zero, or if answers bunch. Write the loss log after every logged step and at each probe. 2023 is not used. This is not a decision that a patient qualifies."
+}
