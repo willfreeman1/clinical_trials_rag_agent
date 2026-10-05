@@ -94,4 +94,8 @@ tests passed inside the container.
 build. Replay is named on the page. The three notes are the
 only patients; there is no free-text box.
 
+The looping GIF at the top of `README.md` is captured by
+`scripts/capture_demo_gif.py` (Playwright plus Pillow) while the
+demo is already running. It is not a screen recording.
+
 The system does not say a patient qualifies.

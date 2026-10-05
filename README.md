@@ -1,5 +1,11 @@
 # Clinical-trial eligibility retrieval
 
+![A published TREC note, ranked trials, and one quoted eligibility rule](docs/images/demo.gif)
+
+Search and ranking run on the page. The **replay** badge means the
+reader's replies are stored answers, not a live model call. The system
+does not say a patient qualifies.
+
 Given a short description of a patient, find the clinical trials that patient
 might be able to join — and show a human the specific eligibility rules they
 need to check.
