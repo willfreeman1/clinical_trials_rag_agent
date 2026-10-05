@@ -34,7 +34,8 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "images" / "demo.gif"
 PAPER = (250, 250, 249)
 WIDTH = 1000
-HEIGHT = 1200
+HEIGHT = 650
+ELEMENT_PAD = 28
 PATIENT_ID = "8"
 NCT_ID = "NCT02216994"
 QUOTE_RULE = "Age are from newborn to 3 years old"
@@ -74,19 +75,16 @@ def require_demo(url: str) -> None:
         die(f"unexpected /health body: {body[:200]}")
 
 
-def fit(im: Image.Image, width: int, height: int) -> Image.Image:
+def fill(im: Image.Image, width: int, height: int) -> Image.Image:
+    """Scale so the crop covers the canvas. No letterbox."""
     im = im.convert("RGB")
-    scale = width / im.width
+    scale = max(width / im.width, height / im.height)
+    new_w = max(1, round(im.width * scale))
     new_h = max(1, round(im.height * scale))
-    resized = im.resize((width, new_h), Image.Resampling.LANCZOS)
-    canvas = Image.new("RGB", (width, height), PAPER)
-    if new_h >= height:
-        top = (new_h - height) // 2
-        resized = resized.crop((0, top, width, top + height))
-        canvas.paste(resized, (0, 0))
-    else:
-        canvas.paste(resized, (0, (height - new_h) // 2))
-    return canvas
+    resized = im.resize((new_w, new_h), Image.Resampling.LANCZOS)
+    left = max(0, (new_w - width) // 2)
+    top = max(0, (new_h - height) // 2)
+    return resized.crop((left, top, left + width, top + height))
 
 
 def assemble(frames: list[tuple[bytes, int]], dest: Path) -> None:
@@ -94,7 +92,7 @@ def assemble(frames: list[tuple[bytes, int]], dest: Path) -> None:
     durations: list[int] = []
     for raw, hold in frames:
         im = Image.open(io.BytesIO(raw))
-        images.append(fit(im, WIDTH, HEIGHT).quantize(colors=64, method=Image.Quantize.MEDIANCUT))
+        images.append(fill(im, WIDTH, HEIGHT).quantize(colors=64, method=Image.Quantize.MEDIANCUT))
         durations.append(hold)
     dest.parent.mkdir(parents=True, exist_ok=True)
     images[0].save(
@@ -112,10 +110,53 @@ async def viewport_png(page) -> bytes:
     return await page.screenshot(type="png", scale="css")
 
 
+async def scroll_to_top(loc, gap: int = 16) -> None:
+    await loc.evaluate(
+        """(el, gap) => {
+            const y = el.getBoundingClientRect().top + window.scrollY - gap;
+            window.scrollTo(0, Math.max(0, y));
+        }""",
+        gap,
+    )
+
+
+def _grow_to_aspect(x: float, y: float, w: float, h: float, aspect: float) -> tuple[float, float, float, float]:
+    if w / h > aspect:
+        new_h = w / aspect
+        y -= (new_h - h) / 2
+        h = new_h
+    else:
+        new_w = h * aspect
+        x -= (new_w - w) / 2
+        w = new_w
+    return x, y, w, h
+
+
 async def element_png(page, text: str) -> bytes:
     loc = page.locator("article.rule").filter(has_text=text)
     await loc.first.scroll_into_view_if_needed()
-    return await loc.first.screenshot(type="png")
+    box = await loc.first.bounding_box()
+    if not box:
+        raise RuntimeError(f"no box for rule: {text}")
+    x = box["x"] - ELEMENT_PAD
+    y = box["y"] - ELEMENT_PAD
+    w = box["width"] + 2 * ELEMENT_PAD
+    h = box["height"] + 2 * ELEMENT_PAD
+    x, y, w, h = _grow_to_aspect(x, y, w, h, WIDTH / HEIGHT)
+    vw, vh = WIDTH, HEIGHT
+    x = max(0, x)
+    y = max(0, y)
+    if x + w > vw:
+        x = max(0, vw - w)
+        w = min(w, vw)
+    if y + h > vh:
+        y = max(0, vh - h)
+        h = min(h, vh)
+    return await page.screenshot(
+        type="png",
+        scale="css",
+        clip={"x": x, "y": y, "width": w, "height": h},
+    )
 
 
 async def capture(url: str) -> list[tuple[bytes, int]]:
@@ -138,24 +179,26 @@ async def capture(url: str) -> list[tuple[bytes, int]]:
 
         await page.locator(f'#patients button[data-id="{PATIENT_ID}"]').click()
         await page.locator("#note").wait_for(state="visible")
+        await scroll_to_top(page.locator(f'#patients button[data-id="{PATIENT_ID}"]'))
         frames.append((await viewport_png(page), HOLDS["page"]))
 
         release.set()
         await page.locator("#results button.row").first.wait_for()
         await page.locator("#mode").filter(has_text="replay").wait_for()
+        ranked = page.locator("h2").filter(has_text="Ranked trials")
+        await scroll_to_top(ranked)
         frames.append((await viewport_png(page), HOLDS["ranked"]))
 
         row = page.locator("#results button.row").filter(has_text=NCT_ID)
         await row.click()
         await page.locator("article.rule").first.wait_for()
-        await row.scroll_into_view_if_needed()
+        await scroll_to_top(ranked)
         frames.append((await viewport_png(page), HOLDS["expanded"]))
 
         frames.append((await element_png(page, QUOTE_RULE), HOLDS["quote"]))
         frames.append((await element_png(page, NEI_RULE), HOLDS["nei"]))
 
-        await page.evaluate("window.scrollTo(0, 0)")
-        await page.locator("#disclaimer").wait_for()
+        await scroll_to_top(page.locator("#disclaimer"))
         frames.append((await viewport_png(page), HOLDS["disclaimer"]))
         await browser.close()
     return frames
