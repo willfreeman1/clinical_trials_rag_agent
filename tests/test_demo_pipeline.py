@@ -32,6 +32,12 @@ class PipelineTests(unittest.TestCase):
         quote_rows = [rule for r in read_ok for rule in r["reader"]["rules"] if rule.get("quote")]
         if quote_rows:
             self.assertIn(quote_rows[0]["quote_bucket"], ("ok", "A", "B", "C", "D", "E"))
+        first = out["results"][0]
+        self.assertTrue(first.get("criteria"))
+        self.assertTrue(first["criteria"][0].get("text"))
+        self.assertIn(first["criteria"][0]["section"], ("inclusion", "exclusion", "unsplit"))
+        if first.get("reader"):
+            self.assertTrue(first["reader"]["rules"][0].get("text"))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clinical-trial eligibility retrieval</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <header>
+      <p class="kicker">Portfolio demo · TREC 2022 notes · 423 trials</p>
+      <h1>Clinical-trial eligibility retrieval</h1>
+      <p id="disclaimer" class="disclaimer">
+        This system does not say a patient qualifies. It returns ranked
+        candidates and the criterion text a person must check.
+      </p>
+      <p>
+        <span id="mode" class="badge">loading</span>
+      </p>
+    </header>
+
+    <main class="layout">
+      <div class="primary">
+        <section>
+          <h2>Published notes</h2>
+          <p class="hint">Three descriptions from a public research benchmark. Pick one.</p>
+          <div id="patients" class="cards"></div>
+          <article id="note" class="note" hidden></article>
+        </section>
+
+        <section>
+          <h2>Ranked trials</h2>
+          <p id="status" class="hint">Pick a note to run search and ranking.</p>
+          <ol id="results" class="results"></ol>
+        </section>
+      </div>
+
+      <aside id="detail" class="detail">
+        <h2 id="detail-heading">Requirements</h2>
+        <p id="detail-meta" class="hint">Click a trial to see its written inclusion and exclusion rules.</p>
+        <div id="detail-body"></div>
+      </aside>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

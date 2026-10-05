@@ -87,4 +87,11 @@ joinable, six rules, quote bucket `ok` (anosmia / low GnRH
 from the note). Second hit expert-excluded. The existing 34
 tests passed inside the container.
 
+## Page
+
+`GET /` serves one HTML page from the same container. It calls
+`/v1/patients` and `/v1/match`. There is no separate frontend
+build. Replay is named on the page. The three notes are the
+only patients; there is no free-text box.
+
 The system does not say a patient qualifies.

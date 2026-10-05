@@ -148,6 +148,7 @@ def match_patient(
             read = None
         gold = catalog.qrels.get((patient.patient_id, nct))
         agg = read.aggregates if read else aggregate([], rules)
+        split_by_id = {rule.rule_id: rule for rule in rules}
         results.append(
             {
                 "nct_id": nct,
@@ -162,6 +163,14 @@ def match_patient(
                 "topical_score": catalog.scores.get((patient.patient_id, nct)),
                 "expert_verdict": LABEL_NAME.get(gold) if gold is not None else None,
                 "expert_label": gold,
+                "criteria": [
+                    {
+                        "rule_id": rule.rule_id,
+                        "section": rule.section,
+                        "text": rule.text,
+                    }
+                    for rule in rules
+                ],
                 "reader": None
                 if read is None
                 else {
@@ -172,6 +181,8 @@ def match_patient(
                     "rules": [
                         {
                             "rule_id": r.rule_id,
+                            "section": split_by_id[r.rule_id].section if r.rule_id in split_by_id else "unsplit",
+                            "text": split_by_id[r.rule_id].text if r.rule_id in split_by_id else "",
                             "verdict": r.verdict,
                             "explanation": r.explanation,
                             "quote": r.quote,

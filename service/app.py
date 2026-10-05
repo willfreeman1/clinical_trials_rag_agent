@@ -12,7 +12,7 @@ import sys
 import time
 from pathlib import Path
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -24,7 +24,8 @@ from service.pipeline import DISCLAIMER, match_patient, resolve_patient  # noqa:
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("demo")
 
-app = Flask(__name__)
+STATIC = Path(__file__).resolve().parent / "static"
+app = Flask(__name__, static_folder=str(STATIC), static_url_path="/static")
 CATALOG = None
 COMPLETE = None
 MODEL_MODE = "replay"
@@ -45,6 +46,11 @@ def boot() -> None:
     else:
         DB_OK = False
     log.info("ready mode=%s patients=%s trials=%s db=%s", MODEL_MODE, len(CATALOG.patients), len(CATALOG.trials), DB_OK)
+
+
+@app.get("/")
+def index():
+    return send_from_directory(app.static_folder, "index.html")
 
 
 @app.get("/health")
@@ -68,6 +74,8 @@ def patients():
         rows.append(
             {
                 "patient_id": p.patient_id,
+                "summary": p.summary,
+                "note": p.note,
                 "first_line": (p.note.split("\n")[0])[:160],
             }
         )
