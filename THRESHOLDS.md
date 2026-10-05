@@ -35,20 +35,21 @@ changed.**
 
 | Result | Locked in |
 |---|---|
-| Search keeping 91.6% / 91.4% of eligible trials at 6% of the collection | *TREC hybrid retrieval*, line 1545 |
-| Re-ranking the shortlist, including two cross-encoders that failed | *TREC reranking the shortlist*, line 1696 |
-| What the shortlist actually contains, and three fixes that went nowhere | line 1796 onward |
-| The cheap disease-relevance pass | *cheap topical pass*, line 1932 |
-| Whether a re-ordering stage earns its place | line 2029 |
-| The eligibility prompt rewrite that made things worse | line 2219 |
-| Adapter against the default ranker, 50 held-out patients | line 2377 |
-| The rule-by-rule reader — 7.6% of rules settled, 3.75% fabricated quotes | line 2419 |
+| Search keeping 91.6% / 91.4% of eligible trials at 6% of the collection | *Spike 2 — TREC hybrid retrieval, stages 1–2 only (before any run)* |
+| Re-ranking the shortlist, including two cross-encoders that failed | *Spike 2 — TREC reranking the shortlist (2021/2022 only)* |
+| What the shortlist actually contains, and three fixes that went nowhere | *Spike 2 — what is in the TREC shortlist (2021/2022 only)* and *Spike 2 — weighted fusion and section ranking (2021/2022 only)* |
+| The cheap disease-relevance pass | *Spike 2 — cheap topical pass on the shortlist (2021/2022 only)* |
+| Whether a re-ordering stage earns its place | *Spike 2 — does a reordering stage earn its place? (2021/2022 only)* |
+| The eligibility prompt rewrite that made things worse | *Spike 2 — eligibility prompt v2 on the 30-patient sample (2021/2022 only)* |
+| Adapter against the default ranker, 50 held-out patients | *Adapter vs topical slice as the default ranker — 2022, 50 patients* |
+| The rule-by-rule reader — 7.6% of rules settled, 3.75% fabricated quotes | *Rule-by-rule reader — 2022, top 25, no pass/fail* |
 | Fine-tuning settings, seeds and training pairs | `locks/trec_lora_config.json` |
 | The pre-registered cutoff replication on a year never used in the sweep | `locks/trec_lora_rank_2021_config.json` |
 | GPT-5.4 against the fine-tuned model on identical pairs | `locks/trec_gpt_vs_adapter_config.json` |
 | The reader's design, scope and exclusions | `locks/trec_reader_config.json` |
 
-Sections before line 1545 belong to an earlier phase of the project on a
+Sections before *Spike 2 — TREC hybrid retrieval, stages 1–2 only (before any run)*
+belong to an earlier phase of the project on a
 lung-cancer slice of the registry. That work produced the first measurement of
 how often a model invents a supporting quote, but it is not the work the README
 describes, and nothing in it is needed to follow the published results.
@@ -1492,70 +1493,6 @@ clears. Cost it then.
 
 ---
 
-## Spike 2 — UMLS corrections (2026-09-30, before the lung API run)
-
-**Committed before any UMLS REST call and before any Metathesaurus
-download.** The brief is not a wholesale swap of the six-name matcher.
-
-### Do not download the full Metathesaurus unless smaller options fail
-
-Order: (1) scispaCy bundled subset — only if it has concept is-a;
-(2) UMLS REST API for the lung-slice gate; (3) standalone RxNorm +
-MeSH if the API test passes and we need a local index; (4) SNOMED CT
-only if those two are insufficient; (5) full Metathesaurus +
-MetamorphoSys last. External disk is fine for raw files. Query a
-small SQLite index on the internal drive, not the external disk.
-
-### scispaCy check (do this first)
-
-If the bundled KB has no concept-to-concept is-a, it cannot do
-containment and is unused. The Semantic Network type tree is not a
-substitute. Do not install it as a hierarchy.
-
-### Gene symbols stay as they are
-
-Do **not** put `driver_mutation` through UMLS. It is 99.9% recall on
-plain gene-symbol / closed-name matching and is the strongest filter.
-UMLS coverage of specific variants (EGFR L858R, ALK fusion, KRAS G12C)
-is thin. Trading the best component for the weakest is forbidden.
-UMLS is for diseases, comorbidities, drugs and drug classes, and lab
-tests — the parts a hand-written list cannot enumerate.
-
-### Lung-slice gate still holds, via the API
-
-Same 20 patients, 1,307 trials, same answer key. Mean recall ≥84%
-(within 10 points of 93.9%). False pickup ≤5%. Report per fact.
-Markers reported from the existing matcher, not from UMLS.
-
-A few thousand lookups. No bulk download. Lookup miss → keep the
-literal phrase and match on the string (degrade to current behaviour;
-do not drop the rule). Report the miss rate.
-
-### TREC assignment is not a frontier-model bill
-
-Do not spend ~$5,100 (judged pool) or ~$40,000 (snapshot) on gpt-5.4.
-Cheap hosted (~$1,500) is still too much. Shrinking to 30 of 125
-topics harms the scoreboard. Keyword-filter-then-assign is
-chicken-and-egg. **Self-hosted batch on rented GPU, once, then
-tear down** is the affordable path and is the resume gap that now
-has a real job. Do not start that job until the lung API gate
-clears. Cost it then.
-
-### Still do not
-
-- Let the model emit CUIs.
-- Assign more than one subject per rule.
-- Change the direction rule.
-- Replace gene-symbol matching.
-- Start Steps 6 or 7.
-- Start TREC-scale assignment.
-
-
-
-
-
----
-
 ## Spike 2 — UMLS coverage of Step 1 phrases (before lookup)
 
 **Committed 2026-09-30, before any of the 5,578 Step 1 phrases
@@ -2344,85 +2281,6 @@ that. Copy scores off; terminate via the API.
 
 ---
 
-## Spike 2 — eligibility prompt v2 on the 30-patient sample (2021/2022 only)
-
-**Committed 2026-10-02, before any v2 eligibility score.**
-2023 stays stopped. Same shortlist, nothing discarded. This is a
-prompt-and-output-shape change on the **same 30 patients** (seed
-**20261001**) as the first eligibility arm. It is not a matched
-model comparison: the question, the labels, and the written check
-all changed. The thing we are allowed to ask is whether **true
-positives** went up — joinable trials (human label 2) higher in
-the list, especially on the first page.
-
-### What changed
-
-Same model (`Qwen/Qwen2.5-7B-Instruct`), same full eligibility
-text, same raw patient note. New instructions: read the whole
-block; hunt timing and specifics; written CHECK then a verdict
-word. Verdict is `ineligible` / `eligible` / `unsure`. Unsure
-**only** when a fact the trial's stated criteria require is
-missing from the note. If the fact is in the note, it must pick
-eligible or ineligible.
-
-Ranking number is **P(eligible)** from the three verdict tokens
-after `VERDICT:`, not a typed decimal and not a 0–3 digit. The
-written word is reported for accuracy; it does not veto ranking.
-
-Do not reuse the old topical prompt. Do not reuse the old
-"if unsure, choose 2" line.
-
-### What is counted
-
-Same 30 patients, full shortlist depth. Both years.
-
-- Eligible hits and macro P@10 / P@20 vs the stored
-  `elig_full_cont` arm on **this same sample**
-- Equivalent depth at 20, 200, 500 (baseline calibration row)
-- 10-in-20 count
-- Verdict mix: eligible / ineligible / unsure
-- Among judged pairs: share of label 2 called eligible (true
-  positive rate of the word); share of label 1 called eligible;
-  label-1-vs-2 AUROC on P(eligible)
-- Machine time and dollars
-
-Accuracy of the word does not veto a ranking lift. Wilson on
-n=30.
-
-### Thresholds — read after this run
-
-Compare to stored `qwen_elig_full_cont` on the same 30
-(2021 P@20 **48.7%**, 2022 P@20 **58.0%**; 2021 10-in-20 **7/15**).
-
-| Result | Decision |
-|---|---|
-| 2021 P@20 is **≥ 2 points** above 48.7% (so **≥ 50.7%**), and 2022 is not more than 2 points worse than 58.0% | The prompt helped the first page. Keep v2 as the eligibility prompt |
-| 2021 P@20 is **≤ 48.7%** and 10-in-20 does not rise | The prompt did not help true positives on the page. Do not replace v1 on this evidence |
-| Split (one year up, one down, or only 10-in-20 moves) | Report. Do not replace v1 |
-| Unsure is **> 50%** of judged disease-relevant (label 1+2) pairs | The model is still dumping. Say so even if P@20 rises |
-| P(eligible) AUROC on judged 1 vs 2 is **≥ 0.80** (v1 continuous was **0.745**) | Say loudly: the 1-vs-2 gap moved |
-
-Equivalent depth at 200 is reported. It is not the replace-gate
-for this run: we are asking about true positives on the page.
-
-### Cost
-
-Written CHECK on 30 × ~1,570 is slower than a single digit.
-Budget about 4–10 hours on H100/A100, about $8–20. Prefer H100
-then A100. Stop and ask if it looks like tens of dollars over
-that. Copy scores off; terminate via the API.
-
-### Do not
-
-- Touch 2023.
-- Discard a trial.
-- Start Run 3 from this commit.
-- Start the per-criterion reader.
-- Leave a paid GPU running. Terminate via the API.
-- Say a patient qualifies.
-
----
-
 ## Adapter vs topical slice as the default ranker — 2022, 50 patients
 
 **Committed before any full-shortlist adapter score.** No pass/fail
@@ -2459,7 +2317,7 @@ patient-resampled intervals on P@10 and P@20; machine time and
 dollars.
 
 A rate probe on patients 1 and 2 is scored first. The full 50
-starts only if the projection stays near or under about \.
+starts only if the projection stays near or under about $25.
 
 The system does not say a patient qualifies.
 
@@ -2625,4 +2483,3 @@ pairs as the 0.779 adapter mean, what is GPT-5.4's AUROC?
 Compare beside 0.779 (mean of seeds 20261003 / 06 / 07) and
 untrained Qwen 0.749. This is not a decision that a patient
 qualifies.
-
