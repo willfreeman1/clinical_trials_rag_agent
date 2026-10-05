@@ -43,7 +43,10 @@
   },
   "aggregation": {
     "any_hard_fail": "Excluded if any exclusion rule is met or any inclusion rule is not_met. Joinable only if every inclusion is met, no exclusion fires, and nothing is unsettled. Otherwise uncertain.",
-    "net_balance": "Excluded if any exclusion fires, or if fewer than half of the settled inclusions are met. Joinable if at least half of settled inclusions are met and nothing is unsettled. Otherwise uncertain."
+    "net_balance": "Excluded if any exclusion fires, or if fewer than half of the settled inclusions are met. Joinable if at least half of settled inclusions are met and nothing is unsettled. Otherwise uncertain.",
+    "compatible_unless_contradicted": "TREC assessors' rule. Excluded if an exclusion fires or an inclusion is positively failed. Otherwise compatible. Unsettled rules get no vote.",
+    "unsplit": "u_not is a contradiction; u_met is a confirmation. Same as any_hard_fail / net_balance.",
+    "score_compatible": "Contradiction: min(0.05 * confirms/n / contradictions, 0.05). No contradiction: 0.50 + 0.50 * confirms/n. confirms = inc_met + exc_not + u_met. contradictions = exc_met + inc_not + u_not."
   },
   "quote_buckets": {
     "ok": "Exact or whitespace-normalised span in the named source",

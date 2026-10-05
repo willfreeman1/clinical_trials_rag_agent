@@ -2522,3 +2522,32 @@ projection is under about $25, run the 1,250. If not, stop.
 
 The system does not say a patient qualifies.
 
+### Amendment — 4 Oct 2026, compatible-unless-contradicted
+
+The 0.59 AUROC used an aggregation stricter than the TREC 2022
+assessors. They judged compatibility, not proof: a sufficient
+amount of information may suggest eligibility, and the notes are
+deliberately 5 to 10 sentences. **Committed before any new
+combination of the stored per-rule verdicts.** No new model
+calls. No pass/fail.
+
+Third rule, reported beside the first two:
+
+- **compatible_unless_contradicted.** Excluded if any exclusion
+  fires or any inclusion is positively failed. Otherwise
+  compatible. Unsettled rules get no vote. Silence never
+  excludes.
+- Unsplit rules: `u_not` is a contradiction, `u_met` is a
+  confirmation, same as the first two rules. Five trials (0.4%)
+  had exclusion language inside an unsplit block.
+- Score, locked: one contradiction puts the trial at most 0.05
+  (divided by the number of contradictions; confirms add a
+  little inside that band). No contradiction: 0.50 + 0.50 ×
+  (confirms / n). `not_enough_information` is zero either way.
+
+Report AUROC with a patient interval, the verdict counts,
+precision with any agreement (compatible is a weaker claim),
+and the share of rules a TREC note can settle.
+
+The system does not say a patient qualifies.
+

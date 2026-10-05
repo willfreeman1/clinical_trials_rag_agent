@@ -1,7 +1,7 @@
-"""Two ways to turn per-rule verdicts into one trial-level call.
+"""Three ways to turn per-rule verdicts into one trial-level call.
 
-Polarity is in reader.schema. Neither rule says the patient
-qualifies. Both produce a label a coordinator can disagree with,
+Polarity is in reader.schema. None of the rules says the patient
+qualifies. Each produces a label a coordinator can disagree with,
 and a number that can be ranked against the 0.779 scorer.
 
 any_hard_fail: one failed inclusion, or one firing exclusion, and
@@ -13,7 +13,17 @@ the share of settled inclusions that were met is the score. Below
 half is excluded; half or more with leftover unknowns is uncertain;
 half or more with none unknown is joinable.
 
-If the two rules disagree on the headline, that is the finding.
+compatible_unless_contradicted: the TREC assessors' rule. A
+sufficient amount of information may suggest eligibility; not
+every fact in the note need be covered. Excluded if an exclusion
+fires or an inclusion is positively failed. Otherwise compatible.
+Unsettled rules get no vote. Silence never excludes.
+
+Unsplit rules are treated as the first two rules treat them:
+u_not is a contradiction (like a failed inclusion); u_met is a
+confirmation (like a met inclusion).
+
+If the rules disagree on the headline, that is the finding.
 
 The system does not say a patient qualifies.
 """
@@ -93,6 +103,38 @@ def score_net(c: dict[str, int]) -> float:
     return (raw / n + 1.0) / 2.0
 
 
+def _contradictions(c: dict[str, int]) -> int:
+    return c["exc_met"] + c["inc_not"] + c["u_not"]
+
+
+def _confirms(c: dict[str, int]) -> int:
+    return c["inc_met"] + c["exc_not"] + c["u_met"]
+
+
+def compatible_unless_contradicted_label(c: dict[str, int]) -> str:
+    if _contradictions(c):
+        return "excluded"
+    return "compatible"
+
+
+def score_compatible(c: dict[str, int]) -> float:
+    """Contradictions dominate; confirms break ties; silence is neutral.
+
+    Locked weights, committed before any score:
+    - One contradiction puts the trial in the bottom band
+      (at most 0.05, divided by the number of contradictions).
+    - Confirms add a little lift inside that band, and the only
+      ranking signal among compatible trials (0.50 to 1.00).
+    - not_enough_information adds nothing either way.
+    """
+    n = max(c["n"], 1)
+    contradictions = _contradictions(c)
+    confirms = _confirms(c)
+    if contradictions:
+        return max(0.0, 0.05 * (confirms / n) / contradictions)
+    return 0.5 + 0.5 * (confirms / n)
+
+
 def aggregate(rows: list[RuleJudgement], rules: list[Rule]) -> dict:
     rule_by_id = {r.rule_id: r for r in rules}
     c = _counts(rows, rule_by_id)
@@ -100,6 +142,8 @@ def aggregate(rows: list[RuleJudgement], rules: list[Rule]) -> dict:
         "counts": c,
         "any_hard_fail": any_hard_fail_label(c),
         "net_balance": net_balance_label(c),
+        "compatible_unless_contradicted": compatible_unless_contradicted_label(c),
         "score_any_hard_fail": round(score_any_hard_fail(c), 6),
         "score_net": round(score_net(c), 6),
+        "score_compatible": round(score_compatible(c), 6),
     }
