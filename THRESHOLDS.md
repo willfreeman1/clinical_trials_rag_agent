@@ -6,6 +6,53 @@ said plainly in the memo — it does not get edited here after results exist.
 
 ---
 
+## How to read this file
+
+This is the project's record of deciding what would count as success **before**
+seeing any result. Each section was written and committed first; the measurement
+it describes came afterwards, in a later commit.
+
+**Verifying that, rather than taking it on trust:**
+
+```bash
+git log --follow --oneline THRESHOLDS.md
+```
+
+Every commit message here begins with a word like *lock*, *commit* or *record*,
+and names what was being fixed in advance. Comparing those dates against the
+commits that added the corresponding results in `docs/` shows the ordering.
+
+Some later runs were locked in machine-readable form instead of prose, in
+`scripts/*_config.json` — the model, the random seeds, the exact patient and pair
+lists, and what was deliberately out of scope. Same convention, same ordering.
+
+**This header was added after the fact for readability. Nothing below it has been
+changed.**
+
+### Where each published result was pre-registered
+
+| Result | Locked in |
+|---|---|
+| Search keeping 91.6% / 91.4% of eligible trials at 6% of the collection | *TREC hybrid retrieval*, line 1545 |
+| Re-ranking the shortlist, including two cross-encoders that failed | *TREC reranking the shortlist*, line 1696 |
+| What the shortlist actually contains, and three fixes that went nowhere | line 1796 onward |
+| The cheap disease-relevance pass | *cheap topical pass*, line 1932 |
+| Whether a re-ordering stage earns its place | line 2029 |
+| The eligibility prompt rewrite that made things worse | line 2219 |
+| Adapter against the default ranker, 50 held-out patients | line 2377 |
+| The rule-by-rule reader — 7.6% of rules settled, 3.75% fabricated quotes | line 2419 |
+| Fine-tuning settings, seeds and training pairs | `scripts/trec_lora_config.json` |
+| The pre-registered cutoff replication on a year never used in the sweep | `scripts/trec_lora_rank_2021_config.json` |
+| GPT-5.4 against the fine-tuned model on identical pairs | `scripts/trec_gpt_vs_adapter_config.json` |
+| The reader's design, scope and exclusions | `scripts/trec_reader_config.json` |
+
+Sections before line 1545 belong to an earlier phase of the project on a
+lung-cancer slice of the registry. That work produced the first measurement of
+how often a model invents a supporting quote, but it is not the work the README
+describes, and nothing in it is needed to follow the published results.
+
+---
+
 ## Spike 2, Step 1 — concept concentration in the corpus
 
 **Committed 2026-09-28, before any extraction run.** Set by Claude with reasoning
