@@ -8,13 +8,12 @@ data/
 mlruns/
 mlartifacts/
 
-# Local lab notebook. On disk here; not published.
+# Keep restored internal working files local-only.
 CONTEXT.md
 DECISIONS.md
 HANDOFF.md
 SPIKE_2_PLAN.md
 report.md
-requirements.txt
 fake_patients_vague.md
 questions_design.json
 questions_oracle_draw.json
@@ -23,7 +22,40 @@ sparse_design.json
 step8_design.json
 step9_consequential_ids.json
 therapy_hierarchy.json
-scripts/
-docs/papers/
-docs/*.md
-docs/*.csv
+requirements.txt
+
+# Docs: keep only README image assets public; keep working docs local.
+docs/**
+!docs/images/
+!docs/images/**
+
+# Scripts: publish only reproducibility-facing TREC pipeline artifacts.
+scripts/**
+!scripts/trec_hybrid_*.py
+!scripts/trec_rerank_*.py
+!scripts/trec_lora_*.py
+!scripts/trec_score_*.py
+!scripts/trec_reader_*.py
+!scripts/trec_gpt_vs_adapter_*.py
+!scripts/trec_elig_logit.py
+!scripts/trec_precision.py
+!scripts/trec_lora_config.json
+!scripts/trec_lora_rank_config.json
+!scripts/trec_lora_rank_2021_config.json
+!scripts/trec_reader_config.json
+!scripts/trec_gpt_vs_adapter_config.json
+!scripts/trec_lora_splits.json
+!scripts/trec_lora_eval_pairs.json
+!scripts/trec_lora_rank_pairs.json
+!scripts/trec_lora_rank_probe_pairs.json
+!scripts/trec_lora_rank_2021_pairs.json
+!scripts/trec_lora_rank_2021_probe_pairs.json
+!scripts/trec_lora_train_pairs.json
+!scripts/trec_lora_train_pairs_20261006.json
+!scripts/trec_lora_train_pairs_20261007.json
+!scripts/trec_lora_junk_pairs.json
+!scripts/trec_reader_pairs.json
+!scripts/trec_reader_probe_pairs.json
+!scripts/trec_gpt_vs_adapter_pairs.json
+!scripts/keyword_section_check.py
+!scripts/step3_gold.json

@@ -1,0 +1,264 @@
+{
+  "year": 2022,
+  "cutoff": 25,
+  "note": "Rate probe only. Two 2022 patients, top 25 each.",
+  "n_patients": 2,
+  "n_pairs": 50,
+  "n_rules": 600,
+  "topics": {
+    "1": [
+      {
+        "nct_id": "NCT01511588",
+        "label": 2,
+        "n_rules": 6
+      },
+      {
+        "nct_id": "NCT03792477",
+        "label": 2,
+        "n_rules": 26
+      },
+      {
+        "nct_id": "NCT01386567",
+        "label": 1,
+        "n_rules": 5
+      },
+      {
+        "nct_id": "NCT02697188",
+        "label": 2,
+        "n_rules": 12
+      },
+      {
+        "nct_id": "NCT03335254",
+        "label": 2,
+        "n_rules": 22
+      },
+      {
+        "nct_id": "NCT03091296",
+        "label": 2,
+        "n_rules": 24
+      },
+      {
+        "nct_id": "NCT00372008",
+        "label": 2,
+        "n_rules": 2
+      },
+      {
+        "nct_id": "NCT01403116",
+        "label": 2,
+        "n_rules": 17
+      },
+      {
+        "nct_id": "NCT02081300",
+        "label": 2,
+        "n_rules": 19
+      },
+      {
+        "nct_id": "NCT00695110",
+        "label": 2,
+        "n_rules": 6
+      },
+      {
+        "nct_id": "NCT01786473",
+        "label": 2,
+        "n_rules": 15
+      },
+      {
+        "nct_id": "NCT01446042",
+        "label": 2,
+        "n_rules": 36
+      },
+      {
+        "nct_id": "NCT00220298",
+        "label": 2,
+        "n_rules": 2
+      },
+      {
+        "nct_id": "NCT00448955",
+        "label": 2,
+        "n_rules": 4
+      },
+      {
+        "nct_id": "NCT00597051",
+        "label": 2,
+        "n_rules": 4
+      },
+      {
+        "nct_id": "NCT03198728",
+        "label": 2,
+        "n_rules": 45
+      },
+      {
+        "nct_id": "NCT02149264",
+        "label": 2,
+        "n_rules": 6
+      },
+      {
+        "nct_id": "NCT03203681",
+        "label": 2,
+        "n_rules": 27
+      },
+      {
+        "nct_id": "NCT00452322",
+        "label": 9,
+        "n_rules": 5
+      },
+      {
+        "nct_id": "NCT03019575",
+        "label": 1,
+        "n_rules": 24
+      },
+      {
+        "nct_id": "NCT00562731",
+        "label": 1,
+        "n_rules": 5
+      },
+      {
+        "nct_id": "NCT02722278",
+        "label": 2,
+        "n_rules": 33
+      },
+      {
+        "nct_id": "NCT00398580",
+        "label": 2,
+        "n_rules": 16
+      },
+      {
+        "nct_id": "NCT01500447",
+        "label": 0,
+        "n_rules": 10
+      },
+      {
+        "nct_id": "NCT01816295",
+        "label": 2,
+        "n_rules": 37
+      }
+    ],
+    "2": [
+      {
+        "nct_id": "NCT02268877",
+        "label": 2,
+        "n_rules": 8
+      },
+      {
+        "nct_id": "NCT01800162",
+        "label": 2,
+        "n_rules": 12
+      },
+      {
+        "nct_id": "NCT00468299",
+        "label": 1,
+        "n_rules": 16
+      },
+      {
+        "nct_id": "NCT03993015",
+        "label": 2,
+        "n_rules": 4
+      },
+      {
+        "nct_id": "NCT02637739",
+        "label": 2,
+        "n_rules": 1
+      },
+      {
+        "nct_id": "NCT02363569",
+        "label": 9,
+        "n_rules": 9
+      },
+      {
+        "nct_id": "NCT02580175",
+        "label": 1,
+        "n_rules": 5
+      },
+      {
+        "nct_id": "NCT00342290",
+        "label": 1,
+        "n_rules": 7
+      },
+      {
+        "nct_id": "NCT02152696",
+        "label": 2,
+        "n_rules": 14
+      },
+      {
+        "nct_id": "NCT00129506",
+        "label": 2,
+        "n_rules": 10
+      },
+      {
+        "nct_id": "NCT01803113",
+        "label": 1,
+        "n_rules": 5
+      },
+      {
+        "nct_id": "NCT04207554",
+        "label": 9,
+        "n_rules": 11
+      },
+      {
+        "nct_id": "NCT04079361",
+        "label": 9,
+        "n_rules": 2
+      },
+      {
+        "nct_id": "NCT02973230",
+        "label": 2,
+        "n_rules": 4
+      },
+      {
+        "nct_id": "NCT02577536",
+        "label": 2,
+        "n_rules": 4
+      },
+      {
+        "nct_id": "NCT00330993",
+        "label": 1,
+        "n_rules": 3
+      },
+      {
+        "nct_id": "NCT03989869",
+        "label": 1,
+        "n_rules": 13
+      },
+      {
+        "nct_id": "NCT01855568",
+        "label": 2,
+        "n_rules": 10
+      },
+      {
+        "nct_id": "NCT03461835",
+        "label": 2,
+        "n_rules": 9
+      },
+      {
+        "nct_id": "NCT00426491",
+        "label": 2,
+        "n_rules": 9
+      },
+      {
+        "nct_id": "NCT01261026",
+        "label": 2,
+        "n_rules": 2
+      },
+      {
+        "nct_id": "NCT02763176",
+        "label": 1,
+        "n_rules": 7
+      },
+      {
+        "nct_id": "NCT00386282",
+        "label": 1,
+        "n_rules": 6
+      },
+      {
+        "nct_id": "NCT01663350",
+        "label": 9,
+        "n_rules": 8
+      },
+      {
+        "nct_id": "NCT02686840",
+        "label": 1,
+        "n_rules": 13
+      }
+    ]
+  }
+}

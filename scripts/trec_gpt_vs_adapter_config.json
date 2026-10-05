@@ -1,0 +1,21 @@
+{
+  "question": "On the same 2022 judged joinable-versus-excluded pairs as the 0.779 adapter mean, what is GPT-5.4's AUROC?",
+  "year": 2022,
+  "patients": "all 50",
+  "pairs_source": "scripts/trec_lora_eval_pairs.json test_2022, copied not redrawn",
+  "n_pairs_expected": 6249,
+  "n1_expected": 2635,
+  "n2_expected": 3614,
+  "prompt": "v1_ELIG_SYSTEM_DIGIT",
+  "model": "gpt-5.4",
+  "score": "expected digit from token logprobs (cont). Fallback: the typed digit.",
+  "reuse_stored_v1": "data/trec/frontier_elig_gpt.json arms.v1.2022 when topic and NCT match. Same model, same prompt.",
+  "reference_adapter_mean": 0.779,
+  "reference_adapter_seeds": [20261003, 20261006, 20261007],
+  "not": ["2021", "2023", "TREC-label prompt", "rule-by-rule reader", "P@10", "first-page ranking"],
+  "spend_cap_usd": 20,
+  "expected_usd": "12-15 after reuse",
+  "interval": "patient bootstrap, 5000 draws, seed 20261004",
+  "no_pass_fail": true,
+  "note": "This is not a decision that a patient qualifies. No overall accuracy. Do not compare this AUROC to P@10."
+}
