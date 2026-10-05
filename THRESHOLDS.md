@@ -1,8 +1,8 @@
 # Thresholds
 
 Committed **before** the run they apply to. Git history is the evidence they were not
-moved afterward. If one turns out badly chosen, it gets logged in `DECISIONS.md` and
-said plainly in the memo — it does not get edited here after results exist.
+moved afterward. If one turns out badly chosen, that is said plainly in the write-up
+of the run — it does not get edited here after results exist.
 
 ---
 
