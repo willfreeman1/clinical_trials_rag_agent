@@ -153,7 +153,7 @@ def main() -> None:
         "frontier_411_reference": 0.828,
         "no_overall_accuracy": True,
         "no_p_at_10": True,
-        "threshold_commit": "",
+        "threshold_commit": "6f7bc99",
     }
     RESULTS.write_text(json.dumps(rec, indent=2), encoding="utf-8")
     log_mlflow(rec)

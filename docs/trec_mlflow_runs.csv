@@ -1,4 +1,8 @@
 experiment,run_name,metric,value,lo,hi,config,threshold_commit,retrofitted
+trec_eligibility,gpt54_vs_adapter_2022,adapter_mean_reference,0.779,,,model=gpt-5.4; prompt=v1_ELIG_SYSTEM_DIGIT; year=2022; n_pairs=6249,6f7bc99,false
+trec_eligibility,gpt54_vs_adapter_2022,auroc_gpt,0.8213,0.7846,0.8519,model=gpt-5.4; prompt=v1_ELIG_SYSTEM_DIGIT; year=2022; n_pairs=6249,6f7bc99,false
+trec_eligibility,gpt54_vs_adapter_2022,reused,210,,,model=gpt-5.4; prompt=v1_ELIG_SYSTEM_DIGIT; year=2022; n_pairs=6249,6f7bc99,false
+trec_eligibility,gpt54_vs_adapter_2022,usd,11.2672,,,model=gpt-5.4; prompt=v1_ELIG_SYSTEM_DIGIT; year=2022; n_pairs=6249,6f7bc99,false
 trec_frontier,gpt54_elig_411pairs,auroc_trec_prompt,0.829,,,model=gpt-5.4; prompt=v1_and_trec_label; patients=30; pairs=411,99f795c,true
 trec_frontier,gpt54_elig_411pairs,auroc_v1,0.828,,,model=gpt-5.4; prompt=v1_and_trec_label; patients=30; pairs=411,99f795c,true
 trec_frontier,gpt54_elig_411pairs,p_elig_ge_0.75_joinable_rate,0.85,,,model=gpt-5.4; prompt=v1_and_trec_label; patients=30; pairs=411,99f795c,true

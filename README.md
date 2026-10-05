@@ -73,7 +73,7 @@ flip.
 | Logistic regression combining every signal already on disk | 0.686 |
 | Asking the model about eligibility instead, untrained | 0.749 |
 | **Fine-tuned on the benchmark's human verdicts** | **0.779** (three seeds: 0.793, 0.770, 0.773) |
-| GPT-5.4 — *different and smaller sample, not comparable* | 0.83 |
+| GPT-5.4, same 6,249 pairs | **0.821** (0.785–0.852); +0.038 vs the trained 7B on the same patients |
 
 The fine-tuning cost about $5 of rented GPU time per training run. It used a
 LoRA adapter — a small file of extra numbers trained on top of a frozen base
@@ -170,7 +170,7 @@ eligibility score. `docs/trec_reader.md`.
 
 ## Experiment tracking
 
-A local MLflow store holds the thirteen TREC runs that produced reported
+A local MLflow store holds the fourteen TREC runs that produced reported
 results — not every experiment the project ran — with settings, metrics and
 intervals, the write-up, and the threshold commit that governed the run. The
 three fine-tuned adapters are on the registry; seed 20261007 is marked as the
@@ -208,9 +208,10 @@ engineering:
 | `docs/trec_hybrid_retrieval.md` | The search stage and the keyword-decomposition result |
 | `docs/trec_lora_rank.md` | Benchmark-standard measures for every approach tried, both years |
 | `docs/trec_model_currency.md` | How the system would stay current; distillation designed, not run; MLflow |
-| `docs/trec_mlflow_runs.csv` | Long table of the thirteen reported runs: one row per run-and-metric, with intervals |
+| `docs/trec_mlflow_runs.csv` | Long table of the fourteen reported runs: one row per run-and-metric, with intervals |
 | `docs/trec_lora_elig.md` | The fine-tuning work, including a collapsed first attempt and its diagnosis |
 | `docs/trec_frontier_elig.md` | GPT-5.4 as a measured baseline |
+| `docs/trec_gpt_vs_adapter.md` | GPT-5.4 vs the trained 7B on the same 6,249 2022 pairs: 0.821 vs 0.779 |
 | `docs/trec_reader.md` | Rule-by-rule reader on the 2022 top 25: 7.6% of rules settled, AUROC 0.59 under all three combination rules, D+E 3.75% |
 | `docs/trec_short_notes.md` | What a TREC note can support: 7.6% of requirements, why walking every rule is the wrong ranking method, what to discuss next |
 | `docs/trec_shortlist_diagnosis.md`, `docs/trec_shortlist_fix.md` | What the shortlist contains, and three approaches that did not help |

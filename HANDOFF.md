@@ -148,6 +148,7 @@ Full detail in `docs/`. The short version, so you know what not to repeat:
 
 | Finding | Where |
 |---|---|
+| GPT-5.4 0.821 vs trained 7B 0.779 on the same 6,249 2022 pairs; paired +0.038 | `trec_gpt_vs_adapter.md` |
 | A TREC note settles 7.6% of requirements; rule-by-rule ranking 0.59; compatible-unless-contradicted changes labels not sort | `trec_short_notes.md`, `trec_reader.md` |
 | Keyword-per-query hybrid search: 91.6% / 91.4% eligible recall at 6% | `trec_hybrid_retrieval.md` |
 | 2023 is a different task (sparse questionnaire fields, ~315 eligible per topic); 65.4%. **Do not touch 2023** | same |
@@ -401,8 +402,10 @@ uncertainty, and say plainly when a result is weak.
 
 1. **Does a topical reordering stage earn its place at all, or does a cheap
    eligibility score replace it?** Runs 1 and 2. Gates already committed.
-2. **How far is a 7B open model from a frontier model, and how far is either
-   from human assessors?** Run 3. Needs Will's approval; crosses the $25 line.
+2. **How far is a 7B open model from a frontier model?** Measured on the
+   same 6,249 2022 pairs as 0.779: GPT-5.4 AUROC **0.821** vs trained
+   7B mean **0.779**, paired gap +0.038 (0.012–0.068).
+   `docs/trec_gpt_vs_adapter.md`. Not a first-page score.
 3. **Can anything separate label 1 from label 2** — right disease but
    excluded, versus eligible? Nothing has. This is the most valuable
    unanswered question in the project.
