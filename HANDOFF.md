@@ -61,8 +61,12 @@ deliverable**, as much as any working pipeline.
 The project also exists to close specific gaps he found in about twenty job
 descriptions: production vector databases, agent frameworks, explicit
 function-calling, a named evaluation platform, structured output,
-guardrails, and self-hosted inference. Most of those are still open. See
-Part 0 of `CONTEXT.md`.
+guardrails, and self-hosted inference. Local pgvector, an HTTP API and a
+page, reader JSON and quote checks, and MLflow are in the repo. Still
+open: a hosted database, tool calling with measured choice accuracy,
+Langfuse, an injection test set, and vLLM in the demo container.
+LangGraph was used for clarifying questions, measured, and not kept.
+See Part 0 of `CONTEXT.md`.
 
 **Nothing here touches real patient data, ever.** Patient descriptions are
 either invented or from the published benchmark. **The system never tells
@@ -420,10 +424,11 @@ uncertainty, and say plainly when a result is weak.
    than the 26,162 judged pool?** Unknown, and the honest caveat on every
    headline number.
 
-Items from the original gap list that remain completely untouched: a
-production vector database, an agent framework, a named evaluation platform,
-structured output, guardrails, and a deployed service. There is still no API,
-no container, and no user-facing anything. That is a deliberate consequence
-of spending the effort on measurement, and it is the right trade for a
-portfolio piece about depth — but it should be a conscious choice each time
-it is renewed, not a drift.
+The original gap list is no longer untouched. The laptop demo has local
+pgvector, an API, a container, and a page. The reader has schema-checked
+JSON and a quote check. MLflow is the eval registry. LangGraph was
+measured on clarifying questions and not kept in the product path.
+Still not built: a hosted database and a live registry update, a public
+URL, tool calling with measured choice accuracy, Langfuse, an injection
+test set, and vLLM in the demo image. That remaining list should be a
+conscious choice each time it is renewed, not a drift.

@@ -31,16 +31,18 @@ cd clinical_trials_rag_agent
 docker compose up --build
 ```
 
-Wait until the logs say the app is ready. Then:
+Wait until the logs say the app is ready. Then open
+http://127.0.0.1:8088
+in a browser. Pick one of the three published notes. The page
+names replay mode, shows ranked trials, expert marks, and the
+quoted criterion text. It does not say the patient qualifies.
+
+The JSON API is still there:
 
 ```bash
 curl http://127.0.0.1:8088/health
 curl -s http://127.0.0.1:8088/v1/match -H "Content-Type: application/json" -d "{\"patient_id\":\"1\"}"
 ```
-
-`model_mode` will be `replay`. The body includes ranked trials,
-per-rule verdicts, verified quotes, and the expert mark when we
-have one. It does not say the patient qualifies.
 
 On Windows PowerShell, use `curl.exe` and put the JSON in a
 file (`--data-binary @req.json`). The `curl` alias will eat
@@ -233,13 +235,16 @@ tracking starts with the reader.
 
 ## What is not built
 
-Stated plainly, because the measurement record is deliberately ahead of the
-engineering:
+- A hosted production database, or a pipeline that keeps ClinicalTrials.gov current
+- A public URL. The container, the API, and the page run on a laptop
+- The model choosing among named tools, with a measured choice accuracy
+- A prompt-injection test set
+- Langfuse. MLflow is the eval registry
+- vLLM in the demo container. The 7B was measured on rented GPUs; the laptop demo replays stored replies
 
-- A production vector database and a pipeline that keeps trials current
-- An agent framework with explicit function calling
-- Validated structured output and guardrails
-- A deployed service, an API, or a container
+LangGraph was used for a clarifying-question loop, measured, and not kept
+in the product path. The reader’s JSON schema and quote check are in the
+demo. The system still does not say a patient qualifies.
 
 ---
 
