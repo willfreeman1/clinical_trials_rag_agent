@@ -212,6 +212,7 @@ engineering:
 | `docs/trec_lora_elig.md` | The fine-tuning work, including a collapsed first attempt and its diagnosis |
 | `docs/trec_frontier_elig.md` | GPT-5.4 as a measured baseline |
 | `docs/trec_reader.md` | Rule-by-rule reader on the 2022 top 25: 7.6% of rules settled, AUROC 0.59 under all three combination rules, D+E 3.75% |
+| `docs/trec_short_notes.md` | What a TREC note can support: 7.6% of requirements, why walking every rule is the wrong ranking method, what to discuss next |
 | `docs/trec_shortlist_diagnosis.md`, `docs/trec_shortlist_fix.md` | What the shortlist contains, and three approaches that did not help |
 | `THRESHOLDS.md` | Each run's deciding numbers, committed **before** that run |
 | `DECISIONS.md` | Every decision, its options, and what evidence would reverse it |

@@ -131,10 +131,14 @@ Of the 1,570, about 67 are eligible, 73 are right-disease-but-excluded, and
 **91% is junk** — mostly trials never about this patient that matched a
 generic term like "hypertension" or "nausea."
 
-**Stage 3 — the per-criterion reader.** A model reads each of a trial's ~43
-eligibility rules against the patient, judges each, and quotes the sentence
-it relied on. **This has never been run on TREC.** It is what both papers say
-does the real work, and it is the output a coordinator actually needs.
+**Stage 3 — the per-criterion reader.** Measured on TREC 2022, top 25,
+1,250 pairs. A TREC note settles **7.6%** of the written requirements
+(about 13 per trial here, not the ~43 from the lung-cancer slice).
+Walking every rule is the wrong ranking method for this test. The
+fair last step calls most trials compatible; ranking stays 0.59
+against the fine-tuned scorer’s 0.779. Quotes are usually real
+(3.75% made up or paraphrased). Read `docs/trec_short_notes.md`
+before proposing another reader.
 
 ---
 
@@ -144,6 +148,7 @@ Full detail in `docs/`. The short version, so you know what not to repeat:
 
 | Finding | Where |
 |---|---|
+| A TREC note settles 7.6% of requirements; rule-by-rule ranking 0.59; compatible-unless-contradicted changes labels not sort | `trec_short_notes.md`, `trec_reader.md` |
 | Keyword-per-query hybrid search: 91.6% / 91.4% eligible recall at 6% | `trec_hybrid_retrieval.md` |
 | 2023 is a different task (sparse questionnaire fields, ~315 eligible per topic); 65.4%. **Do not touch 2023** | same |
 | Generic `text-embedding-3-small` **beat** medical MedCPT at retrieval (91.8% vs 88.0%) | same |
@@ -401,9 +406,11 @@ uncertainty, and say plainly when a result is weak.
 3. **Can anything separate label 1 from label 2** — right disease but
    excluded, versus eligible? Nothing has. This is the most valuable
    unanswered question in the project.
-4. **Does the per-criterion reader work on TREC**, and what is its fabricated-
-   citation rate? Never run here. The fabrication measurement is the
-   project's most original contribution and should be repeated on it.
+4. **Does the per-criterion reader work on TREC?** Measured. It produces
+   usable quotes (3.75% fabrication on offered quotes) and does not
+   rank (0.59). The open question is whether anything else is worth
+   running — contradiction-only evidence, a larger model, or stop.
+   `docs/trec_short_notes.md`.
 5. **Would fine-tuning Qwen on the 71,226 human judgements beat the frontier
    model?** Decided by question 2.
 6. **Does any of this survive against the full 375,581-trial registry rather

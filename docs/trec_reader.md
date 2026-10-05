@@ -1,5 +1,8 @@
 # Rule-by-rule reader on the 2022 top 25
 
+What those numbers mean for method, and what to discuss next:
+`docs/trec_short_notes.md`.
+
 The reader is a program that splits one trial's eligibility text into
 rules, asks a self-hosted 7-billion-parameter model
 (Qwen2.5-7B-Instruct) to judge each rule against one patient note,
