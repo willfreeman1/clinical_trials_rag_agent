@@ -30,22 +30,43 @@ CATALOG = None
 COMPLETE = None
 MODEL_MODE = "replay"
 DB_OK = False
+VECTOR_BACKEND = "memory"
+DATABASE_URL = ""
+
+
+def vector_backend_from_env() -> str:
+    backend = (os.environ.get("VECTOR_BACKEND") or "memory").strip().lower()
+    if backend not in {"memory", "pgvector"}:
+        raise RuntimeError("VECTOR_BACKEND must be 'memory' or 'pgvector'")
+    return backend
 
 
 def boot() -> None:
-    global CATALOG, COMPLETE, MODEL_MODE, DB_OK
+    global CATALOG, COMPLETE, MODEL_MODE, DB_OK, VECTOR_BACKEND, DATABASE_URL
     CATALOG = load_catalog()
     MODEL_MODE, COMPLETE = complete_from_env(CATALOG.reads)
-    url = (os.environ.get("DATABASE_URL") or "").strip()
-    if url:
-        conn = wait_db(url)
+    VECTOR_BACKEND = vector_backend_from_env()
+    DATABASE_URL = (os.environ.get("DATABASE_URL") or "").strip()
+    if VECTOR_BACKEND == "pgvector" and not DATABASE_URL:
+        raise RuntimeError("VECTOR_BACKEND=pgvector requires DATABASE_URL")
+    if DATABASE_URL:
+        conn = wait_db(DATABASE_URL)
         ensure_schema(conn)
         seed_postgres(conn, CATALOG)
         conn.close()
         DB_OK = True
     else:
         DB_OK = False
-    log.info("ready mode=%s patients=%s trials=%s db=%s", MODEL_MODE, len(CATALOG.patients), len(CATALOG.trials), DB_OK)
+    if VECTOR_BACKEND == "pgvector" and not DB_OK:
+        raise RuntimeError("VECTOR_BACKEND=pgvector requires an available database")
+    log.info(
+        "ready mode=%s vector_backend=%s patients=%s trials=%s db=%s",
+        MODEL_MODE,
+        VECTOR_BACKEND,
+        len(CATALOG.patients),
+        len(CATALOG.trials),
+        DB_OK,
+    )
 
 
 @app.get("/")
@@ -60,6 +81,7 @@ def health():
             "ok": True,
             "model_mode": MODEL_MODE,
             "database": "up" if DB_OK else "memory_only",
+            "vector_backend": VECTOR_BACKEND,
             "n_patients": len(CATALOG.patients) if CATALOG else 0,
             "n_trials": len(CATALOG.trials) if CATALOG else 0,
             "disclaimer": DISCLAIMER,
@@ -69,6 +91,8 @@ def health():
 
 @app.get("/v1/patients")
 def patients():
+    if CATALOG is None:
+        return jsonify({"error": "catalog not loaded", "model_mode": MODEL_MODE}), 503
     rows = []
     for p in CATALOG.patients.values():
         rows.append(
@@ -79,7 +103,14 @@ def patients():
                 "first_line": (p.note.split("\n")[0])[:160],
             }
         )
-    return jsonify({"model_mode": MODEL_MODE, "patients": rows, "disclaimer": DISCLAIMER})
+    return jsonify(
+        {
+            "model_mode": MODEL_MODE,
+            "vector_backend": VECTOR_BACKEND,
+            "patients": rows,
+            "disclaimer": DISCLAIMER,
+        }
+    )
 
 
 @app.post("/v1/match")
@@ -99,12 +130,22 @@ def match():
     depth = body.get("depth", 10)
     if not isinstance(depth, int) or depth < 1 or depth > 25:
         return jsonify({"error": "depth must be an integer from 1 to 25", "model_mode": MODEL_MODE}), 400
+    if CATALOG is None:
+        return jsonify({"error": "catalog not loaded", "model_mode": MODEL_MODE}), 503
     try:
         patient = resolve_patient(CATALOG, pid, note)
     except KeyError as exc:
         return jsonify({"error": str(exc), "model_mode": MODEL_MODE}), 404
     try:
-        payload = match_patient(CATALOG, patient, COMPLETE, MODEL_MODE, depth=depth)
+        payload = match_patient(
+            CATALOG,
+            patient,
+            COMPLETE,
+            MODEL_MODE,
+            depth=depth,
+            vector_backend=VECTOR_BACKEND,
+            database_url=DATABASE_URL,
+        )
     except Exception as exc:
         log.exception("match failed")
         return jsonify({"error": str(exc), "model_mode": MODEL_MODE}), 502

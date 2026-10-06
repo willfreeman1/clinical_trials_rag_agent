@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import math
 import re
+from importlib import import_module
 from collections import defaultdict
 
 TOKEN = re.compile(r"[a-z0-9]+")
@@ -73,6 +74,34 @@ def vector_search(
     scored = [(nct, cosine(query, row)) for nct, row in zip(ids, matrix)]
     scored.sort(key=lambda kv: -kv[1])
     return scored[:k]
+
+
+def _vector_literal(values: list[float]) -> str:
+    return "[" + ",".join(f"{v:.7f}" for v in values) + "]"
+
+
+def vector_search_pg(
+    query: list[float],
+    database_url: str,
+    k: int = 50,
+) -> list[tuple[str, float]]:
+    """Return nearest trials using pgvector cosine distance."""
+    psycopg = import_module("psycopg")
+
+    if not query:
+        return []
+    vec = _vector_literal(query)
+    sql = """
+        SELECT nct_id, embedding <=> %s::vector AS dist
+        FROM trials
+        WHERE embedding IS NOT NULL
+        ORDER BY embedding <=> %s::vector ASC
+        LIMIT %s
+    """
+    with psycopg.connect(database_url, connect_timeout=5) as conn:
+        rows = conn.execute(sql, (vec, vec, k)).fetchall()
+    # Convert distance (lower is better) to a bounded similarity for RRF tie clarity.
+    return [(str(nct), 1.0 / (1.0 + float(dist))) for nct, dist in rows]
 
 
 def rrf(rankings: list[list[tuple[str, float]]], k: int = 60) -> list[tuple[str, float]]:

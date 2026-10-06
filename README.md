@@ -134,6 +134,12 @@ and every response states which mode it is in.
 The seed is three patients from the 2022 benchmark and 423 trials, about 3 MB,
 with embeddings precomputed.
 
+The demo now supports two vector-search backends: in-memory vectors
+(`VECTOR_BACKEND=memory`) and Postgres pgvector
+(`VECTOR_BACKEND=pgvector`). `docker compose up` uses pgvector by default, so
+the retrieval path runs against a real vector database with no recurring cloud
+cost.
+
 <details>
 <summary>API and tests</summary>
 

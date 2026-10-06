@@ -14,7 +14,7 @@ from reader.aggregate import aggregate
 from reader.judge import read_trial
 from reader.split_rules import split_rules
 from service.backend import ReplayComplete, ReplayMiss
-from service.search import BM25, rrf, vector_search
+from service.search import BM25, rrf, vector_search, vector_search_pg
 
 
 DISCLAIMER = (
@@ -98,6 +98,8 @@ def match_patient(
     complete,
     model_mode: str,
     depth: int = 10,
+    vector_backend: str = "memory",
+    database_url: str | None = None,
 ) -> dict:
     t0 = time.perf_counter()
     timings: dict[str, float] = {}
@@ -106,8 +108,16 @@ def match_patient(
     rankings = [catalog.bm25.query(kw, k=40) for kw in patient.keywords if kw.strip()]
     if not rankings:
         rankings = [catalog.bm25.query(patient.note, k=40)]
+    active_vector_backend = "none"
     if patient.query_embedding:
-        rankings.append(vector_search(patient.query_embedding, catalog.emb_ids, catalog.emb_mat, k=40))
+        if vector_backend == "pgvector":
+            if not database_url:
+                raise RuntimeError("VECTOR_BACKEND=pgvector requires DATABASE_URL")
+            rankings.append(vector_search_pg(patient.query_embedding, database_url, k=40))
+            active_vector_backend = "pgvector"
+        else:
+            rankings.append(vector_search(patient.query_embedding, catalog.emb_ids, catalog.emb_mat, k=40))
+            active_vector_backend = "memory"
     fused = rrf(rankings)
     timings["search_ms"] = round((time.perf_counter() - s0) * 1000, 1)
 
@@ -201,6 +211,7 @@ def match_patient(
     return {
         "patient_id": patient.patient_id,
         "model_mode": model_mode,
+        "vector_backend": active_vector_backend,
         "disclaimer": DISCLAIMER,
         "n_retrieved": len(fused),
         "results": results,
