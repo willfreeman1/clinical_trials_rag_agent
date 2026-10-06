@@ -158,6 +158,18 @@ docker compose --profile test run --rm test
 A live model server is optional (`MODEL_MODE=live` and `MODEL_URL`). The demo
 does not need it.
 
+Observability is optional too. If you run Langfuse locally, set
+`LANGFUSE_ENABLED=true` plus `LANGFUSE_HOST`, `LANGFUSE_PUBLIC_KEY`, and
+`LANGFUSE_SECRET_KEY`. Then each `/v1/match` call writes a trace with
+search/ranking/reader timings and quote-check buckets. Leave these unset for
+normal demo runs.
+
+Local proof from this repo's run:
+
+![Langfuse trace list after running `/v1/match`](docs/images/langfuse-traces.png)
+
+![Langfuse trace detail showing spans and timings](docs/images/langfuse-trace-detail.png)
+
 </details>
 
 ---

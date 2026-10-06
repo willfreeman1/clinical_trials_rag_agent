@@ -1,6 +1,7 @@
 flask>=3.0
 psycopg[binary]>=3.1
 numpy>=1.26
+langfuse>=2.52
 # Demo image only. Do not install the repo root requirements.txt
 # (MLflow / LangGraph); those are for measurement, not the laptop
 # container.

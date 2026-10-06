@@ -94,9 +94,11 @@ def _to_judgements(
     rules: list[Rule],
     patient_note: str,
     trial_text: str,
+    obs=None,
 ) -> list[RuleJudgement]:
     by_id = {r.rule_id: r for r in rules}
     out = []
+    bucket_counts: dict[str, int] = {}
     for row in rows:
         item = RuleJudgement(
             rule_id=row["rule_id"],
@@ -107,7 +109,12 @@ def _to_judgements(
             coerced_to_nei=bool(row.get("coerced_to_nei")),
         )
         rule = by_id[row["rule_id"]]
-        out.append(verify_judgement(item, rule, patient_note, trial_text))
+        checked = verify_judgement(item, rule, patient_note, trial_text)
+        out.append(checked)
+        bucket = checked.quote_bucket or "unknown"
+        bucket_counts[bucket] = bucket_counts.get(bucket, 0) + 1
+    if obs:
+        obs.event("quote_verification", {"bucket_counts": bucket_counts, "n_rules": len(out)})
     return out
 
 
@@ -119,10 +126,14 @@ def read_trial(
     eligibility: str,
     complete: CompleteFn,
     max_retries: int = MAX_RETRIES,
+    obs=None,
 ) -> TrialRead:
+    read_span = obs.start_span("reader_parse") if obs else None
     rules = split_rules(eligibility)
     trial_text = f"{title}\n{eligibility}"
     if not rules:
+        if read_span:
+            read_span.end(output={"schema_ok": True, "n_rules": 0})
         return TrialRead(
             patient_id=patient_id,
             nct_id=nct_id,
@@ -139,6 +150,8 @@ def read_trial(
     retries = 0
 
     for attempt in range(max_retries + 1):
+        if read_span:
+            read_span.event("reader_attempt", {"attempt": attempt})
         prompt = (
             user
             if attempt == 0
@@ -153,14 +166,24 @@ def read_trial(
             break
         except (json.JSONDecodeError, SchemaError, TypeError) as exc:
             last_err = _describe_failure(last_raw, expected, exc)
+            if read_span:
+                read_span.event("reader_parse_error", {"attempt": attempt, "error": last_err[:300]})
             parsed = None
 
     schema_ok = parsed is not None
     if parsed is None:
         parsed = []
     filled, missing = _fill_missing(rules, parsed)
-    judgements = _to_judgements(filled, rules, patient_note, trial_text)
+    judgements = _to_judgements(filled, rules, patient_note, trial_text, obs=read_span)
     coerced = [j.rule_id for j in judgements if j.coerced_to_nei]
+    if read_span:
+        read_span.end(
+            output={"schema_ok": schema_ok, "retries": retries},
+            metadata={
+                "missing_rule_ids": missing,
+                "coerced_rule_ids": coerced,
+            },
+        )
     return TrialRead(
         patient_id=patient_id,
         nct_id=nct_id,

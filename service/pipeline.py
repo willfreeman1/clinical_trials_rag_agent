@@ -100,7 +100,9 @@ def match_patient(
     depth: int = 10,
     vector_backend: str = "memory",
     database_url: str | None = None,
+    obs=None,
 ) -> dict:
+    request_span = obs.start_span("pipeline_match", metadata={"patient_id": patient.patient_id, "depth": depth}) if obs else None
     t0 = time.perf_counter()
     timings: dict[str, float] = {}
 
@@ -120,6 +122,16 @@ def match_patient(
             active_vector_backend = "memory"
     fused = rrf(rankings)
     timings["search_ms"] = round((time.perf_counter() - s0) * 1000, 1)
+    if request_span:
+        request_span.event(
+            "search_completed",
+            {
+                "keywords": len(patient.keywords),
+                "ranking_arms": len(rankings),
+                "fused_count": len(fused),
+                "vector_backend": active_vector_backend,
+            },
+        )
 
     s1 = time.perf_counter()
     def rank_key(item: tuple[str, float]) -> tuple[float, float]:
@@ -130,12 +142,26 @@ def match_patient(
 
     ordered = sorted(fused, key=rank_key, reverse=True)
     timings["rank_ms"] = round((time.perf_counter() - s1) * 1000, 1)
+    if request_span:
+        top_preview = [
+            {"nct_id": nct, "topical": catalog.scores.get((patient.patient_id, nct)), "rrf": round(rrf_s, 6)}
+            for nct, rrf_s in ordered[:5]
+        ]
+        request_span.event("rank_completed", {"top5": top_preview})
 
     s2 = time.perf_counter()
     results = []
     for nct, rrf_s in ordered[:depth]:
         trial = catalog.trials[nct]
         rules = split_rules(trial.eligibility)
+        trial_span = (
+            request_span.start_span(
+                "trial_read",
+                metadata={"nct_id": nct, "rules": len(rules), "splitter_mode": trial.splitter_mode or "unknown"},
+            )
+            if request_span
+            else None
+        )
         read = None
         read_error = None
         try:
@@ -149,15 +175,29 @@ def match_patient(
                 trial.title,
                 trial.eligibility,
                 fn,
+                obs=trial_span,
             )
         except ReplayMiss:
             read_error = "no stored reader reply for this pair"
             read = None
+            if trial_span:
+                trial_span.event("reader_miss", {"reason": read_error})
         except Exception as exc:
             read_error = str(exc)
             read = None
+            if trial_span:
+                trial_span.event("reader_error", {"error": read_error})
         gold = catalog.qrels.get((patient.patient_id, nct))
         agg = read.aggregates if read else aggregate([], rules)
+        if trial_span:
+            trial_span.end(
+                output={
+                    "schema_ok": bool(read and read.schema_ok),
+                    "compatible": agg.get("compatible_unless_contradicted"),
+                    "score_compatible": agg.get("score_compatible"),
+                },
+                metadata={"read_error": read_error},
+            )
         split_by_id = {rule.rule_id: rule for rule in rules}
         results.append(
             {
@@ -208,6 +248,8 @@ def match_patient(
         )
     timings["read_ms"] = round((time.perf_counter() - s2) * 1000, 1)
     timings["total_ms"] = round((time.perf_counter() - t0) * 1000, 1)
+    if request_span:
+        request_span.end(output={"results": len(results)}, metadata={"timings": timings})
     return {
         "patient_id": patient.patient_id,
         "model_mode": model_mode,

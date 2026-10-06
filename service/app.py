@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 
 from service.backend import complete_from_env, mode_from_env  # noqa: E402
 from service.load_seed import ensure_schema, load_catalog, seed_postgres, wait_db  # noqa: E402
+from service.observability import obs_from_env  # noqa: E402
 from service.pipeline import DISCLAIMER, match_patient, resolve_patient  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -32,6 +33,7 @@ MODEL_MODE = "replay"
 DB_OK = False
 VECTOR_BACKEND = "memory"
 DATABASE_URL = ""
+OBS = None
 
 
 def vector_backend_from_env() -> str:
@@ -42,7 +44,7 @@ def vector_backend_from_env() -> str:
 
 
 def boot() -> None:
-    global CATALOG, COMPLETE, MODEL_MODE, DB_OK, VECTOR_BACKEND, DATABASE_URL
+    global CATALOG, COMPLETE, MODEL_MODE, DB_OK, VECTOR_BACKEND, DATABASE_URL, OBS
     CATALOG = load_catalog()
     MODEL_MODE, COMPLETE = complete_from_env(CATALOG.reads)
     VECTOR_BACKEND = vector_backend_from_env()
@@ -59,13 +61,16 @@ def boot() -> None:
         DB_OK = False
     if VECTOR_BACKEND == "pgvector" and not DB_OK:
         raise RuntimeError("VECTOR_BACKEND=pgvector requires an available database")
+    OBS = obs_from_env()
     log.info(
-        "ready mode=%s vector_backend=%s patients=%s trials=%s db=%s",
+        "ready mode=%s vector_backend=%s patients=%s trials=%s db=%s obs=%s (%s)",
         MODEL_MODE,
         VECTOR_BACKEND,
         len(CATALOG.patients),
         len(CATALOG.trials),
         DB_OK,
+        OBS.provider,
+        OBS.reason,
     )
 
 
@@ -82,6 +87,7 @@ def health():
             "model_mode": MODEL_MODE,
             "database": "up" if DB_OK else "memory_only",
             "vector_backend": VECTOR_BACKEND,
+            "observability": {"provider": OBS.provider if OBS else "none", "enabled": bool(OBS and OBS.enabled)},
             "n_patients": len(CATALOG.patients) if CATALOG else 0,
             "n_trials": len(CATALOG.trials) if CATALOG else 0,
             "disclaimer": DISCLAIMER,
@@ -137,6 +143,13 @@ def match():
     except KeyError as exc:
         return jsonify({"error": str(exc), "model_mode": MODEL_MODE}), 404
     try:
+        trace = None
+        if OBS:
+            trace = OBS.start_trace(
+                "match_request",
+                input={"patient_id": patient.patient_id, "depth": depth},
+                metadata={"model_mode": MODEL_MODE, "vector_backend": VECTOR_BACKEND},
+            )
         payload = match_patient(
             CATALOG,
             patient,
@@ -145,8 +158,23 @@ def match():
             depth=depth,
             vector_backend=VECTOR_BACKEND,
             database_url=DATABASE_URL,
+            obs=trace,
         )
+        if trace:
+            trace.end(
+                output={"n_retrieved": payload.get("n_retrieved"), "n_results": len(payload.get("results") or [])},
+                metadata={"timings": payload.get("timings")},
+            )
+            trace.flush()
     except Exception as exc:
+        if OBS:
+            err_trace = OBS.start_trace(
+                "match_request_error",
+                input={"patient_id": pid, "depth": depth},
+                metadata={"model_mode": MODEL_MODE, "vector_backend": VECTOR_BACKEND, "error": str(exc)},
+            )
+            err_trace.end(output={"error": str(exc)})
+            err_trace.flush()
         log.exception("match failed")
         return jsonify({"error": str(exc), "model_mode": MODEL_MODE}), 502
     payload["disclaimer"] = DISCLAIMER

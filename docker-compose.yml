@@ -21,6 +21,10 @@ services:
       DATABASE_URL: postgresql://demo:demo@db:5432/demo
       VECTOR_BACKEND: pgvector
       MODEL_MODE: replay
+      LANGFUSE_ENABLED: ${LANGFUSE_ENABLED:-false}
+      LANGFUSE_HOST: ${LANGFUSE_HOST:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
       SEED_DIR: /app/demo/seed
       PYTHONPATH: /app
     depends_on:
@@ -34,6 +38,10 @@ services:
       DATABASE_URL: postgresql://demo:demo@db:5432/demo
       VECTOR_BACKEND: pgvector
       MODEL_MODE: replay
+      LANGFUSE_ENABLED: ${LANGFUSE_ENABLED:-false}
+      LANGFUSE_HOST: ${LANGFUSE_HOST:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
       SEED_DIR: /app/demo/seed
       PYTHONPATH: /app
     depends_on:
